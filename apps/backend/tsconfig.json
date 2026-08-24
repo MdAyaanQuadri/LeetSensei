@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./src",
     "outDir": "./dist",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -9,7 +8,7 @@
     "lib": ["esnext"],
     "types": ["node"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "prisma", "prisma.config.ts", "generated"]
+  "include": ["src/**/*", "generated/**/*"],
+  "exclude": ["node_modules", "dist", "prisma", "prisma.config.ts"]
 }
 

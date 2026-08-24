@@ -12,4 +12,36 @@ datasource db {
   provider = "postgresql"
 }
 
+model College {
+  id          String   @id @default(uuid())
+  name        String
+  collegeDbId String   @unique
+  city        String
+  state       String
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+}
+
+model User {
+  // userInfo
+  id              String   @id @default(uuid())
+  clerkId         String   @unique
+  userName        String?  @unique
+  email           String   @unique
+  profileImageUrl String?
+
+  //collegeInfo
+  collegeId       String?
+  course          String?
+  branch          String?
+  graduationYear  Int?    
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // foreignKey
+  college         College? @relation(fields: [collegeId], references: [id],onDelete: SetNull)
+}
