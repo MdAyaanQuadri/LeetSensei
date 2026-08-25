@@ -29,8 +29,9 @@ model User {
   // userInfo
   id              String   @id @default(uuid())
   clerkId         String   @unique
-  userName        String?  @unique
   email           String   @unique
+  firstName       String   
+  lastName        String
   profileImageUrl String?
 
   //collegeInfo

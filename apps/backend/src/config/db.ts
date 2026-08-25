@@ -3,6 +3,6 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import env from './env.js'
 
 const adapter = new PrismaPg(env.DATABASE_URL)
-const db = new PrismaClient({adapter })
+const prisma = new PrismaClient({adapter })
 
-export default db
+export default prisma
