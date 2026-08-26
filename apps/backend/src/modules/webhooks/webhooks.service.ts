@@ -3,6 +3,8 @@ import prisma from "../../config/db"
 //types 
 import type { UserJSON } from "@clerk/backend"
 
+
+// create or update user
 export const createUser = async (data : UserJSON) => {
     await prisma.user.upsert({
         where :{
@@ -22,7 +24,7 @@ export const createUser = async (data : UserJSON) => {
     })
 }
 
-
+// delete user
 export const deleteUser = async (clerkId : string) =>{
     await prisma.user.delete({
         where : {

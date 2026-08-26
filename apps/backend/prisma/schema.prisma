@@ -13,36 +13,77 @@ datasource db {
 }
 
 model College {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
-  collegeDbId String   @unique
+  collegeDbId String @unique
   city        String
   state       String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  users       User[]
+  users User[]
 }
 
 model User {
   // userInfo
-  id              String   @id @default(uuid())
-  clerkId         String   @unique
-  email           String   @unique
-  firstName       String   
+  id              String  @id @default(uuid())
+  clerkId         String  @unique
+  email           String  @unique
+  firstName       String
   lastName        String
   profileImageUrl String?
 
   //collegeInfo
-  collegeId       String?
-  course          String?
-  branch          String?
-  graduationYear  Int?    
+  collegeId      String?
+  course         String?
+  branch         String?
+  graduationYear Int?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // foreignKey
-  college         College? @relation(fields: [collegeId], references: [id],onDelete: SetNull)
+  college       College?       @relation(fields: [collegeId], references: [id], onDelete: SetNull)
+  leetcodeStats LeetCodeStats?
+}
+
+model LeetCodeStats {
+  id                    String @id @default(uuid())
+  userId                String @unique
+  // stats
+  userName              String
+  globalRank            Int    @default(5000000)  
+  totalQuestionsSolved  Int    @default(0)
+  mediumQuestionsSolved Int    @default(0)
+  hardQuestionsSolved   Int    @default(0)
+  easyQuestionsSolved   Int    @default(0)
+  badges                Json   @default("[]")
+  
+  // days
+  activeDays            Int    @default(0)
+  maxStreak             Int    @default(0)
+  currentStreak         Int    @default(0)
+
+  // submissions
+  submissionHeatMap     Json   @default("[]")
+
+  // tag
+  fundamentalTag        Json   @default("[]")
+  intermediateTag       Json   @default("[]")
+  advancedTag           Json   @default("[]")
+
+
+  // profile
+  isVerified            Boolean @default(false)
+
+  // time
+  createdAt             DateTime @default(now())
+  lastSyncedAt          DateTime @updatedAt
+
+  // foreign key
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // redundant
+  // @@unique([userName,userId])
 }
