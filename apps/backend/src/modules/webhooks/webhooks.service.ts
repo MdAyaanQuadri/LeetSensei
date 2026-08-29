@@ -15,6 +15,7 @@ export const createUser = async (data : UserJSON) => {
             firstName: data.first_name ?? "",
             lastName: data.last_name ?? "",
             profileImageUrl:data.image_url,
+            username: data.username ?? "", 
         },
         create: {
             clerkId: data.id,
@@ -22,6 +23,7 @@ export const createUser = async (data : UserJSON) => {
             firstName: data.first_name ?? "",
             lastName: data.last_name ?? "",
             profileImageUrl:data.image_url,
+            username: data.username ?? "", 
         }
     })
 }

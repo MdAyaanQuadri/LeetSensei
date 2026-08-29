@@ -6,7 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 
 const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
     // const { userId } = getAuth(req);
-    const userId = "user_3ITHExMHYavgaFsA1sG8xhH49G5" ;
+    const userId = "user_3IbDvHlHhXU1G8mKSJQpUdXvb5u" ;
     if (!userId) {
         return res.status(401).json({
             sucess: false,

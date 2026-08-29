@@ -10,14 +10,17 @@ import {
     leetcodeHeatmapPrivate, 
     updateLeetcodeProfileOnly, 
     updateLeetcodeCalendarOnly,
-    retryAfterRateLimitRateLimit
+    retryAfterRateLimitRateLimit,
 } from "../leetcode/leetcode.service.js" 
 
 // user services 
-import { getUserDataService } from './user.service.js'
+import { getUserDataService ,getUserDataByUsernameService} from './user.service.js'
 
 //error
-import { UserNotFoundError } from "../../errorHandler.js"
+import { UserNotFoundError, ZodParsingError } from "../../errorHandler.js"
+
+// validations
+import { usernameParamSchema } from "./user.validation.js";
 
 export const getMyProfile = async (req: Request, res: Response) => {
     const userId = res.locals.userId;
@@ -29,14 +32,14 @@ export const getMyProfile = async (req: Request, res: Response) => {
     }
     
     // 2. Fetch Cached LeetCode Stats
-    const cachedLeetcodeStats = await getLeetcodeStatsDataService(userId);
+    const cachedLeetcodeStats = user.leetcodeStats;
     if (!cachedLeetcodeStats) {
         // Soft Error: The user exists but hasn't linked a LeetCode account yet.
         return res.status(200).json({
             success: false,
             status: "partial",
             message: "User profile loaded, but no LeetCode account is linked.",
-            data: { user, leetcode: null }
+            data: { user }
         });
     }
 
@@ -51,7 +54,7 @@ export const getMyProfile = async (req: Request, res: Response) => {
             success: true,
             status: "success",
             message: "Profile fetched successfully from cache.",
-            data: { user, leetcode: cachedLeetcodeStats }
+            data: { user }
         });
     }
 
@@ -70,8 +73,7 @@ export const getMyProfile = async (req: Request, res: Response) => {
             status: "partial",
             message: "LeetCode username changed or abandoned. Showing cached data.",
             data: { 
-                user, 
-                leetcode: { ...cachedLeetcodeStats, hasUsernameChanged: true } 
+                user
             }
         });
     }
@@ -93,8 +95,11 @@ export const getMyProfile = async (req: Request, res: Response) => {
             status: "partial",
             message: "Profile synced, but LeetCode Heatmap is set to private.",
             data: {
-                user,
-                leetcode: { ...updatedProfileStats, isHeatmapPrivate: true }
+               user: { 
+                    ...user, 
+                    // Overwrite the old stats with the fresh ones!
+                    leetcodeStats: { ...updatedProfileStats, isHeatmapPrivate: true } 
+                }
             }
         });
     }
@@ -107,8 +112,11 @@ export const getMyProfile = async (req: Request, res: Response) => {
         status: "success",
         message: "Profile completely synced successfully.",
         data: {
-            user,
-            leetcode: fullyUpdatedStats
+            user: {
+                ...user,
+                // Overwrite the old stats with the fresh ones!
+                leetcodeStats: fullyUpdatedStats 
+            }
         }
     });
 }
@@ -117,16 +125,103 @@ export const getMyProfile = async (req: Request, res: Response) => {
 
 
 
-export const getPublicProfile = (req: Request, res: Response) => {
-    const { username } = req.params;
-    if (!username) {
-        return res.status(400).json(
-            {
-                success: false,
-                code: "BAD_REQUEST",
-                message: "THERE IS NO USERNAME PRESENT"
-            }
-        );
+export const getPublicProfile = async (req: Request, res: Response) => {
+    // 1. Zod Validation
+    const { data, success, error } = usernameParamSchema.safeParse(req.params);
+    if (!success) {
+        throw new ZodParsingError("Invalid username parameter", "ZodError", error.message);
     }
-}
+    const { username } = data;
 
+    // 2. Fetch User Data with Prisma Join (User + Stats + College)
+    const user = await getUserDataByUsernameService(username);
+    if (!user) {
+        throw new UserNotFoundError("The requested user profile does not exist", "");
+    }
+    const userId = user.id;
+    
+    // Extract stats directly from the Prisma Join
+    const cachedLeetcodeStats = user.leetcodeStats;
+    
+    if (!cachedLeetcodeStats) {
+        return res.status(200).json({
+            success: false,
+            status: "partial",
+            message: "User profile loaded, but no LeetCode account is linked.",
+            data: { user }
+        });
+    }
+
+    // 3. SECURITY: Do not show stats if they haven't verified them!
+    if (!cachedLeetcodeStats.isVerified) {
+        return res.status(200).json({
+            success: false,
+            status: "partial",
+            message: "User has linked a LeetCode account but has not verified it yet.",
+            data: { 
+                user: { ...user, leetcodeStats: null }
+            }
+        });
+    }
+
+    // 4. Check 1-Hour Cache
+    const lastSynced = cachedLeetcodeStats.lastSyncedAt.getTime();
+    const now = Date.now();
+    const ONE_HOUR_IN_MS = 60 * 60 * 1000; 
+
+    if (now - lastSynced < ONE_HOUR_IN_MS) {
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            message: "Profile fetched successfully from cache.",
+            data: { user }
+        });
+    }
+
+    // 5. Cache Expired -> Fetch Fresh Profile Data
+    // CRITICAL FIX: Use the actual LeetCode username, not the Clerk URL username!
+    const leetcodeUserName = cachedLeetcodeStats.userName;
+    const freshProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, leetcodeUserName);
+    
+    if (!freshProfileData) {
+        console.warn(`\n⚠️ [SYNC WARNING] Profile fetch failed for ${leetcodeUserName}.`);
+        await leetcodeUsernameChanged(userId);
+        return res.status(200).json({
+            success: false,
+            status: "partial",
+            message: "LeetCode username changed or abandoned. Showing cached data.",
+            data: { 
+                user: { ...user, leetcodeStats: { ...cachedLeetcodeStats, hasUsernameChanged: true } }
+            }
+        });
+    }
+    
+    const updatedProfileStats = await updateLeetcodeProfileOnly(userId, leetcodeUserName, freshProfileData);
+
+    // 6. Fetch Fresh Calendar Data
+    const freshCalendarData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, leetcodeUserName);
+    
+    if (!freshCalendarData) {
+        console.warn(`\n⚠️ [SYNC WARNING] Calendar fetch failed for ${leetcodeUserName}. Heatmap might be private.`);
+        await leetcodeHeatmapPrivate(userId);
+        return res.status(200).json({
+            success: false,
+            status: "partial",
+            message: "Profile synced, but LeetCode Heatmap is set to private.",
+            data: {
+                user: { ...user, leetcodeStats: { ...updatedProfileStats, isHeatmapPrivate: true } }
+            }
+        });
+    }
+
+    const fullyUpdatedStats = await updateLeetcodeCalendarOnly(userId, freshCalendarData);
+
+    return res.status(200).json({
+        success: true,
+        status: "success",
+        message: "Profile completely synced successfully.",
+        data: {
+            user: { ...user, leetcodeStats: fullyUpdatedStats }
+        }
+    });
+}

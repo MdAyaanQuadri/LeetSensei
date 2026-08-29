@@ -6,20 +6,23 @@ import { leetcodeUsernameInputSchema } from "./leetcode.validation"
 
 
 // errors
-import { ZodParsingError, LeetCodeProfileFetchError, LeetCodeCalendarFetchError } from "../../errorHandler.js";
+import { ZodParsingError,
+        LeetCodeProfileFetchError,
+        LeetCodeCalendarFetchError
+    } from "../../errorHandler.js";
 
 
 
 // services
 import {
     fetchLeetCodeProfileData,
-    fetchLeetcodeSubmissionCalender
-    , createAndUpdateLeetcodeProfile,
-    genrateAndSaveVerificationId
-    , getLeetcodeStatsDataService,
+    fetchLeetcodeSubmissionCalender,
+    createAndUpdateLeetcodeProfile,
+    genrateAndSaveVerificationId,
+    getLeetcodeStatsDataService,
     fetchUsersBioService,
     verifiedLeetcodeAccount,
-    retryAfterRateLimitRateLimit
+    retryAfterRateLimitRateLimit,
 } from "./leetcode.service.js";
 
 
@@ -37,7 +40,7 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
     const userName = data.leetCodeUsername;
 
     const userId = res.locals.userId;
-    const leetcodeProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData,2000,userName);
+    const leetcodeProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, userName);
 
     if (!leetcodeProfileData) {
         throw new LeetCodeProfileFetchError(
@@ -46,7 +49,7 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
         );
     }
 
-    const leetcodeSubmissionCalenderData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender,2000,userName);
+    const leetcodeSubmissionCalenderData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, userName);
 
     if (!leetcodeSubmissionCalenderData) {
         throw new LeetCodeCalendarFetchError(
@@ -67,7 +70,7 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
 export const verifyMyProfile = async (req: Request, res: Response) => {
     const userId = res.locals.userId as string;
     const leetCodeStats = await getLeetcodeStatsDataService(userId);
-    
+
     if (!leetCodeStats) {
         return res.status(200).json({
             success: false,
@@ -75,7 +78,7 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
             message: "LeetCode account not linked. Please link an account first."
         });
     }
-    
+
     const actualVerificationCode = leetCodeStats.verificationCode;
     if (!actualVerificationCode) {
         return res.status(200).json({
@@ -84,22 +87,22 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
             message: "No verification code found. Please generate a code first."
         });
     }
-    
+
     const rawBio = await retryAfterRateLimitRateLimit(fetchUsersBioService, 2000, leetCodeStats.userName);
     if (!rawBio) {
         // Only logging the external system failure!
         console.warn(`\n⚠️ [VERIFY WARNING] Failed to fetch LeetCode bio for ${leetCodeStats.userName}. API may be down or username changed.`);
-        
+
         return res.status(200).json({
             success: false,
             status: "partial",
             message: "Failed to fetch LeetCode profile. The username may have been changed."
         });
     }
-    
+
     const bioText = rawBio?.matchedUser?.profile?.aboutMe || "";
     const username = leetCodeStats.userName;
-    
+
     if (!bioText.toLowerCase().includes(actualVerificationCode.toLowerCase())) {
         return res.status(200).json({
             success: false,
@@ -107,10 +110,10 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
             message: "Verification failed. We could not find the secret code in your LeetCode bio."
         });
     }
-    
+
     // Match found! Run the conflict resolution service
     await verifiedLeetcodeAccount(userId, username);
-    
+
     return res.status(200).json({
         success: true,
         status: "success",

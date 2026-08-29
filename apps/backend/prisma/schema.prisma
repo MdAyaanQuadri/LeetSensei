@@ -33,6 +33,7 @@ model User {
   email           String  @unique
   firstName       String
   lastName        String
+  username        String  @unique
   profileImageUrl String?
   //collegeInfo
   collegeId      String?

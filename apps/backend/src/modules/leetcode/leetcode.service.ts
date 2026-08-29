@@ -139,9 +139,15 @@ export const getLeetcodeStatsDataService = async (userId: string) => {
     const leetCodeStatsData = await prisma.leetCodeStats.findUnique({
         where: { userId: userId }
     });
-    console.log(leetCodeStatsData);
     return leetCodeStatsData;
 }
+// export const getLeetcodeStatsDataByusernameService = async (username: string) => {
+//     const leetCodeStatsData = await prisma.leetCodeStats.findUnique({
+//         where: { userName: username }
+//     });
+//     console.log(leetCodeStatsData);
+//     return leetCodeStatsData;
+// }
 
 export const leetcodeUsernameChanged = async (userId: string) => {
     await prisma.leetCodeStats.update({

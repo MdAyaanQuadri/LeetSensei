@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 // controllers
-import { getMyProfile, getPublicProfile } from "./user.controller.js";
+import { getMyProfile,
+     getPublicProfile
+     } from "./user.controller.js";
 
 // middleware
 import requireAuth from "../../middleware/requireAuth.middleware.js";
