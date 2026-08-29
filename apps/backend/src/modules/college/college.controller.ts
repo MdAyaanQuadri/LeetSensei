@@ -35,6 +35,7 @@ export const getCollegeById = async (req: Request, res: Response) => {
     }
     const college = await getCollegeByIdService(data.id);
     if (!college) {
+        console.warn(`\n⚠️ [COLLEGE WARNING] Someone tried to fetch an invalid college ID: ${data.id}`);
         return res.status(200).json({
             success: false,
             status: "partial",
@@ -92,6 +93,7 @@ export const linkCollegeToUser = async (req: Request, res: Response) => {
         data.graduationYear
     );
     if (!updatedUser) {
+        console.warn(`\n⚠️ [COLLEGE WARNING] User ${userId} tried to link an invalid college ID: ${data.collegeId}`);
         return res.status(200).json({
             success: false,
             status: "partial",

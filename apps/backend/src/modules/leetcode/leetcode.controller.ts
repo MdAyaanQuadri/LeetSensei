@@ -87,6 +87,9 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
     
     const rawBio = await retryAfterRateLimitRateLimit(fetchUsersBioService, 2000, leetCodeStats.userName);
     if (!rawBio) {
+        // Only logging the external system failure!
+        console.warn(`\n⚠️ [VERIFY WARNING] Failed to fetch LeetCode bio for ${leetCodeStats.userName}. API may be down or username changed.`);
+        
         return res.status(200).json({
             success: false,
             status: "partial",

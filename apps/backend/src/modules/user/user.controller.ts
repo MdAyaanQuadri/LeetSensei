@@ -60,6 +60,9 @@ export const getMyProfile = async (req: Request, res: Response) => {
     const freshProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, username);
     
     if (!freshProfileData) {
+        // Log the silent failure to the terminal so you aren't flying blind!
+        console.warn(`\n⚠️ [SYNC WARNING] Profile fetch failed for ${username}. They may have changed their username.`);
+        
         // Soft Error: User changed their LeetCode name.
         await leetcodeUsernameChanged(userId);
         return res.status(200).json({
@@ -80,6 +83,9 @@ export const getMyProfile = async (req: Request, res: Response) => {
     const freshCalendarData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, username);
     
     if (!freshCalendarData) {
+        // Log the silent failure to the terminal
+        console.warn(`\n⚠️ [SYNC WARNING] Calendar fetch failed for ${username}. Heatmap might be private.`);
+        
         // Soft Error: Heatmap is private or failed to fetch.
         await leetcodeHeatmapPrivate(userId);
         return res.status(200).json({
