@@ -5,26 +5,28 @@ import errorHandler from './middleware/error.middleware.js'
 
 // routers 
 import webhookRouter from "./modules/webhooks/webhooks.routes.js";
-import leetCodeRouter from "./modules/leetcode/leetcode.routes.js"
+import leetCodeRouter from "./modules/leetcode/leetcode.routes.js";
+import userRouter from "./modules/user/user.routes.js";
+import collegeRouter from "./modules/college/college.routes.js";
 
-const app = Express() ;
+const app = Express();
 
 // webhooks module calls
-app.use('/api/webhook',webhookRouter); 
+app.use('/api/webhook', webhookRouter);
 
 // clerk builtin middleware
-app.use(clerkMiddleware()) ;
+app.use(clerkMiddleware());
 
 // parse json
 app.use(Express.json());
 
-// leetcode module calls 
-app.use('/api/leetcode',leetCodeRouter);
-
+// module routes
+app.use('/api/leetcode', leetCodeRouter);
+app.use('/api/user', userRouter);
+app.use('/api/college', collegeRouter);
 
 // error Handler
 app.use(errorHandler);
 
-
-
 export default app;
+

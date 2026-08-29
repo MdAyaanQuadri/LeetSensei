@@ -14,12 +14,14 @@ export const createUser = async (data : UserJSON) => {
             email: data.email_addresses[0]?.email_address ?? "",
             firstName: data.first_name ?? "",
             lastName: data.last_name ?? "",
+            profileImageUrl:data.image_url,
         },
         create: {
             clerkId: data.id,
             email: data.email_addresses[0]?.email_address ?? "",
             firstName: data.first_name ?? "",
-            lastName: data.last_name ?? ""
+            lastName: data.last_name ?? "",
+            profileImageUrl:data.image_url,
         }
     })
 }
