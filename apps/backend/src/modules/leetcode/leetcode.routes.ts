@@ -3,16 +3,17 @@ import { Router } from "express";
 const router = Router();
 
 // middleware
-import requireAuth from "../../middleware/requireAuth.middleware";
+import requireAuth from "../../middleware/requireAuth.middleware.js";
 
 // controllers
-import {linkLeetCodeAccount,verifyMyProfile , generateVerificationCode} from './leetcode.controller'
+import { linkLeetCodeAccount, verifyMyProfile, generateVerificationCode, syncQuestion, trackSubmission } from './leetcode.controller.js';
 
+router.post("/link", requireAuth, linkLeetCodeAccount);
+router.patch("/generate/verificationcode", requireAuth, generateVerificationCode);
+router.get("/verify", requireAuth, verifyMyProfile);
 
-router.post("/link" ,requireAuth, linkLeetCodeAccount) ; 
+// Extension Endpoints
+router.post("/questions/sync", requireAuth, syncQuestion);
+router.post("/submissions/track", requireAuth, trackSubmission);
 
-router.patch("/generate/verificationcode" , requireAuth , generateVerificationCode) ;
-
-router.get("/verify", requireAuth, verifyMyProfile) ;
-
-export default router ;
+export default router;

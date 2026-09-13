@@ -133,3 +133,55 @@ export const generateVerificationCode = async (req: Request, res: Response) => {
 }
 
 
+
+// ==========================================
+// CHROME EXTENSION ENDPOINTS
+// ==========================================
+
+export const syncQuestion = async (req: Request, res: Response) => {
+    try {
+        const userId = res.locals.userId as string;
+        const { questionId, questionTitle, questionSlug, difficulty } = req.body;
+
+        console.log(`\n📥 [LeetSensei Extension] Question Synced!`);
+        console.log(`User ID: ${userId}`);
+        console.log(`Question: ${questionTitle} (${difficulty})`);
+        
+        // TODO: Uncomment when schema is updated
+        // await db.question.upsert({ ... })
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            message: "Question synced successfully"
+        });
+    } catch (error) {
+        console.error("Error syncing question:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+export const trackSubmission = async (req: Request, res: Response) => {
+    try {
+        const userId = res.locals.userId as string;
+        const { questionSlug, statusDisplay, runtime, memory, code } = req.body;
+
+        console.log(`\n📥 [LeetSensei Extension] Submission Received!`);
+        console.log(`User ID: ${userId}`);
+        console.log(`Question: ${questionSlug}`);
+        console.log(`Status: ${statusDisplay}`);
+        console.log(`Memory: ${memory}`);
+
+        // TODO: Uncomment when schema is updated
+        // await db.submission.create({ ... })
+
+        return res.status(200).json({
+            success: true,
+            status: "success",
+            message: "Submission tracked successfully"
+        });
+    } catch (error) {
+        console.error("Error tracking submission:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}

@@ -28,7 +28,7 @@ export const handleClerkWebhook = async (req: Request, res: Response) => {
     }
     catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown webhook verification error';
-        throw new WebhookVerificationError(message, "Clerk WebHook verification failed ");
+        console.error("\n❌ Webhook Error:", message, error); throw new WebhookVerificationError(message, "Clerk WebHook verification failed ");
     }
 
 
