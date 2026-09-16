@@ -1,4 +1,4 @@
-import { createClerkClient } from '@clerk/chrome-extension/background';
+import { createClerkClient } from '@clerk/chrome-extension/client';
 
 const getFreshClerk = () => createClerkClient({
   publishableKey: process.env.PLASMO_PUBLIC_CLERK_PUBLISHABLE_KEY || '',

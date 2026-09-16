@@ -93,3 +93,12 @@ model LeetCodeStats {
   // redundant
   // @@unique([userName,userId])
 }
+
+model Questions{
+  id              String        @id         @default(uuid())
+  questionId      String        @unique
+  questionSlug    String        @unique
+  questionBody    String
+  topics          String[]
+  difficulty      String
+}

@@ -1,17 +1,15 @@
-import type { Request, Response } from "express"
-import { success, z } from 'zod'
+import type { Request, Response } from "express";
+import { z } from "zod";
 
 // validations
-import { leetcodeUsernameInputSchema } from "./leetcode.validation"
-
+import { leetcodeUsernameInputSchema } from "./leetcode.validation";
 
 // errors
-import { ZodParsingError,
-        LeetCodeProfileFetchError,
-        LeetCodeCalendarFetchError
-    } from "../../errorHandler.js";
-
-
+import {
+    ZodParsingError,
+    LeetCodeProfileFetchError,
+    LeetCodeCalendarFetchError,
+} from "../../errorHandler.js";
 
 // services
 import {
@@ -25,11 +23,10 @@ import {
     retryAfterRateLimitRateLimit,
 } from "./leetcode.service.js";
 
-
-
 export const linkLeetCodeAccount = async (req: Request, res: Response) => {
-    const { data, success, error } = leetcodeUsernameInputSchema.safeParse(req.body);
-    if (!success) {
+    const { data, success: isValid, error } = leetcodeUsernameInputSchema.safeParse(req.body);
+
+    if (!isValid) {
         const message = error instanceof Error
             ? z.flattenError(error).fieldErrors.leetCodeUsername?.[0] ?? error.message
             : "Unidentified Zod Error";
@@ -37,11 +34,11 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
         const details = "leetCodeUsername parsing error";
         throw new ZodParsingError(message, code, details);
     }
+
     const userName = data.leetCodeUsername;
-
     const userId = res.locals.userId;
-    const leetcodeProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, userName);
 
+    const leetcodeProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, userName);
     if (!leetcodeProfileData) {
         throw new LeetCodeProfileFetchError(
             "Unable to fetch Leetcode account",
@@ -49,7 +46,11 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
         );
     }
 
-    const leetcodeSubmissionCalenderData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, userName);
+    const leetcodeSubmissionCalenderData = await retryAfterRateLimitRateLimit(
+        fetchLeetcodeSubmissionCalender,
+        2000,
+        userName
+    );
 
     if (!leetcodeSubmissionCalenderData) {
         throw new LeetCodeCalendarFetchError(
@@ -57,15 +58,21 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
             `No calendar data found for LeetCode username: ${userName}`
         );
     }
-    const leetcodeStats = await createAndUpdateLeetcodeProfile(userId, userName, leetcodeProfileData, leetcodeSubmissionCalenderData);
+
+    const leetcodeStats = await createAndUpdateLeetcodeProfile(
+        userId,
+        userName,
+        leetcodeProfileData,
+        leetcodeSubmissionCalenderData
+    );
 
     return res.status(200).json({
         success: true,
         status: "success",
         message: "LeetCode profile linked and saved successfully!",
-        data: leetcodeStats
+        data: leetcodeStats,
     });
-}
+};
 
 export const verifyMyProfile = async (req: Request, res: Response) => {
     const userId = res.locals.userId as string;
@@ -75,7 +82,7 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: false,
             status: "partial",
-            message: "LeetCode account not linked. Please link an account first."
+            message: "LeetCode account not linked. Please link an account first.",
         });
     }
 
@@ -84,55 +91,52 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: false,
             status: "partial",
-            message: "No verification code found. Please generate a code first."
+            message: "No verification code found. Please generate a code first.",
         });
     }
 
     const rawBio = await retryAfterRateLimitRateLimit(fetchUsersBioService, 2000, leetCodeStats.userName);
     if (!rawBio) {
-        // Only logging the external system failure!
         console.warn(`\n⚠️ [VERIFY WARNING] Failed to fetch LeetCode bio for ${leetCodeStats.userName}. API may be down or username changed.`);
 
         return res.status(200).json({
             success: false,
             status: "partial",
-            message: "Failed to fetch LeetCode profile. The username may have been changed."
+            message: "Failed to fetch LeetCode profile. The username may have been changed.",
         });
     }
 
-    const bioText = rawBio?.matchedUser?.profile?.aboutMe || "";
+    const bioText = rawBio?.matchedUser?.profile?.aboutMe ?? "";
     const username = leetCodeStats.userName;
 
     if (!bioText.toLowerCase().includes(actualVerificationCode.toLowerCase())) {
         return res.status(200).json({
             success: false,
             status: "partial",
-            message: "Verification failed. We could not find the secret code in your LeetCode bio."
+            message: "Verification failed. We could not find the secret code in your LeetCode bio.",
         });
     }
 
-    // Match found! Run the conflict resolution service
     await verifiedLeetcodeAccount(userId, username);
 
     return res.status(200).json({
         success: true,
         status: "success",
-        message: "You have been successfully verified!"
+        message: "You have been successfully verified!",
     });
-}
+};
 
 export const generateVerificationCode = async (req: Request, res: Response) => {
     const userId = res.locals.userId as string;
     const verificationCode = await genrateAndSaveVerificationId(userId);
+
     return res.status(201).json({
         success: true,
         status: "success",
         message: "Generated the verification code successfully",
         verificationCode,
     });
-}
-
-
+};
 
 // ==========================================
 // CHROME EXTENSION ENDPOINTS
@@ -146,20 +150,23 @@ export const syncQuestion = async (req: Request, res: Response) => {
         console.log(`\n📥 [LeetSensei Extension] Question Synced!`);
         console.log(`User ID: ${userId}`);
         console.log(`Question: ${questionTitle} (${difficulty})`);
-        
+
         // TODO: Uncomment when schema is updated
         // await db.question.upsert({ ... })
 
         return res.status(200).json({
             success: true,
             status: "success",
-            message: "Question synced successfully"
+            message: "Question synced successfully",
         });
     } catch (error) {
         console.error("Error syncing question:", error);
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
-}
+};
 
 export const trackSubmission = async (req: Request, res: Response) => {
     try {
@@ -178,10 +185,38 @@ export const trackSubmission = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: true,
             status: "success",
-            message: "Submission tracked successfully"
+            message: "Submission tracked successfully",
         });
     } catch (error) {
         console.error("Error tracking submission:", error);
-        return res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
-}
+};
+
+export const getLeetCodeStats = async (req: Request, res: Response) => {
+    try {
+        const userId = res.locals.userId;
+        const stats = await getLeetcodeStatsDataService(userId);
+
+        if (!stats) {
+            return res.status(404).json({
+                success: false,
+                message: "LeetCode stats not found for this user.",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: stats,
+        });
+    } catch (error) {
+        console.error("Error fetching LeetCode stats:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error while fetching stats.",
+        });
+    }
+};
