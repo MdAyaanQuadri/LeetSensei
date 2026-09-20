@@ -12,6 +12,7 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model College {
   id          String @id @default(uuid())
   name        String @unique      
@@ -94,11 +95,39 @@ model LeetCodeStats {
   // @@unique([userName,userId])
 }
 
-model Questions{
-  id              String        @id         @default(uuid())
-  questionId      String        @unique
-  questionSlug    String        @unique
-  questionBody    String
-  topics          String[]
-  difficulty      String
+enum Diffculty {
+    EASY 
+    MEDIUM 
+    HARD
+}
+
+model Topic {
+  id          String     @id @default(uuid())
+  name        String     // e.g., "Hash Table"
+  slug        String     @unique // e.g., "hash-table"
+  
+  // Creates the reverse relationship back to Questions
+  questions   Question[] 
+}
+
+model Question {
+  id                 String   @id @default(uuid())
+  
+  questionId         String   @unique  // Perfect for redundancy checks!
+  title              String
+  titleSlug          String   @unique
+  content            String
+  difficulty         String
+  
+  topicTags          Topic[]  
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+
+model Submission {
+  id              String    @id   @default(uuid())
+
+  
 }

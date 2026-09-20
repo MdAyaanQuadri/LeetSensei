@@ -196,27 +196,3 @@ export const trackSubmission = async (req: Request, res: Response) => {
     }
 };
 
-export const getLeetCodeStats = async (req: Request, res: Response) => {
-    try {
-        const userId = res.locals.userId;
-        const stats = await getLeetcodeStatsDataService(userId);
-
-        if (!stats) {
-            return res.status(404).json({
-                success: false,
-                message: "LeetCode stats not found for this user.",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data: stats,
-        });
-    } catch (error) {
-        console.error("Error fetching LeetCode stats:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error while fetching stats.",
-        });
-    }
-};
