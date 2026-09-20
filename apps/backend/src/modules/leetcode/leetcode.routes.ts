@@ -18,6 +18,5 @@ router.post("/submissions/track", requireAuth, trackSubmission);
 
 
 
-// extention end point
 
 export default router;

@@ -1,0 +1,856 @@
+{
+    "data": [
+        {
+            "name": "Array",
+            "slug": "array"
+        },
+        {
+            "name": "Hash Table",
+            "slug": "hash-table"
+        },
+        {
+            "name": "Linked List",
+            "slug": "linked-list"
+        },
+        {
+            "name": "Math",
+            "slug": "math"
+        },
+        {
+            "name": "Two Pointers",
+            "slug": "two-pointers"
+        },
+        {
+            "name": "String",
+            "slug": "string"
+        },
+        {
+            "name": "Binary Search",
+            "slug": "binary-search"
+        },
+        {
+            "name": "Divide and Conquer",
+            "slug": "divide-and-conquer"
+        },
+        {
+            "name": "Dynamic Programming",
+            "slug": "dynamic-programming"
+        },
+        {
+            "name": "Backtracking",
+            "slug": "backtracking"
+        },
+        {
+            "name": "Stack",
+            "slug": "stack"
+        },
+        {
+            "name": "Greedy",
+            "slug": "greedy"
+        },
+        {
+            "name": "Bit Manipulation",
+            "slug": "bit-manipulation"
+        },
+        {
+            "name": "Tree",
+            "slug": "tree"
+        },
+        {
+            "name": "Depth-First Search",
+            "slug": "depth-first-search"
+        },
+        {
+            "name": "Breadth-First Search",
+            "slug": "breadth-first-search"
+        },
+        {
+            "name": "Union-Find",
+            "slug": "union-find"
+        },
+        {
+            "name": "Graph Theory",
+            "slug": "graph"
+        },
+        {
+            "name": "Design",
+            "slug": "design"
+        },
+        {
+            "name": "Topological Sort",
+            "slug": "topological-sort"
+        },
+        {
+            "name": "Trie",
+            "slug": "trie"
+        },
+        {
+            "name": "Binary Indexed Tree",
+            "slug": "binary-indexed-tree"
+        },
+        {
+            "name": "Segment Tree",
+            "slug": "segment-tree"
+        },
+        {
+            "name": "Binary Search Tree",
+            "slug": "binary-search-tree"
+        },
+        {
+            "name": "Recursion",
+            "slug": "recursion"
+        },
+        {
+            "name": "Brainteaser",
+            "slug": "brainteaser"
+        },
+        {
+            "name": "Memoization",
+            "slug": "memoization"
+        },
+        {
+            "name": "Queue",
+            "slug": "queue"
+        },
+        {
+            "name": "Minimax",
+            "slug": "minimax-algorithm"
+        },
+        {
+            "name": "Reservoir Sampling",
+            "slug": "reservoir-sampling"
+        },
+        {
+            "name": "Ordered Map",
+            "slug": "ordered-map"
+        },
+        {
+            "name": "Geometry",
+            "slug": "geometry"
+        },
+        {
+            "name": "Rejection Sampling",
+            "slug": "rejection-sampling"
+        },
+        {
+            "name": "Sliding Window",
+            "slug": "sliding-window"
+        },
+        {
+            "name": "Sweep Line",
+            "slug": "sweep-line"
+        },
+        {
+            "name": "Rolling Hash",
+            "slug": "rolling-hash"
+        },
+        {
+            "name": "Suffix Array",
+            "slug": "suffix-array"
+        },
+        {
+            "name": "Meet in the Middle",
+            "slug": "meet-in-the-middle"
+        },
+        {
+            "name": "Database",
+            "slug": "database"
+        },
+        {
+            "name": "Shell",
+            "slug": "shell"
+        },
+        {
+            "name": "Concurrency",
+            "slug": "concurrency"
+        },
+        {
+            "name": "Sorting",
+            "slug": "sorting"
+        },
+        {
+            "name": "Heap (Priority Queue)",
+            "slug": "heap-priority-queue"
+        },
+        {
+            "name": "Merge Sort",
+            "slug": "merge-sort"
+        },
+        {
+            "name": "String Matching",
+            "slug": "string-matching"
+        },
+        {
+            "name": "Matrix",
+            "slug": "matrix"
+        },
+        {
+            "name": "Monotonic Stack",
+            "slug": "monotonic-stack"
+        },
+        {
+            "name": "Simulation",
+            "slug": "simulation"
+        },
+        {
+            "name": "Combinatorics",
+            "slug": "combinatorics"
+        },
+        {
+            "name": "Binary Tree",
+            "slug": "binary-tree"
+        },
+        {
+            "name": "Doubly-Linked List",
+            "slug": "doubly-linked-list"
+        },
+        {
+            "name": "Interactive",
+            "slug": "interactive"
+        },
+        {
+            "name": "Bucket Sort",
+            "slug": "bucket-sort"
+        },
+        {
+            "name": "Radix Sort",
+            "slug": "radix-sort"
+        },
+        {
+            "name": "Counting",
+            "slug": "counting"
+        },
+        {
+            "name": "Data Stream",
+            "slug": "data-stream"
+        },
+        {
+            "name": "Iterator",
+            "slug": "iterator"
+        },
+        {
+            "name": "Hash Function",
+            "slug": "hash-function"
+        },
+        {
+            "name": "Enumeration",
+            "slug": "enumeration"
+        },
+        {
+            "name": "Number Theory",
+            "slug": "number-theory"
+        },
+        {
+            "name": "Prefix Sum",
+            "slug": "prefix-sum"
+        },
+        {
+            "name": "Quickselect",
+            "slug": "quickselect"
+        },
+        {
+            "name": "Ordered Set",
+            "slug": "ordered-set"
+        },
+        {
+            "name": "Monotonic Queue",
+            "slug": "monotonic-queue"
+        },
+        {
+            "name": "Counting Sort",
+            "slug": "counting-sort"
+        },
+        {
+            "name": "Game Theory",
+            "slug": "game-theory"
+        },
+        {
+            "name": "Eulerian Circuit",
+            "slug": "eulerian-circuit"
+        },
+        {
+            "name": "Randomized",
+            "slug": "randomized"
+        },
+        {
+            "name": "Shortest Path",
+            "slug": "shortest-path"
+        },
+        {
+            "name": "Bitmask",
+            "slug": "bitmask"
+        },
+        {
+            "name": "Probability and Statistics",
+            "slug": "probability-and-statistics"
+        },
+        {
+            "name": "Minimum Spanning Tree",
+            "slug": "minimum-spanning-tree"
+        },
+        {
+            "name": "Biconnected Component",
+            "slug": "biconnected-component"
+        },
+        {
+            "name": "Strongly Connected Component",
+            "slug": "strongly-connected-component"
+        },
+        {
+            "name": "Eulerian Path",
+            "slug": "eulerian-path"
+        },
+        {
+            "name": "0-1 BFS",
+            "slug": "0-1-bfs"
+        },
+        {
+            "name": "Prim's Algorithm",
+            "slug": "prims-algorithm"
+        },
+        {
+            "name": "Binary Lifting",
+            "slug": "binary-lifting"
+        },
+        {
+            "name": "Quicksort",
+            "slug": "quicksort"
+        },
+        {
+            "name": "Directed Acyclic Graph",
+            "slug": "directed-acyclic-graph"
+        },
+        {
+            "name": "Graph Coloring",
+            "slug": "graph-coloring"
+        },
+        {
+            "name": "Kruskal's Algorithm",
+            "slug": "kruskals-algorithm"
+        },
+        {
+            "name": "Lowest Common Ancestor",
+            "slug": "lowest-common-ancestor"
+        },
+        {
+            "name": "Dijkstra's Algorithm",
+            "slug": "dijkstra"
+        },
+        {
+            "name": "Red\u2013Black Tree",
+            "slug": "red-black-tree"
+        },
+        {
+            "name": "DP on Trees",
+            "slug": "dp-on-trees"
+        },
+        {
+            "name": "Heavy-Light Decomposition",
+            "slug": "heavy-light-decomposition"
+        },
+        {
+            "name": "Triangulation",
+            "slug": "triangulation"
+        },
+        {
+            "name": "Insertion Sort",
+            "slug": "insertion-sort"
+        },
+        {
+            "name": "Articulation Point",
+            "slug": "articulation-point"
+        },
+        {
+            "name": "Knapsack Problem",
+            "slug": "knapsack-problem"
+        },
+        {
+            "name": "Johnson's Algorithm",
+            "slug": "johnsons-algorithm"
+        },
+        {
+            "name": "Convex Hull",
+            "slug": "convex-hull"
+        },
+        {
+            "name": "Suffix Automaton",
+            "slug": "suffix-automaton"
+        },
+        {
+            "name": "Suffix Tree",
+            "slug": "suffix-tree"
+        },
+        {
+            "name": "Maximum Flow",
+            "slug": "maximum-flow"
+        },
+        {
+            "name": "Kosaraju's Algorithm",
+            "slug": "kosarajus-algorithm"
+        },
+        {
+            "name": "Determinant",
+            "slug": "determinant"
+        },
+        {
+            "name": "Ternary Search",
+            "slug": "ternary-search"
+        },
+        {
+            "name": "Prime Factorization",
+            "slug": "prime-factorization"
+        },
+        {
+            "name": "Bubble Sort",
+            "slug": "bubble-sort"
+        },
+        {
+            "name": "Manacher",
+            "slug": "manacher"
+        },
+        {
+            "name": "Bellman\u2013Ford Algorithm",
+            "slug": "bellman-ford-algorithm"
+        },
+        {
+            "name": "Floyd\u2013Warshall Algorithm",
+            "slug": "floyd-warshall-algorithm"
+        },
+        {
+            "name": "Heapsort",
+            "slug": "heapsort"
+        },
+        {
+            "name": "B\u00e9zout's Lemma",
+            "slug": "bezouts-lemma"
+        },
+        {
+            "name": "Sqrt Decomposition",
+            "slug": "sqrt-decomposition"
+        },
+        {
+            "name": "Treap",
+            "slug": "treap"
+        },
+        {
+            "name": "Least Common Multiple",
+            "slug": "least-common-multiple"
+        },
+        {
+            "name": "Sparse Table",
+            "slug": "sparse-table"
+        },
+        {
+            "name": "Z Algorithm",
+            "slug": "z-algorithm"
+        },
+        {
+            "name": "Pigeonhole Principle",
+            "slug": "pigeonhole-principle"
+        },
+        {
+            "name": "Brute-Force Search",
+            "slug": "brute-force-search"
+        },
+        {
+            "name": "Timsort",
+            "slug": "timsort"
+        },
+        {
+            "name": "0-1 Knapsack",
+            "slug": "0-1-knapsack"
+        },
+        {
+            "name": "Bitmask DP",
+            "slug": "bitmask-dp"
+        },
+        {
+            "name": "Euclidean Algorithm",
+            "slug": "euclidean-algorithm"
+        },
+        {
+            "name": "Interpolation",
+            "slug": "interpolation"
+        },
+        {
+            "name": "Shell Sort",
+            "slug": "shell-sort"
+        },
+        {
+            "name": "Hungarian Algorithm",
+            "slug": "hungarian-algorithm"
+        },
+        {
+            "name": "Graph Theory",
+            "slug": "graph-theory"
+        },
+        {
+            "name": "Fermat's Little Theorem",
+            "slug": "fermats-little-theorem"
+        },
+        {
+            "name": "Heuristic Search",
+            "slug": "heuristic-search"
+        },
+        {
+            "name": "Primality Test",
+            "slug": "primality-test"
+        },
+        {
+            "name": "Algorithm X",
+            "slug": "algorithm-x"
+        },
+        {
+            "name": "Newton's Method",
+            "slug": "newtons-method"
+        },
+        {
+            "name": "Cartesian Tree",
+            "slug": "cartesian-tree"
+        },
+        {
+            "name": "Linear Algebra",
+            "slug": "linear-algebra"
+        },
+        {
+            "name": "Chinese Remainder Theorem",
+            "slug": "chinese-remainder-theorem"
+        },
+        {
+            "name": "Bidirectional Search",
+            "slug": "bidirectional-search"
+        },
+        {
+            "name": "Fast Fourier Transform",
+            "slug": "fast-fourier-transform"
+        },
+        {
+            "name": "Maximum Matching",
+            "slug": "maximum-matching"
+        },
+        {
+            "name": "Selection Sort",
+            "slug": "selection-sort"
+        },
+        {
+            "name": "Greatest Common Divisor",
+            "slug": "greatest-common-divisor"
+        },
+        {
+            "name": "AVL Tree",
+            "slug": "avl-tree"
+        },
+        {
+            "name": "Hamiltonian Path",
+            "slug": "hamiltonian-path"
+        },
+        {
+            "name": "Bipartite Graph",
+            "slug": "bipartite-graph"
+        },
+        {
+            "name": "Simulated Annealing",
+            "slug": "simulated-annealing"
+        },
+        {
+            "name": "Skip List",
+            "slug": "skip-list"
+        },
+        {
+            "name": "K-D Tree",
+            "slug": "k-d-tree"
+        },
+        {
+            "name": "Nim Game",
+            "slug": "nim-game"
+        },
+        {
+            "name": "Tournament Sort",
+            "slug": "tournament-sort"
+        },
+        {
+            "name": "A* Search",
+            "slug": "a-search"
+        },
+        {
+            "name": "Knuth\u2013Morris\u2013Pratt Algorithm",
+            "slug": "knuth-morris-pratt-algorithm"
+        },
+        {
+            "name": "Boyer\u2013Moore String-Search Algorithm",
+            "slug": "boyer-moore-string-search-algorithm"
+        },
+        {
+            "name": "Aho\u2013Corasick Algorithm",
+            "slug": "aho-corasick-algorithm"
+        },
+        {
+            "name": "Extended Euclidean Algorithm",
+            "slug": "extended-euclidean-algorithm"
+        },
+        {
+            "name": "Simplex Algorithm",
+            "slug": "simplex-algorithm"
+        },
+        {
+            "name": "Gaussian Elimination",
+            "slug": "gaussian-elimination"
+        },
+        {
+            "name": "Bor\u016fvka's Algorithm",
+            "slug": "boruvkas-algorithm"
+        },
+        {
+            "name": "Edmonds\u2013Karp Algorithm",
+            "slug": "edmonds-karp-algorithm"
+        },
+        {
+            "name": "MPM Algorithm",
+            "slug": "mpm-algorithm"
+        },
+        {
+            "name": "Push-Relabel Algorithm",
+            "slug": "push-relabel-algorithm"
+        },
+        {
+            "name": "Successive Shortest Path Algorithm",
+            "slug": "successive-shortest-path-algorithm"
+        },
+        {
+            "name": "Hill Climbing Algorithm",
+            "slug": "hill-climbing-algorithm"
+        },
+        {
+            "name": "Genetic Algorithm",
+            "slug": "genetic-algorithm"
+        },
+        {
+            "name": "Boyer\u2013Moore Majority Vote Algorithm",
+            "slug": "boyer-moore-majority-vote-algorithm"
+        },
+        {
+            "name": "Floyd's Cycle Finding Algorithm",
+            "slug": "floyds-cycle-finding-algorithm"
+        },
+        {
+            "name": "Dancing Links",
+            "slug": "dancing-links"
+        },
+        {
+            "name": "Suffix BST",
+            "slug": "suffix-bst"
+        },
+        {
+            "name": "Palindromic Tree",
+            "slug": "palindromic-tree"
+        },
+        {
+            "name": "Sqrt Tree",
+            "slug": "sqrt-tree"
+        },
+        {
+            "name": "Splay Tree",
+            "slug": "splay-tree"
+        },
+        {
+            "name": "Scapegoat Tree",
+            "slug": "scapegoat-tree"
+        },
+        {
+            "name": "AA Tree",
+            "slug": "aa-tree"
+        },
+        {
+            "name": "Li Chao Tree",
+            "slug": "li-chao-tree"
+        },
+        {
+            "name": "Rotating Calipers",
+            "slug": "rotating-calipers"
+        },
+        {
+            "name": "Lexicographically Minimal String Rotation",
+            "slug": "lexicographically-minimal-string-rotation"
+        },
+        {
+            "name": "Lyndon Factorization",
+            "slug": "lyndon-factorization"
+        },
+        {
+            "name": "Euler's Totient Function",
+            "slug": "eulers-totient-function"
+        },
+        {
+            "name": "Euler's Theorem",
+            "slug": "eulers-theorem"
+        },
+        {
+            "name": "Sieve Theory",
+            "slug": "sieve-theory"
+        },
+        {
+            "name": "Prime Number Sieve",
+            "slug": "prime-number-sieve"
+        },
+        {
+            "name": "Inclusion-Exclusion Principle",
+            "slug": "inclusion-exclusion-principle"
+        },
+        {
+            "name": "Linear Programming",
+            "slug": "linear-programming"
+        },
+        {
+            "name": "Nearest Pair of Points",
+            "slug": "nearest-pair-of-points"
+        },
+        {
+            "name": "Minimum Enclosing Circle",
+            "slug": "minimum-enclosing-circle"
+        },
+        {
+            "name": "Inversion Transformation",
+            "slug": "inversion-transformation"
+        },
+        {
+            "name": "Bracket Sequences",
+            "slug": "bracket-sequences"
+        },
+        {
+            "name": "Sprague\u2013Grundy Theorem",
+            "slug": "sprague-grundy-theorem"
+        },
+        {
+            "name": "Persistent Data Structure",
+            "slug": "persistent-data-structure"
+        },
+        {
+            "name": "Minimum-Diameter Spanning Tree",
+            "slug": "minimum-diameter-spanning-tree"
+        },
+        {
+            "name": "Steiner Tree",
+            "slug": "steiner-tree"
+        },
+        {
+            "name": "Bridge (Graph)",
+            "slug": "bridge-graph"
+        },
+        {
+            "name": "Eulerian Graph",
+            "slug": "eulerian-graph"
+        },
+        {
+            "name": "Semi-Eulerian Graph",
+            "slug": "semi-eulerian-graph"
+        },
+        {
+            "name": "Hamiltonian Graph",
+            "slug": "hamiltonian-graph"
+        },
+        {
+            "name": "Hamiltonian Cycle",
+            "slug": "hamiltonian-cycle"
+        },
+        {
+            "name": "Planar Graph",
+            "slug": "planar-graph"
+        },
+        {
+            "name": "Chordal Graph",
+            "slug": "chordal-graph"
+        },
+        {
+            "name": "Vizing's Theorem",
+            "slug": "vizings-theorem"
+        },
+        {
+            "name": "Minimum Cut",
+            "slug": "minimum-cut"
+        },
+        {
+            "name": "Matching (Graph)",
+            "slug": "matching-graph"
+        },
+        {
+            "name": "Perfect Matching",
+            "slug": "perfect-matching"
+        },
+        {
+            "name": "Polygons",
+            "slug": "polygons"
+        },
+        {
+            "name": "Pick's Theorem",
+            "slug": "picks-theorem"
+        },
+        {
+            "name": "Half-Plane Intersection",
+            "slug": "half-plane-intersection"
+        },
+        {
+            "name": "Minimum-Cost Flow",
+            "slug": "minimum-cost-flow"
+        },
+        {
+            "name": "K Shortest Path",
+            "slug": "k-shortest-path"
+        },
+        {
+            "name": "Complete Knapsack",
+            "slug": "complete-knapsack"
+        },
+        {
+            "name": "Multiple Knapsack",
+            "slug": "multiple-knapsack"
+        },
+        {
+            "name": "Mixed Knapsack",
+            "slug": "mixed-knapsack"
+        },
+        {
+            "name": "Longest Increasing Subsequence",
+            "slug": "longest-increasing-subsequence"
+        },
+        {
+            "name": "Longest Common Subsequence",
+            "slug": "longest-common-subsequence"
+        },
+        {
+            "name": "2-SAT",
+            "slug": "2-sat"
+        },
+        {
+            "name": "Zero-Sum Game",
+            "slug": "zero-sum-game"
+        },
+        {
+            "name": "Impartial Game",
+            "slug": "impartial-game"
+        },
+        {
+            "name": "Flow Network",
+            "slug": "flow-network"
+        },
+        {
+            "name": "Flows with Demands",
+            "slug": "flows-with-demands"
+        },
+        {
+            "name": "Range Minimum/Maximum Query",
+            "slug": "range-minimum-maximum-query"
+        },
+        {
+            "name": "Tarjan's SCC Algorithm",
+            "slug": "tarjans-scc-algorithm"
+        },
+        {
+            "name": "Dinic's Algorithm",
+            "slug": "dinics-algorithm"
+        },
+        {
+            "name": "Group Knapsack",
+            "slug": "group-knapsack"
+        }
+    ]
+}

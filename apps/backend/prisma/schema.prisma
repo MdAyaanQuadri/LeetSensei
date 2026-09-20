@@ -95,18 +95,13 @@ model LeetCodeStats {
   // @@unique([userName,userId])
 }
 
-enum Diffculty {
-    EASY 
-    MEDIUM 
-    HARD
-}
 
 model Topic {
-  id          String     @id @default(uuid())
-  name        String     // e.g., "Hash Table"
-  slug        String     @unique // e.g., "hash-table"
+  id          String     @id @default(uuid()) // YOUR safe Primary Key
   
-  // Creates the reverse relationship back to Questions
+  name        String     
+  slug        String     @unique 
+  
   questions   Question[] 
 }
 
@@ -114,6 +109,7 @@ model Question {
   id                 String   @id @default(uuid())
   
   questionId         String   @unique  // Perfect for redundancy checks!
+  questionFrontendId String   
   title              String
   titleSlug          String   @unique
   content            String
@@ -126,8 +122,8 @@ model Question {
 }
 
 
-model Submission {
-  id              String    @id   @default(uuid())
+// model Submission {
+//   id              String    @id   @default(uuid())
 
   
-}
+// }

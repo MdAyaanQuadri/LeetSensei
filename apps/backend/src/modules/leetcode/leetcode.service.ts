@@ -7,7 +7,10 @@ import prisma from '../../config/db';
 //error
 
 import { RateLimitError } from '../../errorHandler.js'
+import { date } from 'zod';
 
+// types 
+import type { QuestionSyncData } from "./leetcode.validation.js"
 
 export const fetchLeetCodeProfileData = async (username: string) => {
     const url = 'https://leetcode.com/graphql/';
@@ -254,4 +257,36 @@ export const retryAfterRateLimitRateLimit = async (
         }
         return null;
     }
+}
+
+export const fetchQuestions = async (titleSlug: string) => {
+    const data = await prisma.question.findUnique({
+        where: {
+            titleSlug
+        }
+    }
+    )
+    return data;
+}
+export const createQuestions = async (questionSyncData: QuestionSyncData) => {
+    const question = questionSyncData.data.question;
+    const data = await prisma.question.create({
+    data: {
+        questionId: question.questionId,
+        questionFrontendId : question.questionFrontendId ,
+        title: question.title,
+        titleSlug: question.titleSlug,
+        content: question.content,
+        difficulty: question.difficulty,
+        topicTags: {
+            // Still creates the tag if LeetCode invents a new one!
+            connectOrCreate: question.topicTags.map(tag => ({
+                where: { slug: tag.slug },
+                create: { name: tag.name, slug: tag.slug }
+            }))
+        }
+    }
+});
+
+return data;
 }

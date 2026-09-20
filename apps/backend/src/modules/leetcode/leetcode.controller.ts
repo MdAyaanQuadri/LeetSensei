@@ -2,7 +2,10 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 
 // validations
-import { leetcodeUsernameInputSchema } from "./leetcode.validation";
+import { 
+    leetcodeUsernameInputSchema , 
+    questionSyncSchema,
+    }from "./leetcode.validation";
 
 // errors
 import {
@@ -21,12 +24,16 @@ import {
     fetchUsersBioService,
     verifiedLeetcodeAccount,
     retryAfterRateLimitRateLimit,
+    fetchQuestions,
+    createQuestions,
 } from "./leetcode.service.js";
+import prisma from "../../config/db";
+import { da } from "zod/locales";
 
 export const linkLeetCodeAccount = async (req: Request, res: Response) => {
-    const { data, success: isValid, error } = leetcodeUsernameInputSchema.safeParse(req.body);
+    const { data, success, error } = leetcodeUsernameInputSchema.safeParse(req.body);
 
-    if (!isValid) {
+    if (!success) {
         const message = error instanceof Error
             ? z.flattenError(error).fieldErrors.leetCodeUsername?.[0] ?? error.message
             : "Unidentified Zod Error";
@@ -142,24 +149,46 @@ export const generateVerificationCode = async (req: Request, res: Response) => {
 // CHROME EXTENSION ENDPOINTS
 // ==========================================
 
+
 export const syncQuestion = async (req: Request, res: Response) => {
     try {
-        const userId = res.locals.userId as string;
-        const { questionId, questionTitle, questionSlug, difficulty } = req.body;
-
-        console.log(`\n📥 [LeetSensei Extension] Question Synced!`);
-        console.log(`User ID: ${userId}`);
-        console.log(`Question: ${questionTitle} (${difficulty})`);
-
-        // TODO: Uncomment when schema is updated
-        // await db.question.upsert({ ... })
-
+        const { data, error, success } = questionSyncSchema.safeParse(req.body);
+        
+        if (!success) {
+            // Correct way to get a readable string of all Zod errors!
+            const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
+            const code = "ZodError";
+            const details = "Question syncing validation error";
+            
+            throw new ZodParsingError(message, code, details);
+        }   
+        
+        // check if question exist rough question slug
+        const questionSlug = data.data.question.titleSlug;
+        const questionData = await fetchQuestions(questionSlug); 
+        
+        if (questionData) {
+            return res.status(200).json({
+                success: true,
+                status: "success",
+                message: "Question already synced",
+            });
+        }
+        // if not save the question 
+        await createQuestions(data);
+        
+        // ai analysis for future feature  
+        
         return res.status(200).json({
             success: true,
             status: "success",
             message: "Question synced successfully",
         });
     } catch (error) {
+        // If it's your custom ZodParsingError, let the global error handler catch it
+        if (error instanceof ZodParsingError) {
+            throw error;
+        }
         console.error("Error syncing question:", error);
         return res.status(500).json({
             success: false,

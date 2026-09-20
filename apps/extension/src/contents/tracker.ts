@@ -39,7 +39,7 @@ const syncQuestion = async (titleSlug: string) => {
 
     const lcData = await lcResponse.json();
     const question = lcData.data?.question;
-
+    console.log(question) ;
     if (!question) return;
 
     chrome.storage.local.get(["ls_token"], async (res) => {
@@ -48,7 +48,7 @@ const syncQuestion = async (titleSlug: string) => {
         console.log("[LeetSensei Tracker] Waiting for user to log in before syncing.");
         return;
       }
-
+      console.log(question);
       const response = await fetch("http://localhost:3000/api/leetcode/syncQuestion", {
         method: "POST",
         headers: {
