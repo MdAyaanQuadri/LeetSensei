@@ -12,13 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model College {
   id          String @id @default(uuid())
-  name        String @unique      
-  collegeId   String @unique      
-  collegeType String @default("other")            
-  city        String              
+  name        String @unique
+  collegeId   String @unique
+  collegeType String @default("other")
+  city        String
   state       String
 
   createdAt DateTime @default(now())
@@ -37,17 +36,18 @@ model User {
   username        String  @unique
   profileImageUrl String?
   //collegeInfo
-  collegeId      String?
-  degree         String?
-  branch         String?
-  graduationYear Int?
+  collegeId       String?
+  degree          String?
+  branch          String?
+  graduationYear  Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // foreignKey
-  college       College?       @relation(fields: [collegeId], references: [id], onDelete: SetNull)
-  leetcodeStats LeetCodeStats?
+  college           College?            @relation(fields: [collegeId], references: [id], onDelete: SetNull)
+  leetcodeStats     LeetCodeStats?
+  submissionHistory SubmissionHistory[]
 }
 
 model LeetCodeStats {
@@ -55,75 +55,120 @@ model LeetCodeStats {
   userId                String @unique
   // stats
   userName              String
-  globalRank            Int    @default(5000001)  
+  globalRank            Int    @default(5000001)
   totalQuestionsSolved  Int    @default(0)
   mediumQuestionsSolved Int    @default(0)
   hardQuestionsSolved   Int    @default(0)
   easyQuestionsSolved   Int    @default(0)
   badges                Json   @default("[]")
-  
+
   // days
-  activeDays            Int    @default(0)
-  maxStreak             Int    @default(0)
-  currentStreak         Int    @default(0)
+  activeDays    Int @default(0)
+  maxStreak     Int @default(0)
+  currentStreak Int @default(0)
 
   // submissions
-  submissionHeatMap     Json   @default("[]")
+  submissionHeatMap Json @default("[]")
 
   // tag
-  fundamentalTag        Json   @default("[]")
-  intermediateTag       Json   @default("[]")
-  advancedTag           Json   @default("[]")
-
+  fundamentalTag  Json @default("[]")
+  intermediateTag Json @default("[]")
+  advancedTag     Json @default("[]")
 
   // profile
-  avatarUrl             String  @default("https://assets.leetcode.com/users/60CEHKApAV/avatar_1787777711.png")
-  isVerified            Boolean @default(false)
-  hasUsernameChanged    Boolean @default(false) 
-  isHeatmapPrivate      Boolean @default(false)
+  avatarUrl          String  @default("https://assets.leetcode.com/users/60CEHKApAV/avatar_1787777711.png")
+  isVerified         Boolean @default(false)
+  hasUsernameChanged Boolean @default(false)
+  isHeatmapPrivate   Boolean @default(false)
 
-  verificationCode      String?
+  verificationCode String?
 
   // time
-  createdAt             DateTime @default(now())
-  lastSyncedAt          DateTime @default(now())
+  createdAt    DateTime @default(now())
+  lastSyncedAt DateTime @default(now())
 
   // foreign key
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // redundant
-  // @@unique([userName,userId])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model Topic {
-  id          String     @id @default(uuid()) // YOUR safe Primary Key
-  
-  name        String     
-  slug        String     @unique 
-  
-  questions   Question[] 
+  id String @id @default(uuid()) // YOUR safe Primary Key
+
+  name String
+  slug String @unique
+
+  questions Question[]
 }
 
 model Question {
-  id                 String   @id @default(uuid())
-  
-  questionId         String   @unique  // Perfect for redundancy checks!
-  questionFrontendId String   
+  id String @id @default(uuid())
+
+  questionId         String @unique // Perfect for redundancy checks!
+  questionFrontendId String
   title              String
-  titleSlug          String   @unique
+  titleSlug          String @unique
   content            String
   difficulty         String
-  
-  topicTags          Topic[]  
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  topicTags Topic[]
+
+  submissionsHistory SubmissionHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+model SubmissionHistory {
+  id           String @id @default(uuid())
+  submissionId String @unique // LeetCode's own submission ID e.g. "2148011835"
 
-// model Submission {
-//   id              String    @id   @default(uuid())
+  // Ownership
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Question Link
+  questionSlug String
+  question     Question @relation(fields: [questionSlug], references: [titleSlug], onDelete: Cascade)
 
-  
-// }
+  // Core Submission Data
+  status        Int // 10, 11, 12, etc.
+  statusDisplay String // "Accepted", "Memory Limit Exceeded", etc.
+  lang          String // "cpp"
+  langName      String // "C++"
+  runtime       String // "0 ms" or "N/A"
+  memory        String // "77.2 MB" or "N/A"
+  timestamp     String // LeetCode sends as a string
+
+  // Extras
+  frontendId Int // Their own sequential counter
+  createdAt  DateTime @default(now())
+
+  submission Submission?
+}
+
+model Submission {
+  submissionId      String            @id
+  submissionHistory SubmissionHistory @relation(fields: [submissionId], references: [submissionId], onDelete: Cascade)
+
+  runtimePercentile   Float?
+  runtimeDistribution String
+
+  memoryPercentile   Float?
+  memoryDistribution String
+
+  code      String
+  timestamp BigInt
+
+  runtimeError String?
+  compileError String?
+
+  lastTestcase   String?
+  expectedOutput String?
+  codeOutput     String?
+
+  totalCorrect   Int?
+  totalTestcases Int
+
+  stdOutput String?
+
+  previouslySolved Boolean
+}

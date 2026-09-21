@@ -1,4 +1,3 @@
-import { tr } from "zod/locales";
 import prisma from "../../config/db"
 
 export const getUserDataService = async (userId : string) =>{

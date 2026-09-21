@@ -7,7 +7,6 @@ import prisma from '../../config/db';
 //error
 
 import { RateLimitError } from '../../errorHandler.js'
-import { date } from 'zod';
 
 // types 
 import type { QuestionSyncData } from "./leetcode.validation.js"
@@ -264,8 +263,8 @@ export const fetchQuestions = async (titleSlug: string) => {
         where: {
             titleSlug
         }
-    }
-    )
+    })
+    console.log(data);
     return data;
 }
 export const createQuestions = async (questionSyncData: QuestionSyncData) => {

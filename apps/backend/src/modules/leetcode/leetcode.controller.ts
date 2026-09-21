@@ -2,10 +2,11 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 
 // validations
-import { 
-    leetcodeUsernameInputSchema , 
+import {
+    leetcodeUsernameInputSchema,
     questionSyncSchema,
-    }from "./leetcode.validation";
+    submissionTrackSchema,
+} from "./leetcode.validation";
 
 // errors
 import {
@@ -27,8 +28,12 @@ import {
     fetchQuestions,
     createQuestions,
 } from "./leetcode.service.js";
-import prisma from "../../config/db";
-import { da } from "zod/locales";
+
+// user service 
+import {
+    getUserDataService
+} from "../user/user.service.js"
+
 
 export const linkLeetCodeAccount = async (req: Request, res: Response) => {
     const { data, success, error } = leetcodeUsernameInputSchema.safeParse(req.body);
@@ -153,20 +158,20 @@ export const generateVerificationCode = async (req: Request, res: Response) => {
 export const syncQuestion = async (req: Request, res: Response) => {
     try {
         const { data, error, success } = questionSyncSchema.safeParse(req.body);
-        
+
         if (!success) {
             // Correct way to get a readable string of all Zod errors!
             const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
             const code = "ZodError";
             const details = "Question syncing validation error";
-            
+
             throw new ZodParsingError(message, code, details);
-        }   
-        
+        }
+
         // check if question exist rough question slug
         const questionSlug = data.data.question.titleSlug;
-        const questionData = await fetchQuestions(questionSlug); 
-        
+        const questionData = await fetchQuestions(questionSlug);
+
         if (questionData) {
             return res.status(200).json({
                 success: true,
@@ -176,9 +181,9 @@ export const syncQuestion = async (req: Request, res: Response) => {
         }
         // if not save the question 
         await createQuestions(data);
-        
+
         // ai analysis for future feature  
-        
+
         return res.status(200).json({
             success: true,
             status: "success",
@@ -200,16 +205,50 @@ export const syncQuestion = async (req: Request, res: Response) => {
 export const trackSubmission = async (req: Request, res: Response) => {
     try {
         const userId = res.locals.userId as string;
-        const { questionSlug, statusDisplay, runtime, memory, code } = req.body;
+        const { data, success, error } = submissionTrackSchema.safeParse(req.body);
+        if (!success) {
+            // Correct way to get a readable string of all Zod errors!
+            const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
+            const code = "ZodError";
+            const details = "Question syncing validation error";
 
-        console.log(`\n📥 [LeetSensei Extension] Submission Received!`);
-        console.log(`User ID: ${userId}`);
-        console.log(`Question: ${questionSlug}`);
-        console.log(`Status: ${statusDisplay}`);
-        console.log(`Memory: ${memory}`);
+            throw new ZodParsingError(message, code, details);
+        }
+        const userData = await getUserDataService(userId);
+        
+        if (!userData?.leetcodeStats) {
+            return res.status(400).json({
+                success: false,
+                message: "No LeetCode account linked. Please link your LeetCode account first.",
+            });
+        }
 
-        // TODO: Uncomment when schema is updated
-        // await db.submission.create({ ... })
+        if (!userData.leetcodeStats.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "Your LeetCode account is not verified. Please verify your account first.",
+            });
+        }
+        
+        if (userData.leetcodeStats.userName !== data.data.submissionDetails.user?.username) {
+            return res.status(400).json({
+                success: false,
+                message: "The LeetCode username on the submission does not match your linked account. Please switch LeetCode accounts.",
+            });
+        }
+
+
+
+        //TODO :PAHSE 2
+        // schema for prev schema
+        //  submit prev submission upsert it 
+
+        // TODO :PHASE 3
+        // format data
+        // create submission schema in prisma 
+
+
+
 
         return res.status(200).json({
             success: true,
