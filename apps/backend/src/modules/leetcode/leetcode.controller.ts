@@ -24,9 +24,12 @@ import {
     getLeetcodeStatsDataService,
     fetchUsersBioService,
     verifiedLeetcodeAccount,
-    retryAfterRateLimitRateLimit,
+    retryAfterRateLimit,
     fetchQuestions,
     createQuestions,
+    createAndUpdateSubmissionHistory,
+    createSubmissionDetails,
+    getQuestionBySlug
 } from "./leetcode.service.js";
 
 // user service 
@@ -50,7 +53,7 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
     const userName = data.leetCodeUsername;
     const userId = res.locals.userId;
 
-    const leetcodeProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, userName);
+    const leetcodeProfileData = await retryAfterRateLimit(fetchLeetCodeProfileData, 2000, userName);
     if (!leetcodeProfileData) {
         throw new LeetCodeProfileFetchError(
             "Unable to fetch Leetcode account",
@@ -58,7 +61,7 @@ export const linkLeetCodeAccount = async (req: Request, res: Response) => {
         );
     }
 
-    const leetcodeSubmissionCalenderData = await retryAfterRateLimitRateLimit(
+    const leetcodeSubmissionCalenderData = await retryAfterRateLimit(
         fetchLeetcodeSubmissionCalender,
         2000,
         userName
@@ -107,7 +110,7 @@ export const verifyMyProfile = async (req: Request, res: Response) => {
         });
     }
 
-    const rawBio = await retryAfterRateLimitRateLimit(fetchUsersBioService, 2000, leetCodeStats.userName);
+    const rawBio = await retryAfterRateLimit(fetchUsersBioService, 2000, leetCodeStats.userName);
     if (!rawBio) {
         console.warn(`\n⚠️ [VERIFY WARNING] Failed to fetch LeetCode bio for ${leetCodeStats.userName}. API may be down or username changed.`);
 
@@ -203,64 +206,85 @@ export const syncQuestion = async (req: Request, res: Response) => {
 };
 
 export const trackSubmission = async (req: Request, res: Response) => {
-    try {
-        const userId = res.locals.userId as string;
-        const { data, success, error } = submissionTrackSchema.safeParse(req.body);
-        if (!success) {
-            // Correct way to get a readable string of all Zod errors!
-            const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
-            const code = "ZodError";
-            const details = "Question syncing validation error";
+    const userId = res.locals.userId as string;
+    const { data, success, error } = submissionTrackSchema.safeParse(req.body);
+    if (!success) {
+        // Correct way to get a readable string of all Zod errors!
+        const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
+        const code = "ZodError";
+        const details = "Question syncing validation error";
 
-            throw new ZodParsingError(message, code, details);
-        }
-        const userData = await getUserDataService(userId);
-        
-        if (!userData?.leetcodeStats) {
-            return res.status(400).json({
-                success: false,
-                message: "No LeetCode account linked. Please link your LeetCode account first.",
-            });
-        }
+        throw new ZodParsingError(message, code, details);
+    }
+    const userData = await getUserDataService(userId);
 
-        if (!userData.leetcodeStats.isVerified) {
-            return res.status(400).json({
-                success: false,
-                message: "Your LeetCode account is not verified. Please verify your account first.",
-            });
-        }
-        
-        if (userData.leetcodeStats.userName !== data.data.submissionDetails.user?.username) {
-            return res.status(400).json({
-                success: false,
-                message: "The LeetCode username on the submission does not match your linked account. Please switch LeetCode accounts.",
-            });
-        }
+    const submissionHistoryData = data.data.questionSubmissionList.submissions;
 
+    const submissionDetailsData = data.data.submissionDetails;
 
-
-        //TODO :PAHSE 2
-        // schema for prev schema
-        //  submit prev submission upsert it 
-
-        // TODO :PHASE 3
-        // format data
-        // create submission schema in prisma 
-
-
-
-
-        return res.status(200).json({
-            success: true,
-            status: "success",
-            message: "Submission tracked successfully",
-        });
-    } catch (error) {
-        console.error("Error tracking submission:", error);
-        return res.status(500).json({
+    if (!userData?.leetcodeStats) {
+        return res.status(400).json({
             success: false,
-            message: "Internal server error",
+            message: "No LeetCode account linked. Please link your LeetCode account first.",
         });
     }
-};
+
+    if (!userData.leetcodeStats.isVerified) {
+        return res.status(400).json({
+            success: false,
+            message: "Your LeetCode account is not verified. Please verify your account first.",
+        });
+    }
+
+    if (userData.leetcodeStats.userName !== submissionDetailsData.user?.username) {
+        return res.status(400).json({
+            success: false,
+            message: "The LeetCode username on the submission does not match your linked account. Please switch LeetCode accounts.",
+        });
+    }
+
+
+
+
+    //TODO :PAHSE 2
+    // schema for prev schema -> done ;
+    //  submit prev submission creaer ie it 
+
+    await createAndUpdateSubmissionHistory(submissionHistoryData, userId);
+
+    // TODO :PHASE 3
+    // format data
+    // create submission schema in prisma  -> done 
+
+    const sorted = [...submissionHistoryData].sort((a, b) => b.frontendId - a.frontendId);
+    const latestSubmission = sorted[0];
+    const submissionId = latestSubmission?.id as string;
+
+    let previouslySolved = false;
+    for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i]?.status === 10) {
+            previouslySolved = true;
+            break;
+        }
+    }
+
+    await createSubmissionDetails(submissionDetailsData, submissionId, previouslySolved) ;
+
+    if(previouslySolved === false && latestSubmission?.status === 10){
+        const questionData = await getQuestionBySlug(submissionDetailsData.question.titleSlug) ;
+        const difficulty = questionData?.difficulty as string ;
+        const timestamp = parseInt(sorted[0]?.timestamp as string) ; 
+        
+
+    }
+
+
+
+
+    return res.status(200).json({
+        success: true,
+        status: "success",
+        message: "Submission tracked successfully",
+    });
+}
 

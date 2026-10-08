@@ -27,65 +27,81 @@ export const questionSyncSchema = z.object({
         })
     })
 });
+// ---- Reusable pieces ----
+
+const submissionHistoryItemSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    titleSlug: z.string(),
+    status: z.number(),
+    statusDisplay: z.string(),
+    lang: z.string(),
+    langName: z.string(),
+    runtime: z.string(),
+    timestamp: z.string(),          // LeetCode sends this as STRING in history!
+    url: z.string(),
+    isPending: z.string(),
+    memory: z.string(),
+    hasNotes: z.boolean(),
+    notes: z.string(),
+    flagType: z.string(),
+    frontendId: z.number(),
+    topicTags: z.array(z.any()),
+});
+
+const submissionDetailsSchema = z.object({
+    runtimePercentile: z.number().nullable(),
+    runtimeDistribution: z.string(),
+    memoryPercentile: z.number().nullable(),
+    memoryDistribution: z.string(),
+    code: z.string(),
+    timestamp: z.number(),          // LeetCode sends this as NUMBER in details!
+    statusCode: z.number(),
+    isCompiledLang: z.boolean().nullable(),
+    lang: z.object({
+        name: z.string(),
+        verboseName: z.string().nullable(),
+    }),
+    question: z.object({
+        questionId: z.string(),
+        titleSlug: z.string(),
+        hasFrontendPreview: z.boolean().nullable(),
+    }),
+    user: z.object({
+        username: z.string(),
+        profile: z.object({
+            realName: z.string().nullable(),
+            userAvatar: z.string().nullable(),
+        }).nullable(),
+    }).nullable(),
+    runtimeError: z.string().nullable(),
+    compileError: z.string().nullable(),
+    lastTestcase: z.string().nullable(),
+    codeOutput: z.string().nullable(),
+    expectedOutput: z.string().nullable(),
+    totalCorrect: z.number().nullable(),
+    totalTestcases: z.number(),
+    stdOutput: z.string().nullable(),
+});
+
+// ---- Final combined schema ----
 
 export const submissionTrackSchema = z.object({
     data: z.object({
-        submissionDetails: z.object({
-            // Performance Metrics
-            runtime: z.number().nullable(),
-            runtimeDisplay: z.string().nullable(),
-            runtimePercentile: z.number().nullable(),
-            runtimeDistribution: z.string().nullable(),
-            
-            memory: z.number().nullable(),
-            memoryDisplay: z.string().nullable(),
-            memoryPercentile: z.number().nullable(),
-            memoryDistribution: z.string().nullable(),
-            
-            // Core Details
-            code: z.string(),
-            timestamp: z.number(),
-            statusCode: z.number(), // 10 = Accepted, 20 = Compile Error, etc.
-            
-            // Language Context
-            isCompiledLang: z.boolean().nullable(),
-            lang: z.object({
-                name: z.string(),
-                verboseName: z.string().nullable(),
-            }),
-            //user
-            user: z.object({
-                username: z.string(),
-                profile: z.object({
-                    realName: z.string().nullable(),
-                    userAvatar: z.string().nullable(),
-                }).nullable(),
-            }).nullable(),
-            // Question Context
-            question: z.object({
-                questionId: z.string(),
-                titleSlug: z.string(),
-                hasFrontendPreview: z.boolean().nullable(),
-            }),
-            
-            // Errors and Execution Outputs (Null if Accepted)
-            compileError: z.string().nullable(),
-            runtimeError: z.string().nullable(),
-            lastTestcase: z.string().nullable(),
-            codeOutput: z.string().nullable(),
-            expectedOutput: z.string().nullable(),
-            stdOutput: z.string().nullable(),
-            fullCodeOutput: z.string().nullable(),
-            
-            // Test Case Stats
-            totalCorrect: z.number().nullable(),
-            totalTestcases: z.number().nullable(),
-            
-        }) 
-    })
+        submissionDetails: submissionDetailsSchema,
+        questionSubmissionList: z.object({
+            lastKey: z.string().nullable(),
+            hasNext: z.boolean(),
+            submissions: z.array(submissionHistoryItemSchema),
+        }),
+    }),
 });
 
-// Automatically extract the TypeScript type!
 export type SubmissionTrackData = z.infer<typeof submissionTrackSchema>;
+
+// sub types 
+
+export type submissionDetailsData = z.infer<typeof submissionDetailsSchema> ;
+export type submissionHistoryItemData = z.infer<typeof submissionHistoryItemSchema> ;
 
 export type QuestionSyncData = z.infer<typeof questionSyncSchema>;

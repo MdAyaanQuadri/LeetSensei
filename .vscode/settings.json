@@ -1,5 +1,11 @@
 {
     "eslint.rules.customizations": [
-        { "rule": "*", "severity": "warn" }
-    ]
+        {
+            "rule": "*",
+            "severity": "warn"
+        }
+    ],
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma-insider"
+    },
 }

@@ -9,7 +9,11 @@ import prisma from '../../config/db';
 import { RateLimitError } from '../../errorHandler.js'
 
 // types 
-import type { QuestionSyncData } from "./leetcode.validation.js"
+import type { 
+    QuestionSyncData,
+    submissionDetailsData ,
+    submissionHistoryItemData
+    } from "./leetcode.validation.js"
 
 export const fetchLeetCodeProfileData = async (username: string) => {
     const url = 'https://leetcode.com/graphql/';
@@ -81,7 +85,7 @@ export const fetchLeetcodeSubmissionCalender = async (username: string) => {
 
 
 // Formats Profile Stats
-export const buildProfileStats = (username: string, profileData: any) => {
+export const buildProfileStats = (username: string , profileData: any) => {
     const matchedUser = profileData.matchedUser;
     const submissions = matchedUser.submitStats.acSubmissionNum;
     const getCount = (diff: string) => submissions.find((s: any) => s.difficulty === diff)?.count || 0;
@@ -240,7 +244,7 @@ export const verifiedLeetcodeAccount = async (userId: string, username: string) 
     });
 }
 
-export const retryAfterRateLimitRateLimit = async (
+export const retryAfterRateLimit = async (
     fetchData: (username: string) => Promise<any>,
     ms: number,
     username: string
@@ -264,7 +268,6 @@ export const fetchQuestions = async (titleSlug: string) => {
             titleSlug
         }
     })
-    console.log(data);
     return data;
 }
 export const createQuestions = async (questionSyncData: QuestionSyncData) => {
@@ -288,4 +291,64 @@ export const createQuestions = async (questionSyncData: QuestionSyncData) => {
 });
 
 return data;
+}
+
+export const createAndUpdateSubmissionHistory = async (submissionHistorydata : submissionHistoryItemData[],userId : string) => {
+    await prisma.submissionHistory.createMany({
+        data: submissionHistorydata.map(
+            history =>(
+                {
+                    submissionId : history.id ,
+                    userId : userId ,
+                    questionSlug : history.titleSlug ,
+                    statusDisplay : history.statusDisplay ,
+                    status : history.status ,
+                    lang : history.lang ,
+                    langName : history.langName ,
+                    runtime : history.runtime ,
+                    memory : history.memory ,
+                    timestamp : history.timestamp ,
+                    frontendId : history.frontendId 
+                }
+            )
+        ),
+        skipDuplicates: true
+    })
+}
+
+export const createSubmissionDetails = async  (submission : submissionDetailsData , submissionId : string, previouslySolved : boolean )=>{
+        await prisma.submission.create({
+            data : {
+                submissionId : submissionId ,
+                runtimePercentile : submission.runtimePercentile ,
+                runtimeDistribution : submission.runtimeDistribution ,
+                memoryPercentile : submission.memoryPercentile ,
+                memoryDistribution : submission.memoryDistribution ,
+                code : submission.code ,
+                timestamp : submission.timestamp ,
+                runtimeError : submission.runtimeError ,
+                compileError : submission.compileError ,
+                lastTestcase : submission.lastTestcase ,
+                expectedOutput : submission.expectedOutput ,
+                codeOutput : submission.codeOutput ,
+                totalCorrect : submission.totalCorrect ,
+                totalTestcases : submission.totalTestcases ,
+                stdOutput : submission.stdOutput ,
+                previouslySolved : previouslySolved 
+            }
+        })
+}
+
+
+export const getQuestionBySlug = async (slug : string) => {
+    const questionData = await prisma.question.findUnique({
+        where : {
+            titleSlug : slug 
+        }
+    })
+    return questionData ;
+}
+
+export const updateLeetcodeStats = async (userId : string,previouslySolved :boolean,status: number ,timeStamp : number , difficulty : string) => {
+    
 }

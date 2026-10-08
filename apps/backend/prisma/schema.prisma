@@ -68,7 +68,7 @@ model LeetCodeStats {
   currentStreak Int @default(0)
 
   // submissions
-  submissionHeatMap Json @default("[]")
+  submissionHeatMap Json @default("{}") // FIXED: Changed to empty object
 
   // tag
   fundamentalTag  Json @default("[]")
@@ -119,12 +119,12 @@ model Question {
 }
 
 model SubmissionHistory {
-  id           String @id @default(uuid())
-  submissionId String @unique // LeetCode's own submission ID e.g. "2148011835"
+  submissionId String @id // FIXED: Made LeetCode ID the primary key directly
 
   // Ownership
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   // Question Link
   questionSlug String
   question     Question @relation(fields: [questionSlug], references: [titleSlug], onDelete: Cascade)
