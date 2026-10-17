@@ -12,76 +12,73 @@ export const leetcodeUsernameInputSchema = z.object({
 export const questionSyncSchema = z.object({
     data: z.object({
         question: z.object({
-            questionId: z.string(),
-            questionFrontendId: z.string(),
+            questionId: z.coerce.string(),
+            questionFrontendId: z.coerce.string(),
             title: z.string(),
             titleSlug: z.string(),
-            content: z.string(),
-            difficulty: z.enum(["Easy", "Medium", "Hard"]),
+            content: z.string().nullable().optional(),
+            difficulty: z.string(), // Some questions might have weird difficulties, string is safer
             topicTags: z.array(
                 z.object({
                     name: z.string(),
                     slug: z.string(),
-                })
-            ).default([])
-        })
-    })
+                }).passthrough()
+            ).nullable().optional().default([])
+        }).passthrough()
+    }).passthrough()
 });
 // ---- Reusable pieces ----
 
 const submissionHistoryItemSchema = z.object({
-    id: z.string(),
+    id: z.coerce.string(),
     title: z.string(),
     titleSlug: z.string(),
-    status: z.number(),
+    status: z.coerce.number(),
     statusDisplay: z.string(),
     lang: z.string(),
     langName: z.string(),
-    runtime: z.string(),
-    timestamp: z.string(),          // LeetCode sends this as STRING in history!
+    runtime: z.string().nullable().optional(),
+    timestamp: z.coerce.string(),          
     url: z.string(),
-    isPending: z.string(),
-    memory: z.string(),
-    hasNotes: z.boolean(),
-    notes: z.string(),
-    flagType: z.string(),
-    frontendId: z.number(),
-    topicTags: z.array(z.any()),
+    isPending: z.any(),
+    memory: z.string().nullable().optional(),
+    hasNotes: z.boolean().nullable().optional(),
+    notes: z.string().nullable().optional(),
+    flagType: z.any(),
+    frontendId: z.coerce.number(),
+    topicTags: z.array(z.any()).nullable().optional(),
 });
 
 const submissionDetailsSchema = z.object({
-    runtimePercentile: z.number().nullable(),
-    runtimeDistribution: z.string(),
-    memoryPercentile: z.number().nullable(),
-    memoryDistribution: z.string(),
+    runtimePercentile: z.number().nullable().optional(),
+    runtimeDistribution: z.string().nullable().optional(),
+    memoryPercentile: z.number().nullable().optional(),
+    memoryDistribution: z.string().nullable().optional(),
     code: z.string(),
-    timestamp: z.number(),          // LeetCode sends this as NUMBER in details!
-    statusCode: z.number(),
-    isCompiledLang: z.boolean().nullable(),
+    timestamp: z.coerce.number(),
+    statusCode: z.coerce.number(),
+    isCompiledLang: z.boolean().nullable().optional(),
     lang: z.object({
         name: z.string(),
-        verboseName: z.string().nullable(),
+        verboseName: z.string().nullable().optional(),
     }),
     question: z.object({
-        questionId: z.string(),
+        questionId: z.coerce.string(),
         titleSlug: z.string(),
-        hasFrontendPreview: z.boolean().nullable(),
+        hasFrontendPreview: z.boolean().nullable().optional(),
     }),
     user: z.object({
         username: z.string(),
-        profile: z.object({
-            realName: z.string().nullable(),
-            userAvatar: z.string().nullable(),
-        }).nullable(),
-    }).nullable(),
-    runtimeError: z.string().nullable(),
-    compileError: z.string().nullable(),
-    lastTestcase: z.string().nullable(),
-    codeOutput: z.string().nullable(),
-    expectedOutput: z.string().nullable(),
-    totalCorrect: z.number().nullable(),
-    totalTestcases: z.number(),
-    stdOutput: z.string().nullable(),
+        profile: z.any(),
+    }).nullable().optional(),
+    runtimeError: z.string().nullable().optional(),
+    compileError: z.string().nullable().optional(),
+    lastTestcase: z.string().nullable().optional(),
+    codeOutput: z.string().nullable().optional(),
+    expectedOutput: z.string().nullable().optional(),
+    totalCorrect: z.coerce.number().nullable().optional(),
+    totalTestcases: z.coerce.number().nullable().optional(),
+    stdOutput: z.string().nullable().optional(),
 });
 
 // ---- Final combined schema ----

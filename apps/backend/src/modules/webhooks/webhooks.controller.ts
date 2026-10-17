@@ -16,7 +16,7 @@ export const handleClerkWebhook = async (req: Request, res: Response) => {
             throw new Error("Missing CLERK_WEBHOOK_SIGNING_SECRET in environment");
         }
         
-        const evt = await verifyWebhook(req, { secretKey: secret });
+        const evt = await verifyWebhook(req, { signingSecret: secret });
 
         // create and update user
 

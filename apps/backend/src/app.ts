@@ -1,3 +1,4 @@
+import env from './config/env.js';
 import Express from "express";
 // middleWares
 import { clerkMiddleware } from '@clerk/express'

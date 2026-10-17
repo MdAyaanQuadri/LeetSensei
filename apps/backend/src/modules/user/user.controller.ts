@@ -43,12 +43,12 @@ export const getMyProfile = async (req: Request, res: Response) => {
         });
     }
 
-    // 3. Check 1-Hour Cache
+    // 3. Check 15-Minute Cache (Codolio standard)
     const lastSynced = cachedLeetcodeStats.lastSyncedAt.getTime();
     const now = Date.now();
-    const ONE_HOUR_IN_MS = 60 * 60 * 1000; 
+    const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000; 
 
-    if (now - lastSynced < ONE_HOUR_IN_MS) {
+    if (now - lastSynced < FIFTEEN_MINUTES_IN_MS) {
         // Cache is fresh, return immediately!
         return res.status(200).json({
             success: true,
@@ -164,12 +164,12 @@ export const getPublicProfile = async (req: Request, res: Response) => {
         });
     }
 
-    // 4. Check 1-Hour Cache
+    // 4. Check 15-Minute Cache (Codolio standard)
     const lastSynced = cachedLeetcodeStats.lastSyncedAt.getTime();
     const now = Date.now();
-    const ONE_HOUR_IN_MS = 60 * 60 * 1000; 
+    const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000; 
 
-    if (now - lastSynced < ONE_HOUR_IN_MS) {
+    if (now - lastSynced < FIFTEEN_MINUTES_IN_MS) {
         return res.status(200).json({
             success: true,
             status: "success",

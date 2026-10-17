@@ -3,10 +3,9 @@ import prisma from "../config/db";
 
 import type { Request, Response, NextFunction } from "express";
 
-
 const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
-    // const { userId } = getAuth(req);
-    const userId = "user_3JH5vxJs4NqUtoTgFJuKRL02mVH" ;
+    const { userId } = getAuth(req);
+    
     if (!userId) {
         return res.status(401).json({
             sucess: false,
@@ -14,16 +13,18 @@ const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
             code: "UNAUTHORISED"
         });
     }
-    const clerkId = userId ;
+
+    const clerkId = userId;
     const dbUser = await prisma.user.findUnique({
         where: { clerkId: userId }
     });
+
     if (!dbUser) {
-        return res.status(404).json({ success: false, message: "User not found ." });
+        return res.status(404).json({ success: false, message: "User not found in database.", code: "USER_NOT_FOUND" });
     }
     
-    res.locals.clerkId = clerkId ;
-    res.locals.userId =  dbUser.id ;
+    res.locals.clerkId = clerkId;
+    res.locals.userId = dbUser.id;
     next();
 }
 
