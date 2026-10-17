@@ -114,4 +114,3 @@ window.fetch = async function(...args) {
   return response;
 };
 
-console.log("[LeetSensei] Interceptor injected successfully.");

@@ -1,6 +1,7 @@
 // prisma/seed.ts
 import prisma from '../src/config/db';
-import collegesData from '../collegeData/colleges.json';
+import collegesData from '../Data/colleges.json';
+import leetcodeTopics from '../Data/topics.json';
 
 const colleges = collegesData as Array<{
     university: string;
@@ -22,6 +23,15 @@ async function main() {
         state: item.state,
     })),
     skipDuplicates: true, // Works perfectly because collegeId is @unique!
+});
+    console.log("Seeding topics...");
+    await prisma.topic.createMany({
+    data: leetcodeTopics.data.map((item) => ({
+        name : item.name,
+        slug :  item.slug ,
+
+    })),
+    skipDuplicates: true, 
 });
 
     console.log("Done seeding!");

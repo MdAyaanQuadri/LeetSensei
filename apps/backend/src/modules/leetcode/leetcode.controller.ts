@@ -2,7 +2,11 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 
 // validations
-import { leetcodeUsernameInputSchema } from "./leetcode.validation";
+import {
+    leetcodeUsernameInputSchema,
+    questionSyncSchema,
+    submissionTrackSchema,
+} from "./leetcode.validation";
 
 // errors
 import {
@@ -21,12 +25,20 @@ import {
     fetchUsersBioService,
     verifiedLeetcodeAccount,
     retryAfterRateLimitRateLimit,
+    fetchQuestions,
+    createQuestions,
 } from "./leetcode.service.js";
 
-export const linkLeetCodeAccount = async (req: Request, res: Response) => {
-    const { data, success: isValid, error } = leetcodeUsernameInputSchema.safeParse(req.body);
+// user service 
+import {
+    getUserDataService
+} from "../user/user.service.js"
 
-    if (!isValid) {
+
+export const linkLeetCodeAccount = async (req: Request, res: Response) => {
+    const { data, success, error } = leetcodeUsernameInputSchema.safeParse(req.body);
+
+    if (!success) {
         const message = error instanceof Error
             ? z.flattenError(error).fieldErrors.leetCodeUsername?.[0] ?? error.message
             : "Unidentified Zod Error";
@@ -142,17 +154,35 @@ export const generateVerificationCode = async (req: Request, res: Response) => {
 // CHROME EXTENSION ENDPOINTS
 // ==========================================
 
+
 export const syncQuestion = async (req: Request, res: Response) => {
     try {
-        const userId = res.locals.userId as string;
-        const { questionId, questionTitle, questionSlug, difficulty } = req.body;
+        const { data, error, success } = questionSyncSchema.safeParse(req.body);
 
-        console.log(`\n📥 [LeetSensei Extension] Question Synced!`);
-        console.log(`User ID: ${userId}`);
-        console.log(`Question: ${questionTitle} (${difficulty})`);
+        if (!success) {
+            // Correct way to get a readable string of all Zod errors!
+            const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
+            const code = "ZodError";
+            const details = "Question syncing validation error";
 
-        // TODO: Uncomment when schema is updated
-        // await db.question.upsert({ ... })
+            throw new ZodParsingError(message, code, details);
+        }
+
+        // check if question exist rough question slug
+        const questionSlug = data.data.question.titleSlug;
+        const questionData = await fetchQuestions(questionSlug);
+
+        if (questionData) {
+            return res.status(200).json({
+                success: true,
+                status: "success",
+                message: "Question already synced",
+            });
+        }
+        // if not save the question 
+        await createQuestions(data);
+
+        // ai analysis for future feature  
 
         return res.status(200).json({
             success: true,
@@ -160,6 +190,10 @@ export const syncQuestion = async (req: Request, res: Response) => {
             message: "Question synced successfully",
         });
     } catch (error) {
+        // If it's your custom ZodParsingError, let the global error handler catch it
+        if (error instanceof ZodParsingError) {
+            throw error;
+        }
         console.error("Error syncing question:", error);
         return res.status(500).json({
             success: false,
@@ -171,16 +205,50 @@ export const syncQuestion = async (req: Request, res: Response) => {
 export const trackSubmission = async (req: Request, res: Response) => {
     try {
         const userId = res.locals.userId as string;
-        const { questionSlug, statusDisplay, runtime, memory, code } = req.body;
+        const { data, success, error } = submissionTrackSchema.safeParse(req.body);
+        if (!success) {
+            // Correct way to get a readable string of all Zod errors!
+            const message = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join(', ') || "Unidentified Zod Error";
+            const code = "ZodError";
+            const details = "Question syncing validation error";
 
-        console.log(`\n📥 [LeetSensei Extension] Submission Received!`);
-        console.log(`User ID: ${userId}`);
-        console.log(`Question: ${questionSlug}`);
-        console.log(`Status: ${statusDisplay}`);
-        console.log(`Memory: ${memory}`);
+            throw new ZodParsingError(message, code, details);
+        }
+        const userData = await getUserDataService(userId);
+        
+        if (!userData?.leetcodeStats) {
+            return res.status(400).json({
+                success: false,
+                message: "No LeetCode account linked. Please link your LeetCode account first.",
+            });
+        }
 
-        // TODO: Uncomment when schema is updated
-        // await db.submission.create({ ... })
+        if (!userData.leetcodeStats.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "Your LeetCode account is not verified. Please verify your account first.",
+            });
+        }
+        
+        if (userData.leetcodeStats.userName !== data.data.submissionDetails.user?.username) {
+            return res.status(400).json({
+                success: false,
+                message: "The LeetCode username on the submission does not match your linked account. Please switch LeetCode accounts.",
+            });
+        }
+
+
+
+        //TODO :PAHSE 2
+        // schema for prev schema
+        //  submit prev submission upsert it 
+
+        // TODO :PHASE 3
+        // format data
+        // create submission schema in prisma 
+
+
+
 
         return res.status(200).json({
             success: true,
@@ -196,27 +264,3 @@ export const trackSubmission = async (req: Request, res: Response) => {
     }
 };
 
-export const getLeetCodeStats = async (req: Request, res: Response) => {
-    try {
-        const userId = res.locals.userId;
-        const stats = await getLeetcodeStatsDataService(userId);
-
-        if (!stats) {
-            return res.status(404).json({
-                success: false,
-                message: "LeetCode stats not found for this user.",
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data: stats,
-        });
-    } catch (error) {
-        console.error("Error fetching LeetCode stats:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error while fetching stats.",
-        });
-    }
-};
