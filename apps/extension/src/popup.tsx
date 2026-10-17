@@ -52,7 +52,7 @@ export default function IndexPopup() {
         } else {
           setLoggedIn(false)
           chrome.storage.local.set({ ls_loggedIn: false });
-          chrome.storage.local.remove(["ls_stats", "ls_token", "ls_last_fetch"]);
+          chrome.storage.local.remove(["ls_stats", "ls_token", "ls_last_fetch", "ls_dont_ask_link", "ls_dont_ask_verify", "ls_dont_ask_mismatch"]);
         }
       })
     } catch (e) {}

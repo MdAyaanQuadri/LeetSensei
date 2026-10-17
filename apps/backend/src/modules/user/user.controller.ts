@@ -10,7 +10,7 @@ import {
     leetcodeHeatmapPrivate, 
     updateLeetcodeProfileOnly, 
     updateLeetcodeCalendarOnly,
-    retryAfterRateLimitRateLimit,
+    retryAfterRateLimit,
 } from "../leetcode/leetcode.service.js" 
 
 // user services 
@@ -43,12 +43,12 @@ export const getMyProfile = async (req: Request, res: Response) => {
         });
     }
 
-    // 3. Check 1-Hour Cache
+    // 3. Check 15-Minute Cache (Codolio standard)
     const lastSynced = cachedLeetcodeStats.lastSyncedAt.getTime();
     const now = Date.now();
-    const ONE_HOUR_IN_MS = 60 * 60 * 1000; 
+    const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000; 
 
-    if (now - lastSynced < ONE_HOUR_IN_MS) {
+    if (now - lastSynced < FIFTEEN_MINUTES_IN_MS) {
         // Cache is fresh, return immediately!
         return res.status(200).json({
             success: true,
@@ -60,7 +60,7 @@ export const getMyProfile = async (req: Request, res: Response) => {
 
     // 4. Cache Expired -> Fetch Fresh Profile Data
     const username = cachedLeetcodeStats.userName;
-    const freshProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, username);
+    const freshProfileData = await retryAfterRateLimit(fetchLeetCodeProfileData, 2000, username);
     
     if (!freshProfileData) {
         // Log the silent failure to the terminal so you aren't flying blind!
@@ -82,7 +82,7 @@ export const getMyProfile = async (req: Request, res: Response) => {
     const updatedProfileStats = await updateLeetcodeProfileOnly(userId, username, freshProfileData);
 
     // 5. Fetch Fresh Calendar Data
-    const freshCalendarData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, username);
+    const freshCalendarData = await retryAfterRateLimit(fetchLeetcodeSubmissionCalender, 2000, username);
     
     if (!freshCalendarData) {
         // Log the silent failure to the terminal
@@ -164,12 +164,12 @@ export const getPublicProfile = async (req: Request, res: Response) => {
         });
     }
 
-    // 4. Check 1-Hour Cache
+    // 4. Check 15-Minute Cache (Codolio standard)
     const lastSynced = cachedLeetcodeStats.lastSyncedAt.getTime();
     const now = Date.now();
-    const ONE_HOUR_IN_MS = 60 * 60 * 1000; 
+    const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000; 
 
-    if (now - lastSynced < ONE_HOUR_IN_MS) {
+    if (now - lastSynced < FIFTEEN_MINUTES_IN_MS) {
         return res.status(200).json({
             success: true,
             status: "success",
@@ -181,7 +181,7 @@ export const getPublicProfile = async (req: Request, res: Response) => {
     // 5. Cache Expired -> Fetch Fresh Profile Data
     // CRITICAL FIX: Use the actual LeetCode username, not the Clerk URL username!
     const leetcodeUserName = cachedLeetcodeStats.userName;
-    const freshProfileData = await retryAfterRateLimitRateLimit(fetchLeetCodeProfileData, 2000, leetcodeUserName);
+    const freshProfileData = await retryAfterRateLimit(fetchLeetCodeProfileData, 2000, leetcodeUserName);
     
     if (!freshProfileData) {
         console.warn(`\n⚠️ [SYNC WARNING] Profile fetch failed for ${leetcodeUserName}.`);
@@ -199,7 +199,7 @@ export const getPublicProfile = async (req: Request, res: Response) => {
     const updatedProfileStats = await updateLeetcodeProfileOnly(userId, leetcodeUserName, freshProfileData);
 
     // 6. Fetch Fresh Calendar Data
-    const freshCalendarData = await retryAfterRateLimitRateLimit(fetchLeetcodeSubmissionCalender, 2000, leetcodeUserName);
+    const freshCalendarData = await retryAfterRateLimit(fetchLeetcodeSubmissionCalender, 2000, leetcodeUserName);
     
     if (!freshCalendarData) {
         console.warn(`\n⚠️ [SYNC WARNING] Calendar fetch failed for ${leetcodeUserName}. Heatmap might be private.`);

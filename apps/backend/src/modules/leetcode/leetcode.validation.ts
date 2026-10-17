@@ -12,80 +12,93 @@ export const leetcodeUsernameInputSchema = z.object({
 export const questionSyncSchema = z.object({
     data: z.object({
         question: z.object({
-            questionId: z.string(),
-            questionFrontendId: z.string(),
+            questionId: z.coerce.string(),
+            questionFrontendId: z.coerce.string(),
             title: z.string(),
             titleSlug: z.string(),
-            content: z.string(),
-            difficulty: z.enum(["Easy", "Medium", "Hard"]),
+            content: z.string().nullable().optional(),
+            difficulty: z.string(), // Some questions might have weird difficulties, string is safer
             topicTags: z.array(
                 z.object({
                     name: z.string(),
                     slug: z.string(),
-                })
-            ).default([])
-        })
-    })
+                }).passthrough()
+            ).nullable().optional().default([])
+        }).passthrough()
+    }).passthrough()
 });
+// ---- Reusable pieces ----
+
+const submissionHistoryItemSchema = z.object({
+    id: z.coerce.string(),
+    title: z.string(),
+    titleSlug: z.string(),
+    status: z.coerce.number(),
+    statusDisplay: z.string(),
+    lang: z.string(),
+    langName: z.string(),
+    runtime: z.string().nullable().optional(),
+    timestamp: z.coerce.string(),          
+    url: z.string(),
+    isPending: z.any(),
+    memory: z.string().nullable().optional(),
+    hasNotes: z.boolean().nullable().optional(),
+    notes: z.string().nullable().optional(),
+    flagType: z.any(),
+    frontendId: z.coerce.number(),
+    topicTags: z.array(z.any()).nullable().optional(),
+});
+
+const submissionDetailsSchema = z.object({
+    runtimePercentile: z.number().nullable().optional(),
+    runtimeDistribution: z.string().nullable().optional(),
+    memoryPercentile: z.number().nullable().optional(),
+    memoryDistribution: z.string().nullable().optional(),
+    code: z.string(),
+    timestamp: z.coerce.number(),
+    statusCode: z.coerce.number(),
+    isCompiledLang: z.boolean().nullable().optional(),
+    lang: z.object({
+        name: z.string(),
+        verboseName: z.string().nullable().optional(),
+    }),
+    question: z.object({
+        questionId: z.coerce.string(),
+        titleSlug: z.string(),
+        hasFrontendPreview: z.boolean().nullable().optional(),
+    }),
+    user: z.object({
+        username: z.string(),
+        profile: z.any(),
+    }).nullable().optional(),
+    runtimeError: z.string().nullable().optional(),
+    compileError: z.string().nullable().optional(),
+    lastTestcase: z.string().nullable().optional(),
+    codeOutput: z.string().nullable().optional(),
+    expectedOutput: z.string().nullable().optional(),
+    totalCorrect: z.coerce.number().nullable().optional(),
+    totalTestcases: z.coerce.number().nullable().optional(),
+    stdOutput: z.string().nullable().optional(),
+});
+
+// ---- Final combined schema ----
 
 export const submissionTrackSchema = z.object({
     data: z.object({
-        submissionDetails: z.object({
-            // Performance Metrics
-            runtime: z.number().nullable(),
-            runtimeDisplay: z.string().nullable(),
-            runtimePercentile: z.number().nullable(),
-            runtimeDistribution: z.string().nullable(),
-            
-            memory: z.number().nullable(),
-            memoryDisplay: z.string().nullable(),
-            memoryPercentile: z.number().nullable(),
-            memoryDistribution: z.string().nullable(),
-            
-            // Core Details
-            code: z.string(),
-            timestamp: z.number(),
-            statusCode: z.number(), // 10 = Accepted, 20 = Compile Error, etc.
-            
-            // Language Context
-            isCompiledLang: z.boolean().nullable(),
-            lang: z.object({
-                name: z.string(),
-                verboseName: z.string().nullable(),
-            }),
-            //user
-            user: z.object({
-                username: z.string(),
-                profile: z.object({
-                    realName: z.string().nullable(),
-                    userAvatar: z.string().nullable(),
-                }).nullable(),
-            }).nullable(),
-            // Question Context
-            question: z.object({
-                questionId: z.string(),
-                titleSlug: z.string(),
-                hasFrontendPreview: z.boolean().nullable(),
-            }),
-            
-            // Errors and Execution Outputs (Null if Accepted)
-            compileError: z.string().nullable(),
-            runtimeError: z.string().nullable(),
-            lastTestcase: z.string().nullable(),
-            codeOutput: z.string().nullable(),
-            expectedOutput: z.string().nullable(),
-            stdOutput: z.string().nullable(),
-            fullCodeOutput: z.string().nullable(),
-            
-            // Test Case Stats
-            totalCorrect: z.number().nullable(),
-            totalTestcases: z.number().nullable(),
-            
-        }) 
-    })
+        submissionDetails: submissionDetailsSchema,
+        questionSubmissionList: z.object({
+            lastKey: z.string().nullable(),
+            hasNext: z.boolean(),
+            submissions: z.array(submissionHistoryItemSchema),
+        }),
+    }),
 });
 
-// Automatically extract the TypeScript type!
 export type SubmissionTrackData = z.infer<typeof submissionTrackSchema>;
+
+// sub types 
+
+export type submissionDetailsData = z.infer<typeof submissionDetailsSchema> ;
+export type submissionHistoryItemData = z.infer<typeof submissionHistoryItemSchema> ;
 
 export type QuestionSyncData = z.infer<typeof questionSyncSchema>;

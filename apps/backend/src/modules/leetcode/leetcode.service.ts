@@ -9,7 +9,11 @@ import prisma from '../../config/db';
 import { RateLimitError } from '../../errorHandler.js'
 
 // types 
-import type { QuestionSyncData } from "./leetcode.validation.js"
+import type { 
+    QuestionSyncData,
+    submissionDetailsData ,
+    submissionHistoryItemData
+    } from "./leetcode.validation.js"
 
 export const fetchLeetCodeProfileData = async (username: string) => {
     const url = 'https://leetcode.com/graphql/';
@@ -81,7 +85,7 @@ export const fetchLeetcodeSubmissionCalender = async (username: string) => {
 
 
 // Formats Profile Stats
-export const buildProfileStats = (username: string, profileData: any) => {
+export const buildProfileStats = (username: string , profileData: any) => {
     const matchedUser = profileData.matchedUser;
     const submissions = matchedUser.submitStats.acSubmissionNum;
     const getCount = (diff: string) => submissions.find((s: any) => s.difficulty === diff)?.count || 0;
@@ -124,14 +128,22 @@ export const createAndUpdateLeetcodeProfile = async (userId: string, username: s
 
     const combinedData = { ...statsData, ...calendarStats };
 
+    const existing = await prisma.leetCodeStats.findUnique({
+        where: { userId }
+    });
+
+    const isDifferentUsername = existing && existing.userName !== username;
+
     return await prisma.leetCodeStats.upsert({
         where: { userId: userId },
         update: {
             hasUsernameChanged: false,
+            ...(isDifferentUsername ? { isVerified: false, verificationCode: null } : {}),
             ...combinedData
         },
         create: {
             userId: userId,
+            isVerified: false,
             ...combinedData
         }
     });
@@ -240,7 +252,7 @@ export const verifiedLeetcodeAccount = async (userId: string, username: string) 
     });
 }
 
-export const retryAfterRateLimitRateLimit = async (
+export const retryAfterRateLimit = async (
     fetchData: (username: string) => Promise<any>,
     ms: number,
     username: string
@@ -264,7 +276,6 @@ export const fetchQuestions = async (titleSlug: string) => {
             titleSlug
         }
     })
-    console.log(data);
     return data;
 }
 export const createQuestions = async (questionSyncData: QuestionSyncData) => {
@@ -275,11 +286,11 @@ export const createQuestions = async (questionSyncData: QuestionSyncData) => {
         questionFrontendId : question.questionFrontendId ,
         title: question.title,
         titleSlug: question.titleSlug,
-        content: question.content,
-        difficulty: question.difficulty,
+        content: question.content || "",
+        difficulty: question.difficulty || "Unknown",
         topicTags: {
             // Still creates the tag if LeetCode invents a new one!
-            connectOrCreate: question.topicTags.map(tag => ({
+            connectOrCreate: (question.topicTags || []).map(tag => ({
                 where: { slug: tag.slug },
                 create: { name: tag.name, slug: tag.slug }
             }))
@@ -288,4 +299,124 @@ export const createQuestions = async (questionSyncData: QuestionSyncData) => {
 });
 
 return data;
+}
+
+export const createAndUpdateSubmissionHistory = async (submissionHistorydata : submissionHistoryItemData[],userId : string) => {
+    await prisma.submissionHistory.createMany({
+        data: submissionHistorydata.map(
+            history =>(
+                {
+                    submissionId : history.id ,
+                    userId : userId ,
+                    questionSlug : history.titleSlug ,
+                    statusDisplay : history.statusDisplay ,
+                    status : history.status ,
+                    lang : history.lang ,
+                    langName : history.langName ,
+                    runtime : history.runtime || "N/A" ,
+                    memory : history.memory || "N/A" ,
+                    timestamp : history.timestamp ,
+                    frontendId : history.frontendId 
+                }
+            )
+        ),
+        skipDuplicates: true
+    })
+}
+
+export const createSubmissionDetails = async  (submission : submissionDetailsData , submissionId : string, previouslySolved : boolean )=>{
+        await prisma.submission.create({
+            data : {
+                submissionId : submissionId ,
+                runtimePercentile : submission.runtimePercentile ?? null ,
+                runtimeDistribution : submission.runtimeDistribution || "{}" ,
+                memoryPercentile : submission.memoryPercentile ?? null ,
+                memoryDistribution : submission.memoryDistribution || "{}" ,
+                code : submission.code ,
+                timestamp : BigInt(submission.timestamp) ,
+                runtimeError : submission.runtimeError ?? null ,
+                compileError : submission.compileError ?? null ,
+                lastTestcase : submission.lastTestcase ?? null ,
+                expectedOutput : submission.expectedOutput ?? null ,
+                codeOutput : submission.codeOutput ?? null ,
+                totalCorrect : submission.totalCorrect ?? null ,
+                totalTestcases : submission.totalTestcases ?? 0 ,
+                stdOutput : submission.stdOutput ?? null ,
+                previouslySolved : previouslySolved 
+            }
+        })
+}
+
+
+export const getQuestionBySlug = async (slug : string) => {
+    const questionData = await prisma.question.findUnique({
+        where : {
+            titleSlug : slug 
+        }
+    })
+    return questionData ;
+}
+
+export const updateLeetcodeStats = async (userId : string,previouslySolved :boolean,status: number ,timeStamp : number , difficulty : string) => {
+
+    const stats = await prisma.leetCodeStats.findUnique({ where : { userId } });
+    if (!stats) return;
+
+    // Build heatmap key as "YYYY-MM-DD" from unix timestamp
+    const dateKey = new Date(timeStamp * 1000).toISOString().split("T")[0] as string;
+    const heatmap = (stats.submissionHeatMap as Record<string, number>) || {};
+    heatmap[dateKey] = (heatmap[dateKey] || 0) + 1;
+
+    // =============================================
+    // SCENARIO 1: FIRST-TIME SOLVE
+    // status === 10 (Accepted) and never solved before
+    // Increment totalQuestionsSolved + correct difficulty bucket
+    // =============================================
+    if (status === 10 && !previouslySolved) {
+        const difficultyMap : Record<string, object> = {
+            easy:   { easyQuestionsSolved:   { increment: 1 } },
+            medium: { mediumQuestionsSolved: { increment: 1 } },
+            hard:   { hardQuestionsSolved:   { increment: 1 } },
+        };
+        const difficultyUpdate = difficultyMap[difficulty.toLowerCase()] ?? {};
+
+        await prisma.leetCodeStats.update({
+            where: { userId },
+            data: {
+                totalQuestionsSolved: { increment: 1 },
+                ...difficultyUpdate,
+                submissionHeatMap: heatmap,
+                lastSyncedAt: new Date(),
+            }
+        });
+        return;
+    }
+
+    // =============================================
+    // SCENARIO 2: RE-SOLVE
+    // status === 10 but already solved before
+    // Only update heatmap — no double-counting
+    // =============================================
+    if (status === 10 && previouslySolved) {
+        await prisma.leetCodeStats.update({
+            where: { userId },
+            data: {
+                submissionHeatMap: heatmap,
+                lastSyncedAt: new Date(),
+            }
+        });
+        return;
+    }
+
+    // =============================================
+    // SCENARIO 3: FAILED ATTEMPT
+    // Any non-accepted status — just record the heatmap activity
+    // =============================================
+    await prisma.leetCodeStats.update({
+        where: { userId },
+        data: {
+            submissionHeatMap: heatmap,
+            lastSyncedAt: new Date(),
+        }
+    });
 }

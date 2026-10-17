@@ -6,7 +6,7 @@ const router = Router();
 import requireAuth from "../../middleware/requireAuth.middleware.js";
 
 // controllers
-import { linkLeetCodeAccount, verifyMyProfile, generateVerificationCode, syncQuestion, trackSubmission, } from './leetcode.controller.js';
+import { linkLeetCodeAccount, verifyMyProfile, generateVerificationCode, syncQuestion, trackSubmission } from './leetcode.controller.js';
 
 router.post("/link", requireAuth, linkLeetCodeAccount);
 router.patch("/generate/verificationcode", requireAuth, generateVerificationCode);
