@@ -1,40 +1,46 @@
 {
-  "name": "clerk-chrome-extension",
-  "displayName": "Clerk chrome extension",
+  "name": "leetsensei",
+  "displayName": "LeetSensei - LeetCode Progress Tracker",
   "version": "0.0.1",
   "description": "\"Automatically sync your solved LeetCode questions and submissions directly to your LeetSensei dashboard to track your progress.\"",
-  "author": "LeetSenesei . LeetSensei.com",
+  "author": "LeetSensei (leetsensei.com)",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build",
+    "build": "plasmo build && cp src/index.html build/chrome-mv3-prod/index.html 2>/dev/null && cp src/index.html build/chrome-mv3-dev/index.html 2>/dev/null || true",
     "package": "plasmo package"
   },
   "dependencies": {
     "@clerk/chrome-extension": "^3.1.82",
     "@clerk/clerk-react": "^5.61.9",
     "plasmo": "^0.90.5",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "tailwindcss": "3.4.1"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
     "@types/chrome": "0.0.258",
     "@types/node": "^20.11.5",
-    "@types/react": "18.2.48",
-    "@types/react-dom": "18.2.18",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "postcss": "8.4.33",
     "prettier": "3.2.4",
     "typescript": "5.3.3"
   },
   "manifest": {
+    "key": "$CRX_PUBLIC_KEY",
     "incognito": "split",
     "host_permissions": [
-      "http://localhost/*"
+      "http://localhost/*",
+      "https://*.accounts.dev/*",
+      "https://*.clerk.accounts.dev/*",
+      "https://*.clerk.com/*",
+      "https://leetcode.com/*"
     ],
     "permissions": [
       "cookies",
-      "storage"
+      "storage",
+      "tabs"
     ]
   }
 }

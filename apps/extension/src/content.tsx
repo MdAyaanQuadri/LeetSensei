@@ -1,6 +1,7 @@
 import cssText from "data-text:~style.css"
 import { useEffect, useState, useRef } from "react"
 import type { PlasmoCSConfig } from "plasmo"
+import iconPng from "data-base64:../assets/icon.png"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://leetcode.com/*"]
@@ -28,17 +29,13 @@ export const getStyle = () => {
 }
 
 let authWindow: Window | null = null;
-const CLERK_SIGN_IN_URL = "https://bursting-flea-33.accounts.dev/sign-in?redirect_url=https://leetcode.com";
-
-console.log("[LeetSensei] Content script injected into page!");
+const FRONTEND_URL = process.env.PLASMO_PUBLIC_FRONTEND_URL || "http://localhost:5173";
 
 export default function ContentOverlay() {
-  console.log("[LeetSensei] Content script mounted!");
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [questionTitle, setQuestionTitle] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Link & Verification States
   const [showLinkFlow, setShowLinkFlow] = useState(false);
@@ -64,69 +61,82 @@ export default function ContentOverlay() {
   const timeRemainingRef = useRef<number>(10000); // 10 seconds
   const lastTickRef = useRef<number>(0);
 
+  const isNotificationsEnabled = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(["ls_notifications"], (res) => {
+        resolve(res?.ls_notifications !== false);
+      });
+    });
+  };
+
   // Listen for Triggers from tracker.ts
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.source !== window) return;
+      const allowed = await isNotificationsEnabled();
+      if (!allowed) return;
+
       if (event.data?.type === "SHOW_VERIFY_MODAL") {
-        chrome.storage.local.get(["ls_dont_ask_verify"], (res) => {
-          if (res?.ls_dont_ask_verify === true) return;
-          setShowVerifyFlow(true);
-          setShowLinkFlow(false);
-          setShowMismatchFlow(false);
-          setShowSyncSuccess(false);
-          setErrorMsg("");
-          setVerifyStep(1);
-          setVisible(true);
-          if (timerRef.current) clearInterval(timerRef.current);
-        });
+        setShowVerifyFlow(true);
+        setShowLinkFlow(false);
+        setShowMismatchFlow(false);
+        setShowSyncSuccess(false);
+        setShowConfirm(false);
+        setErrorMsg("");
+        setVerifyStep(1);
+        setVisible(true);
+        if (timerRef.current) clearTimeout(timerRef.current);
       } else if (event.data?.type === "SHOW_LINK_MODAL") {
-        chrome.storage.local.get(["ls_dont_ask_link"], (res) => {
-          if (res?.ls_dont_ask_link === true) return;
-          setLinkUsername(event.data.username || "Unknown");
-          setShowLinkFlow(true);
-          setShowVerifyFlow(false);
-          setShowMismatchFlow(false);
-          setShowSyncSuccess(false);
-          setVisible(true);
-          if (timerRef.current) clearInterval(timerRef.current);
-        });
+        setLinkUsername(event.data.username || "Unknown");
+        setShowLinkFlow(true);
+        setShowVerifyFlow(false);
+        setShowMismatchFlow(false);
+        setShowSyncSuccess(false);
+        setShowConfirm(false);
+        setVisible(true);
+        if (timerRef.current) clearTimeout(timerRef.current);
       } else if (event.data?.type === "SHOW_MISMATCH_MODAL") {
-        chrome.storage.local.get(["ls_dont_ask_mismatch"], (res) => {
-          if (res?.ls_dont_ask_mismatch === true) return;
-          setMismatchLinked(event.data.linkedUsername || "your linked account");
-          setMismatchCurrent(event.data.currentUsername || "");
-          setShowMismatchFlow(true);
-          setShowLinkFlow(false);
-          setShowVerifyFlow(false);
-          setShowSyncSuccess(false);
-          setErrorMsg("");
-          setVisible(true);
-          if (timerRef.current) clearInterval(timerRef.current);
-        });
+        setMismatchLinked(event.data.linkedUsername || "your linked account");
+        setMismatchCurrent(event.data.currentUsername || "");
+        setShowMismatchFlow(true);
+        setShowLinkFlow(false);
+        setShowVerifyFlow(false);
+        setShowSyncSuccess(false);
+        setShowConfirm(false);
+        setErrorMsg("");
+        setVisible(true);
+        if (timerRef.current) clearTimeout(timerRef.current);
       } else if (event.data?.type === "SHOW_SIGN_IN_MODAL") {
-        chrome.storage.local.get(["ls_notifications"], (res) => {
-          if (res?.ls_notifications === false) return;
-          let title = event.data?.title;
-          if (!title) {
-            title = document.title.replace(" - LeetCode", "").replace("LeetCode", "").trim();
-            const match = window.location.href.match(/leetcode\.com\/problems\/([^/]+)/);
-            if ((!title || title.includes("Loading")) && match) {
-              title = match[1].split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-            }
+        let title = event.data?.title;
+        if (!title) {
+          const slug = event.data?.slug || window.location.pathname.match(/\/problems\/([^/]+)/)?.[1];
+          if (slug) {
+            const romanNumerals = new Set(['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+            title = slug
+              .split('-')
+              .map((w: string) => {
+                const lower = w.toLowerCase();
+                if (romanNumerals.has(lower)) return lower.toUpperCase();
+                return w.charAt(0).toUpperCase() + w.slice(1);
+              })
+              .join(' ');
           }
-          if (title) setQuestionTitle(title);
-          setShowLinkFlow(false);
-          setShowVerifyFlow(false);
-          setShowMismatchFlow(false);
-          setShowSyncSuccess(false);
-          setVisible(true);
-          startTimer(10000);
-        });
+        }
+        if (title) setQuestionTitle(title);
+        setShowLinkFlow(false);
+        setShowVerifyFlow(false);
+        setShowMismatchFlow(false);
+        setShowSyncSuccess(false);
+        setShowConfirm(false);
+        setVisible(true);
+        startTimer(10000);
       } else if (event.data?.type === "SHOW_SYNC_SUCCESS") {
         setSyncSuccessTitle(event.data.title);
         setShowSyncSuccess(true);
         setShowLinkFlow(false);
         setShowVerifyFlow(false);
+        setShowMismatchFlow(false);
+        setShowConfirm(false);
         setVisible(true);
         startTimer(3000); // Disappear quickly like a notification
       }
@@ -136,15 +146,39 @@ export default function ContentOverlay() {
   }, []);
 
   // LIVE Auth Check (No Shortcuts!)
-  const checkAuth = () => {
+  const checkAuth = async () => {
     try {
-      chrome.runtime.sendMessage({ type: "CHECK_AUTH" }, (response) => {
-        if (!chrome.runtime.lastError && response) {
-          setIsLoggedIn(response.loggedIn);
-          if (response.loggedIn && authWindow && !authWindow.closed) {
+      chrome.runtime.sendMessage({ type: "CHECK_AUTH" }, async (response) => {
+        if (!chrome.runtime.lastError && response?.loggedIn) {
+          if (authWindow && !authWindow.closed) {
              authWindow.close();
              authWindow = null;
              closePopup();
+          }
+        } else if (!chrome.runtime.lastError && response?.loggedIn === false) {
+          const allowed = await isNotificationsEnabled();
+          if (!allowed) return;
+
+          // Trigger 1: When we reach a problem and are unauthenticated, show the sign-in modal
+          const slug = window.location.pathname.match(/\/problems\/([^/]+)/)?.[1];
+          if (slug) {
+            const romanNumerals = new Set(['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+            const title = slug
+              .split('-')
+              .map((w: string) => {
+                const lower = w.toLowerCase();
+                if (romanNumerals.has(lower)) return lower.toUpperCase();
+                return w.charAt(0).toUpperCase() + w.slice(1);
+              })
+              .join(' ');
+            setQuestionTitle(title);
+            setShowLinkFlow(false);
+            setShowVerifyFlow(false);
+            setShowMismatchFlow(false);
+            setShowSyncSuccess(false);
+            setShowConfirm(false);
+            setVisible(true);
+            startTimer(10000);
           }
         }
       });
@@ -153,32 +187,39 @@ export default function ContentOverlay() {
 
   useEffect(() => {
     checkAuth(); // Check once on initial mount
+
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.ls_notifications) {
+        if (changes.ls_notifications.newValue === false) {
+          closePopup();
+        }
+      }
+      // Reactive auth: close sign-in window & dismiss modal automatically when user logs in
+      if (changes.ls_loggedIn?.newValue === true) {
+        if (authWindow && !authWindow.closed) {
+          authWindow.close();
+          authWindow = null;
+        }
+        closePopup();
+      }
+    };
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
   }, []);
 
-  // Timer logic for auto-dismiss
+  // Timer logic for auto-dismiss using single setTimeout (Zero continuous polling)
   const startTimer = (duration: number) => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
     timeRemainingRef.current = duration;
     lastTickRef.current = Date.now();
 
-    timerRef.current = setInterval(() => {
-      if (!hoverRef.current) {
-        const now = Date.now();
-        const delta = now - lastTickRef.current;
-        timeRemainingRef.current -= delta;
-        lastTickRef.current = now;
-
-        if (timeRemainingRef.current <= 0) {
-          closePopup();
-        }
-      } else {
-        lastTickRef.current = Date.now();
-      }
-    }, 100);
+    timerRef.current = setTimeout(() => {
+      closePopup();
+    }, duration);
   };
 
   const closePopup = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
     setClosing(true);
     setTimeout(() => {
       setVisible(false);
@@ -194,73 +235,8 @@ export default function ContentOverlay() {
     }, 300);
   };
 
-  // Poll for URL changes to detect new questions
-  useEffect(() => {
-    let lastUrl = "";
-    
-    const checkUrl = () => {
-      const currentUrl = window.location.href;
-      if (currentUrl !== lastUrl) {
-        lastUrl = currentUrl;
-        
-        const match = currentUrl.match(/leetcode\.com\/problems\/([^/]+)/);
-        if (match) {
-          chrome.storage.local.get(["ls_loggedIn", "ls_notifications"], (storage) => {
-            if (storage.ls_notifications === false) return;
-            if (storage.ls_loggedIn === true) {
-              setIsLoggedIn(true);
-              return;
-            }
-
-            // Double check LIVE auth
-            chrome.runtime.sendMessage({ type: "CHECK_AUTH" }, (response) => {
-              const loggedIn = response?.loggedIn || false;
-              setIsLoggedIn(loggedIn);
-
-              if (loggedIn) return;
-
-              setTimeout(() => {
-                let title = document.title.replace(" - LeetCode", "").replace("LeetCode", "").trim();
-                if (!title || title.includes("Loading")) title = match[1].split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-                
-                setQuestionTitle(title);
-                setVisible(true);
-                setShowConfirm(false);
-                setShowVerifyFlow(false);
-                setShowLinkFlow(false);
-                setShowMismatchFlow(false);
-                startTimer(10000);
-              }, 800);
-            });
-          });
-        }
-      }
-    };
-
-    const urlInterval = setInterval(checkUrl, 1000);
-    return () => {
-      clearInterval(urlInterval);
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
   const disableNotifications = () => {
     chrome.storage.local.set({ ls_notifications: false });
-    closePopup();
-  };
-
-  const handleDontShowLinkAgain = () => {
-    chrome.storage.local.set({ ls_dont_ask_link: true });
-    closePopup();
-  };
-
-  const handleDontShowVerifyAgain = () => {
-    chrome.storage.local.set({ ls_dont_ask_verify: true });
-    closePopup();
-  };
-
-  const handleDontShowMismatchAgain = () => {
-    chrome.storage.local.set({ ls_dont_ask_mismatch: true });
     closePopup();
   };
 
@@ -268,6 +244,10 @@ export default function ContentOverlay() {
     setIsLoading(true);
     setErrorMsg("");
     chrome.runtime.sendMessage({ type: "LINK_ACCOUNT", payload: { username: mismatchCurrent } }, (res) => {
+      if (chrome.runtime.lastError) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(false);
       const code = res?.data?.code;
       if (res && res.success && code === "LINK_SUCCESS") {
@@ -281,30 +261,8 @@ export default function ContentOverlay() {
   };
 
   const handleSignIn = () => {
-    const w = 500;
-    const h = 650;
-    const left = (window.screen.width / 2) - (w / 2);
-    const top = (window.screen.height / 2) - (h / 2);
-    
-    // Open a popup specifically to their web app's auth flow
-    authWindow = window.open("https://bursting-flea-33.accounts.dev/sign-in", "LeetSenseiAuth", `width=${w},height=${h},top=${top},left=${left}`);
-
-    // Smart Polling: Only poll while the sign-in window is open!
-    const pollTimer = setInterval(() => {
-      if (!authWindow || authWindow.closed) {
-        clearInterval(pollTimer);
-        return;
-      }
-      chrome.runtime.sendMessage({ type: "CHECK_AUTH" }, (response) => {
-        if (response?.loggedIn) {
-          setIsLoggedIn(true);
-          authWindow?.close();
-          authWindow = null;
-          closePopup();
-          clearInterval(pollTimer);
-        }
-      });
-    }, 1000);
+    const returnTo = window.location.href;
+    chrome.runtime.sendMessage({ type: "START_AUTH", returnTo });
   };
 
   // LINK ACCOUNT LOGIC
@@ -312,6 +270,10 @@ export default function ContentOverlay() {
     setIsLoading(true);
     setErrorMsg("");
     chrome.runtime.sendMessage({ type: "LINK_ACCOUNT", payload: { username: linkUsername } }, (res) => {
+      if (chrome.runtime.lastError) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(false);
       const code = res?.data?.code;
       if (res && res.success && code === "LINK_SUCCESS") {
@@ -329,6 +291,10 @@ export default function ContentOverlay() {
     setIsLoading(true);
     setErrorMsg("");
     chrome.runtime.sendMessage({ type: "GENERATE_CODE" }, (res) => {
+      if (chrome.runtime.lastError) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(false);
       const code = res?.data?.code;
       if (res && res.success && (code === "CODE_GENERATED" || res.data?.verificationCode)) {
@@ -351,6 +317,10 @@ export default function ContentOverlay() {
     setIsLoading(true);
     setErrorMsg("");
     chrome.runtime.sendMessage({ type: "VERIFY_CODE" }, (res) => {
+      if (chrome.runtime.lastError) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(false);
       const code = res?.data?.code;
       if (res && res.success && code === "VERIFY_SUCCESS") {
@@ -387,19 +357,27 @@ export default function ContentOverlay() {
     <div 
       style={overlayStyle} 
       className={`w-[360px] bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 flex flex-col overflow-hidden font-sans text-gray-800 ${animClass}`}
-      onMouseEnter={() => { hoverRef.current = true; }}
-      onMouseLeave={() => { hoverRef.current = false; lastTickRef.current = Date.now(); }}
+      onMouseEnter={() => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        hoverRef.current = true;
+        const elapsed = Date.now() - lastTickRef.current;
+        timeRemainingRef.current = Math.max(0, timeRemainingRef.current - elapsed);
+      }}
+      onMouseLeave={() => {
+        hoverRef.current = false;
+        lastTickRef.current = Date.now();
+        if (timeRemainingRef.current > 0) {
+          timerRef.current = setTimeout(() => {
+            closePopup();
+          }, timeRemainingRef.current);
+        }
+      }}
     >
       
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <div className="flex items-center gap-2">
-           <div className="w-6 h-6 bg-[#2a323d] rounded flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" className="w-4 h-4">
-                 <path d="M 16 58 C 16 10, 112 10, 112 58 Q 64 75 16 58 Z" fill="#ffffff" />
-                 <path d="M 28 80 Q 48 98 64 82 Q 80 98 100 80 Q 80 102 64 92 Q 48 102 28 80 Z" fill="#b0b7bd" />
-              </svg>
-           </div>
+           <img src={iconPng} alt="LeetSensei Logo" className="w-6 h-6 rounded-md shadow-sm object-cover flex-shrink-0" />
            <span className="font-bold text-base tracking-tight text-gray-900">LeetSensei</span>
         </div>
         <button onClick={closePopup} className="text-gray-400 hover:text-gray-600 transition p-1">
@@ -409,8 +387,36 @@ export default function ContentOverlay() {
 
       <div className="px-5 pb-5">
         
-        {/* SYNC SUCCESS NOTIFICATION */}
-        {showSyncSuccess ? (
+        {/* UNIFIED CONFIRMATION SCREEN */}
+        {showConfirm ? (
+          <div className="mt-1">
+             <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-2.5">
+               <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+               </svg>
+             </div>
+             <h3 className="font-bold text-[17px] mb-1.5 text-center text-gray-900">Disable In-Page Alerts?</h3>
+             <p className="text-[13px] text-gray-600 text-center mb-5 leading-relaxed">
+               You won't see any pop-ups on LeetCode (including verification, linking, or tracking prompts). You can always re-enable them in the LeetSensei extension popup.
+             </p>
+             <div className="flex gap-2.5 w-full">
+               <button 
+                 onClick={() => setShowConfirm(false)}
+                 className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition text-sm"
+               >
+                 Keep Alerts
+               </button>
+               <button 
+                 onClick={disableNotifications}
+                 className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition shadow-sm text-sm"
+               >
+                 Turn Off Alerts
+               </button>
+             </div>
+          </div>
+
+        /* SYNC SUCCESS NOTIFICATION */
+        ) : showSyncSuccess ? (
           <div className="mt-2 text-center py-2">
              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -453,7 +459,7 @@ export default function ContentOverlay() {
              </div>
              <div className="w-full text-center mt-3">
                <button 
-                 onClick={handleDontShowLinkAgain} 
+                 onClick={() => setShowConfirm(true)} 
                  className="text-xs text-gray-400 hover:text-gray-600 underline decoration-transparent hover:decoration-gray-300 transition"
                >
                  Don't show this again
@@ -495,8 +501,8 @@ export default function ContentOverlay() {
                  </button>
                </div>
                <div className="w-full text-center mt-3">
-                 <button 
-                   onClick={handleDontShowVerifyAgain} 
+                  <button 
+                    onClick={() => setShowConfirm(true)} 
                    className="text-xs text-gray-400 hover:text-gray-600 underline decoration-transparent hover:decoration-gray-300 transition"
                  >
                    Don't show this again
@@ -580,7 +586,7 @@ export default function ContentOverlay() {
              </div>
              <div className="w-full text-center mt-3">
                <button 
-                 onClick={handleDontShowMismatchAgain} 
+                 onClick={() => setShowConfirm(true)} 
                  className="text-xs text-gray-400 hover:text-gray-600 underline decoration-transparent hover:decoration-gray-300 transition"
                >
                  Don't show this again
@@ -589,7 +595,7 @@ export default function ContentOverlay() {
           </div>
 
         /* ORIGINAL SIGN IN FLOW */
-        ) : !showConfirm ? (
+        ) : (
           <>
             <p className="text-[15px] leading-relaxed text-gray-700 mt-2 mb-5">
               Would you like to automatically track your solution{questionTitle ? <> for <span className="font-semibold">"{questionTitle}"</span></> : ""}?
@@ -614,26 +620,6 @@ export default function ContentOverlay() {
                 className="text-xs text-gray-500 hover:text-gray-800 underline decoration-transparent hover:decoration-gray-300 transition"
               >
                 Don't show this again
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="text-[14px] leading-relaxed text-gray-700 mt-2 mb-6">
-              Are you sure? You won't see this pop-up again, but you can always re-enable it in the extension settings.
-            </p>
-            <div className="flex gap-3 w-full">
-              <button 
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition"
-              >
-                No, keep it
-              </button>
-              <button 
-                onClick={disableNotifications}
-                className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition shadow-sm"
-              >
-                Yes, disable
               </button>
             </div>
           </>

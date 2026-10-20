@@ -1,34 +1,123 @@
 import type { PlasmoCSConfig } from "plasmo"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://leetcode.com/problems/*"]
+  matches: [
+    "https://leetcode.com/problems/*",
+    "https://leetcode.com/contest/*/problems/*"
+  ]
 }
 
 // ==========================================
 // GLOBALS & STATE
 // ==========================================
+let isLoggedIn = false;
 let lastProcessedTimestamp = 0;
 let trackingTimer: NodeJS.Timeout | null = null;
 let lastUrl = "";
+let lastSyncedSlug = "";
 let isFetchingSubmission = false;
 let isWaitingForSubmission = false;
 let submitTimeout: NodeJS.Timeout | null = null;
 
+// Initialize auth state on injection
+chrome.storage.local.get(["ls_loggedIn"], (res) => {
+  isLoggedIn = res?.ls_loggedIn === true;
+});
+
+// Real-time auth changes
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.ls_loggedIn) {
+    const wasLoggedIn = isLoggedIn;
+    isLoggedIn = changes.ls_loggedIn.newValue === true;
+    
+    // If user just logged in while on a problem page, sync the current question
+    if (!wasLoggedIn && isLoggedIn) {
+      const slug = getProblemSlug();
+      if (slug) {
+        syncQuestion(slug);
+      }
+    }
+  }
+});
+
+const isUserLoggedIn = async (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const fallbackTimer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        chrome.storage.local.get(["ls_loggedIn"], (res) => {
+          isLoggedIn = res?.ls_loggedIn === true;
+          resolve(isLoggedIn);
+        });
+      }
+    }, 1500);
+
+    try {
+      chrome.runtime.sendMessage({ type: "CHECK_AUTH" }, (response) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(fallbackTimer);
+          if (!chrome.runtime.lastError && response) {
+            isLoggedIn = response.loggedIn === true;
+            resolve(isLoggedIn);
+          } else {
+            chrome.storage.local.get(["ls_loggedIn"], (res) => {
+              isLoggedIn = res?.ls_loggedIn === true;
+              resolve(isLoggedIn);
+            });
+          }
+        }
+      });
+    } catch {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(fallbackTimer);
+        chrome.storage.local.get(["ls_loggedIn"], (res) => {
+          isLoggedIn = res?.ls_loggedIn === true;
+          resolve(isLoggedIn);
+        });
+      }
+    }
+  });
+};
+
 // ==========================================
 // UTILITIES
 // ==========================================
-const getProblemSlug = (): string | null => {
-  const match = window.location.pathname.match(/\/problems\/([^/]+)/);
+const getProblemSlug = (url: string = window.location.href): string | null => {
+  const match = url.match(/\/problems\/([^/]+)/);
   return match ? match[1] : null;
 };
 
+const formatSlugTitle = (slug: string): string => {
+  const romanNumerals = new Set(['i', 'ii', 'iii', 'iv', 'v', 'vi']);
+  return slug
+    .split('-')
+    .map((w) => {
+      const lower = w.toLowerCase();
+      if (romanNumerals.has(lower)) return lower.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join(' ');
+};
+
 const fetchGraphQL = async (query: string, variables: object) => {
-  const response = await fetch("https://leetcode.com/graphql", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables })
-  });
-  return response.json();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const response = await fetch("https://leetcode.com/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (e) {
+    return null;
+  }
 };
 
 const showToast = (message: string) => {
@@ -62,6 +151,12 @@ const showToast = (message: string) => {
 // ==========================================
 const syncQuestion = async (titleSlug: string) => {
   try {
+    // Feature 1 Guard: Do not sync questions if not logged in
+    const loggedIn = await isUserLoggedIn();
+    if (!loggedIn) {
+      return;
+    }
+
     const query = `
       query questionData($titleSlug: String!) {
         question(titleSlug: $titleSlug) {
@@ -79,39 +174,65 @@ const syncQuestion = async (titleSlug: string) => {
       type: "SYNC_QUESTION",
       payload: { data: { question } }
     }, (response) => {
+      if (chrome.runtime.lastError) {
+        return;
+      }
       if (response && response.success) {
         const code = response.data?.code;
-        if (code === "ALREADY_SYNCED") {
-          console.log(`[LeetSensei] Question already in DB: ${question.title}`);
-        } else if (code === "SYNC_SUCCESS") {
-          console.log(`[LeetSensei] Successfully crowdsourced: ${question.title}`);
+        if (code === "SYNC_SUCCESS") {
           window.postMessage({ type: "SHOW_SYNC_SUCCESS", title: question.title }, "*");
-        } else {
-          console.log(`[LeetSensei] Question sync response:`, response.data);
         }
       } else {
         const code = response?.data?.code;
-        console.error(`[LeetSensei] Failed to sync question. Code: ${code}`, response);
+        if (response?.error === "NO_TOKEN" || code === "UNAUTHORISED" || code === "USER_NOT_FOUND") {
+          return;
+        }
+        if (code === "ALREADY_SYNCED") {
+          return;
+        }
+        console.warn(`[LeetSensei] Question sync skipped or unsuccessful:`, response?.error || code || response);
       }
     });
   } catch (error) {
-    console.error("[LeetSensei] Error syncing question:", error);
+    console.warn("[LeetSensei] Error syncing question:", error);
   }
 };
 
-const checkUrl = () => {
-  const currentUrl = window.location.href;
-  
+const handleRouteChange = async (currentUrl: string = window.location.href) => {
   if (currentUrl !== lastUrl) {
     lastUrl = currentUrl;
     if (trackingTimer) clearTimeout(trackingTimer);
 
-    const slug = getProblemSlug();
-    if (slug) {
-      console.log(`[LeetSensei] Detected question: ${slug}. Debouncing for 5s...`);
-      trackingTimer = setTimeout(() => {
-        syncQuestion(slug);
-      }, 5000);
+    const slug = getProblemSlug(currentUrl);
+    if (slug && slug !== lastSyncedSlug) {
+      lastSyncedSlug = slug;
+      const loggedIn = await isUserLoggedIn();
+      if (loggedIn) {
+        trackingTimer = setTimeout(() => {
+          syncQuestion(slug);
+        }, 5000);
+      } else {
+        // Event-driven: tell content.tsx to show sign-in prompt if unauthenticated
+        let title = formatSlugTitle(slug);
+        try {
+          const query = `
+            query questionTitle($titleSlug: String!) {
+              question(titleSlug: $titleSlug) {
+                title
+              }
+            }
+          `;
+          const lcData = await fetchGraphQL(query, { titleSlug: slug });
+          if (lcData?.data?.question?.title) {
+            title = lcData.data.question.title;
+          }
+        } catch (e) {
+          // Keep title from formatSlugTitle
+        }
+        if (slug === lastSyncedSlug) {
+          window.postMessage({ type: "SHOW_SIGN_IN_MODAL", title, slug }, "*");
+        }
+      }
     }
   }
 };
@@ -121,14 +242,18 @@ const checkUrl = () => {
 // ==========================================
 const processSubmission = async (slug: string) => {
   try {
+    // Feature 2 Guard: Do not track submissions if not logged in
+    const loggedIn = await isUserLoggedIn();
+    if (!loggedIn) {
+      return;
+    }
+
     // 1. URL ID Extraction
     const urlMatch = window.location.href.match(/\/submissions\/(\d+)/);
     if (!urlMatch || !urlMatch[1]) {
-      console.warn("[LeetSensei] Could not find submission ID in URL.");
       return;
     }
     const submissionId = parseInt(urlMatch[1]);
-    console.log(`[LeetSensei] Extracted Submission ID: ${submissionId}`);
 
     // 2. Parallel GraphQL Fetches
     const detailsQuery = `
@@ -173,13 +298,11 @@ const processSubmission = async (slug: string) => {
     const currentTime = Math.floor(Date.now() / 1000);
 
     if (currentTime - submissionTime > 120) {
-        console.log("[LeetSensei] User is viewing a historical submission. Ignoring.");
         return;
     }
 
     // 4. Security Guard 2: The Deduplication Check
     if (submissionTime <= lastProcessedTimestamp) {
-        console.log("[LeetSensei] Submission already processed. Skipping.");
         return;
     }
     lastProcessedTimestamp = submissionTime;
@@ -195,7 +318,9 @@ const processSubmission = async (slug: string) => {
       type: "PROCESS_SUBMISSION",
       payload: { data: { submissionDetails, questionSubmissionList } }
     }, (response) => {
-      console.log("[LeetSensei] PROCESS_SUBMISSION response:", response);
+      if (chrome.runtime.lastError) {
+        return;
+      }
       if (response && response.success) {
         showToast("🚀 Submission Tracked!");
       } else {
@@ -213,7 +338,11 @@ const processSubmission = async (slug: string) => {
             linkedUsername: linkedUsername
           }, "*");
         } else if (code === "UNAUTHORISED" || code === "USER_NOT_FOUND" || response?.error === "NO_TOKEN") {
-          window.postMessage({ type: "SHOW_SIGN_IN_MODAL" }, "*");
+          window.postMessage({
+            type: "SHOW_SIGN_IN_MODAL",
+            title: submissionDetails?.title || formatSlugTitle(slug),
+            slug
+          }, "*");
         } else {
           showToast("❌ Failed to track submission.");
         }
@@ -221,24 +350,91 @@ const processSubmission = async (slug: string) => {
     });
 
   } catch (error) {
-    console.error("[LeetSensei] Error processing submission:", error);
+    console.warn("[LeetSensei] Error processing submission:", error);
   } finally {
     isFetchingSubmission = false; // Release lock
   }
 };
 
 // ==========================================
+// ==========================================
 // PHASE B: THE SUBMISSION TRIGGER (Armed by Click / Shortcut)
 // ==========================================
-const armSubmissionTrigger = () => {
-  console.log("[LeetSensei] Submit action detected! Arming submission listener for 30s...");
+let submissionObserver: MutationObserver | null = null;
+
+const stopObservingDOM = () => {
+  if (submissionObserver) {
+    submissionObserver.disconnect();
+    submissionObserver = null;
+  }
+};
+
+const startObservingDOM = () => {
+  if (submissionObserver) return; // already observing
+
+  const targetNode = document.body;
+  if (!targetNode) return;
+  const config = { childList: true, subtree: true };
+
+  submissionObserver = new MutationObserver(() => {
+    // Stop if we are already processing a submission
+    if (isFetchingSubmission) return;
+
+    // ONLY process if the user explicitly clicked Submit or used the shortcut!
+    if (!isWaitingForSubmission) {
+      stopObservingDOM();
+      return;
+    }
+
+    // Ensure the URL actually has the numeric submission ID before evaluating
+    const urlMatch = window.location.href.match(/\/submissions\/(\d+)/);
+    if (!urlMatch || !urlMatch[1]) return;
+
+    const resultElement = document.querySelector(
+      '[data-e2e-locator="submission-result"], [data-cy="submission-result"]'
+    );
+    
+    if (resultElement) {
+      const text = resultElement.textContent || "";
+      
+      // Ignore intermediate states
+      if (text.includes("Pending") || text.includes("Judging")) return;
+
+      const slug = getProblemSlug();
+      if (slug) {
+        // Disarm trigger and disconnect observer immediately
+        isWaitingForSubmission = false;
+        if (submitTimeout) clearTimeout(submitTimeout);
+        stopObservingDOM();
+
+        isFetchingSubmission = true; // Lock the observer
+        processSubmission(slug);
+      }
+    }
+  });
+
+  submissionObserver.observe(targetNode, config);
+};
+
+const armSubmissionTrigger = async () => {
+  // Guard: If not logged in, show in-page sign-in nudge modal immediately
+  const loggedIn = await isUserLoggedIn();
+  if (!loggedIn) {
+    const slug = getProblemSlug();
+    const title = slug ? formatSlugTitle(slug) : undefined;
+    window.postMessage({ type: "SHOW_SIGN_IN_MODAL", title, slug, _leetsensei: true }, "*");
+    return;
+  }
+
   isWaitingForSubmission = true;
+  // On-Demand: Start observing DOM only during the submission window
+  startObservingDOM();
 
   if (submitTimeout) clearTimeout(submitTimeout);
   submitTimeout = setTimeout(() => {
     if (isWaitingForSubmission) {
-      console.log("[LeetSensei] Submission window timed out without result.");
       isWaitingForSubmission = false;
+      stopObservingDOM();
     }
   }, 30000);
 };
@@ -254,11 +450,12 @@ const setupSubmitListeners = () => {
     );
 
     if (submitBtn) {
-      const text = submitBtn.textContent?.trim().toLowerCase();
+      const text = submitBtn.textContent?.trim().toLowerCase() || "";
       const isSubmitAttr = submitBtn.getAttribute("data-e2e-locator") === "console-submit-button" ||
                            submitBtn.getAttribute("data-cy") === "submit-code-btn";
+      const isSubmitText = text.startsWith("submit") || text.includes("submit");
 
-      if (isSubmitAttr || text === "submit") {
+      if (isSubmitAttr || isSubmitText) {
         armSubmissionTrigger();
       }
     }
@@ -274,46 +471,24 @@ const setupSubmitListeners = () => {
   }, true);
 };
 
-const startObservingDOM = () => {
-  const targetNode = document.body;
-  const config = { childList: true, subtree: true };
-
-  const observer = new MutationObserver(() => {
-    // Stop if we are already processing a submission
-    if (isFetchingSubmission) return;
-
-    // ONLY process if the user explicitly clicked Submit or used the shortcut!
-    if (!isWaitingForSubmission) return;
-
-    // Make sure the URL actually has an ID to extract before wasting time
-    if (!window.location.href.includes("/submissions/")) return;
-
-    const resultElement = document.querySelector('[data-e2e-locator="submission-result"]');
-    
-    if (resultElement) {
-      const text = resultElement.textContent || "";
-      
-      // Ignore intermediate states
-      if (text.includes("Pending") || text.includes("Judging")) return;
-
-      const slug = getProblemSlug();
-      if (slug) {
-        // Disarm trigger immediately so it only processes once per submit
-        isWaitingForSubmission = false;
-        if (submitTimeout) clearTimeout(submitTimeout);
-
-        isFetchingSubmission = true; // Lock the observer
-        processSubmission(slug);
-      }
-    }
-  });
-
-  observer.observe(targetNode, config);
-};
-
 // ==========================================
-// INITIALIZE EXTENSION
+// INITIALIZE EXTENSION (100% Event-Driven)
 // ==========================================
-setInterval(checkUrl, 1000);
+// 1. Listen for background route change notifications
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === "ROUTE_CHANGED") {
+    stopObservingDOM();
+    handleRouteChange(message.url || window.location.href);
+  }
+});
+
+// 2. Listen for native browser history popstate navigation
+window.addEventListener("popstate", () => {
+  stopObservingDOM();
+  handleRouteChange(window.location.href);
+});
+
+// 3. Initial check on content script injection
+handleRouteChange(window.location.href);
+
 setupSubmitListeners();
-startObservingDOM();
