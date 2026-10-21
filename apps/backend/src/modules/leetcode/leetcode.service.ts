@@ -301,50 +301,78 @@ export const createQuestions = async (questionSyncData: QuestionSyncData) => {
 return data;
 }
 
-export const createAndUpdateSubmissionHistory = async (submissionHistorydata : submissionHistoryItemData[],userId : string) => {
-    await prisma.submissionHistory.createMany({
-        data: submissionHistorydata.map(
-            history =>(
-                {
-                    submissionId : history.id ,
-                    userId : userId ,
-                    questionSlug : history.titleSlug ,
-                    statusDisplay : history.statusDisplay ,
-                    status : history.status ,
-                    lang : history.lang ,
-                    langName : history.langName ,
-                    runtime : history.runtime || "N/A" ,
-                    memory : history.memory || "N/A" ,
-                    timestamp : history.timestamp ,
-                    frontendId : history.frontendId 
-                }
-            )
-        ),
-        skipDuplicates: true
-    })
+export const createAndUpdateSubmissionHistory = async (submissionHistorydata: submissionHistoryItemData[], userId: string) => {
+    for (const history of submissionHistorydata) {
+        await prisma.submissionHistory.upsert({
+            where: { submissionId: history.id },
+            update: {
+                userId: userId,
+                questionSlug: history.titleSlug,
+                statusDisplay: history.statusDisplay,
+                status: history.status,
+                lang: history.lang,
+                langName: history.langName,
+                runtime: history.runtime || "N/A",
+                memory: history.memory || "N/A",
+                timestamp: history.timestamp,
+                frontendId: history.frontendId
+            },
+            create: {
+                submissionId: history.id,
+                userId: userId,
+                questionSlug: history.titleSlug,
+                statusDisplay: history.statusDisplay,
+                status: history.status,
+                lang: history.lang,
+                langName: history.langName,
+                runtime: history.runtime || "N/A",
+                memory: history.memory || "N/A",
+                timestamp: history.timestamp,
+                frontendId: history.frontendId
+            }
+        });
+    }
 }
 
-export const createSubmissionDetails = async  (submission : submissionDetailsData , submissionId : string, previouslySolved : boolean )=>{
-        await prisma.submission.create({
-            data : {
-                submissionId : submissionId ,
-                runtimePercentile : submission.runtimePercentile ?? null ,
-                runtimeDistribution : submission.runtimeDistribution || "{}" ,
-                memoryPercentile : submission.memoryPercentile ?? null ,
-                memoryDistribution : submission.memoryDistribution || "{}" ,
-                code : submission.code ,
-                timestamp : BigInt(submission.timestamp) ,
-                runtimeError : submission.runtimeError ?? null ,
-                compileError : submission.compileError ?? null ,
-                lastTestcase : submission.lastTestcase ?? null ,
-                expectedOutput : submission.expectedOutput ?? null ,
-                codeOutput : submission.codeOutput ?? null ,
-                totalCorrect : submission.totalCorrect ?? null ,
-                totalTestcases : submission.totalTestcases ?? 0 ,
-                stdOutput : submission.stdOutput ?? null ,
-                previouslySolved : previouslySolved 
-            }
-        })
+export const createSubmissionDetails = async (submission: submissionDetailsData, submissionId: string, previouslySolved: boolean) => {
+    await prisma.submission.upsert({
+        where: { submissionId: submissionId },
+        update: {
+            runtimePercentile: submission.runtimePercentile ?? null,
+            runtimeDistribution: submission.runtimeDistribution || "{}",
+            memoryPercentile: submission.memoryPercentile ?? null,
+            memoryDistribution: submission.memoryDistribution || "{}",
+            code: submission.code,
+            timestamp: BigInt(submission.timestamp),
+            runtimeError: submission.runtimeError ?? null,
+            compileError: submission.compileError ?? null,
+            lastTestcase: submission.lastTestcase ?? null,
+            expectedOutput: submission.expectedOutput ?? null,
+            codeOutput: submission.codeOutput ?? null,
+            totalCorrect: submission.totalCorrect ?? null,
+            totalTestcases: submission.totalTestcases ?? 0,
+            stdOutput: submission.stdOutput ?? null,
+            previouslySolved: previouslySolved
+        },
+        create: {
+            submissionId: submissionId,
+            runtimePercentile: submission.runtimePercentile ?? null,
+            runtimeDistribution: submission.runtimeDistribution || "{}",
+            memoryPercentile: submission.memoryPercentile ?? null,
+            memoryDistribution: submission.memoryDistribution || "{}",
+            code: submission.code,
+            timestamp: BigInt(submission.timestamp),
+            runtimeError: submission.runtimeError ?? null,
+            compileError: submission.compileError ?? null,
+            lastTestcase: submission.lastTestcase ?? null,
+            expectedOutput: submission.expectedOutput ?? null,
+            codeOutput: submission.codeOutput ?? null,
+            totalCorrect: submission.totalCorrect ?? null,
+            totalTestcases: submission.totalTestcases ?? 0,
+            stdOutput: submission.stdOutput ?? null,
+            previouslySolved: previouslySolved
+        }
+    });
 }
 
 
@@ -357,14 +385,31 @@ export const getQuestionBySlug = async (slug : string) => {
     return questionData ;
 }
 
-export const updateLeetcodeStats = async (userId : string,previouslySolved :boolean,status: number ,timeStamp : number , difficulty : string) => {
+export const updateLeetcodeStats = async (userId: string, previouslySolved: boolean, status: number, timeStamp: number, difficulty: string) => {
 
-    const stats = await prisma.leetCodeStats.findUnique({ where : { userId } });
+    const stats = await prisma.leetCodeStats.findUnique({ where: { userId } });
     if (!stats) return;
 
-    // Build heatmap key as "YYYY-MM-DD" from unix timestamp
-    const dateKey = new Date(timeStamp * 1000).toISOString().split("T")[0] as string;
-    const heatmap = (stats.submissionHeatMap as Record<string, number>) || {};
+    // Convert timeStamp to midnight UTC Unix timestamp in seconds (matching LeetCode's submissionCalendar key format)
+    const timeInMs = timeStamp > 1e11 ? timeStamp : timeStamp * 1000;
+    const date = new Date(timeInMs);
+    date.setUTCHours(0, 0, 0, 0);
+    const dateKey = Math.floor(date.getTime() / 1000).toString();
+
+    const heatmap = { ...((stats.submissionHeatMap as Record<string, number>) || {}) };
+
+    // Auto-migrate any legacy "YYYY-MM-DD" formatted keys to midnight UTC timestamps
+    for (const [key, count] of Object.entries(heatmap)) {
+        if (key.includes("-")) {
+            const parsed = new Date(key + "T00:00:00.000Z");
+            if (!isNaN(parsed.getTime())) {
+                const normalizedKey = Math.floor(parsed.getTime() / 1000).toString();
+                heatmap[normalizedKey] = (heatmap[normalizedKey] || 0) + count;
+                delete heatmap[key];
+            }
+        }
+    }
+
     heatmap[dateKey] = (heatmap[dateKey] || 0) + 1;
 
     // =============================================
@@ -378,7 +423,7 @@ export const updateLeetcodeStats = async (userId : string,previouslySolved :bool
             medium: { mediumQuestionsSolved: { increment: 1 } },
             hard:   { hardQuestionsSolved:   { increment: 1 } },
         };
-        const difficultyUpdate = difficultyMap[difficulty.toLowerCase()] ?? {};
+        const difficultyUpdate = difficultyMap[difficulty?.toLowerCase() || ""] ?? {};
 
         await prisma.leetCodeStats.update({
             where: { userId },

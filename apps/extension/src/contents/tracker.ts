@@ -16,8 +16,6 @@ let trackingTimer: NodeJS.Timeout | null = null;
 let lastUrl = "";
 let lastSyncedSlug = "";
 let isFetchingSubmission = false;
-let isWaitingForSubmission = false;
-let submitTimeout: NodeJS.Timeout | null = null;
 
 // Initialize auth state on injection
 chrome.storage.local.get(["ls_loggedIn"], (res) => {
@@ -105,7 +103,7 @@ const formatSlugTitle = (slug: string): string => {
 const fetchGraphQL = async (query: string, variables: object) => {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
     const response = await fetch("https://leetcode.com/graphql", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -159,8 +157,11 @@ const syncQuestion = async (titleSlug: string) => {
 
     const query = `
       query questionData($titleSlug: String!) {
+        userStatus {
+          isPremium
+        }
         question(titleSlug: $titleSlug) {
-          questionId questionFrontendId title titleSlug content difficulty
+          questionId questionFrontendId title titleSlug content difficulty isPaidOnly
           topicTags { name slug }
         }
       }
@@ -169,6 +170,20 @@ const syncQuestion = async (titleSlug: string) => {
     const lcData = await fetchGraphQL(query, { titleSlug });
     const question = lcData?.data?.question;
     if (!question) return;
+
+    const isQuestionPremium = question.isPaidOnly === true;
+    const isUserPremium = lcData?.data?.userStatus?.isPremium === true;
+
+    // Only sync if question is free, or if question is premium AND user is premium
+    if (isQuestionPremium && !isUserPremium) {
+      console.log(`[LeetSensei] Skipping sync for premium question "${titleSlug}" because user does not have LeetCode Premium.`);
+      return;
+    }
+
+    // Guard: Do not save questions without valid content (no placeholders)
+    if (!question.content) {
+      return;
+    }
 
     chrome.runtime.sendMessage({
       type: "SYNC_QUESTION",
@@ -238,37 +253,73 @@ const handleRouteChange = async (currentUrl: string = window.location.href) => {
 };
 
 // ==========================================
+// STATUS CODES & TOLERANCE HELPERS
+// ==========================================
+// Final resolved LeetCode submission status codes
+const FINAL_STATUS_CODES = new Set([10, 11, 12, 13, 14, 15, 20, 21]);
+
+const isSubmissionPending = (submission: any, details?: any): boolean => {
+  if (!submission) return true;
+
+  // 1. Check isPending field in history
+  const isPendingStr = String(submission.isPending ?? "").trim().toLowerCase();
+  if (submission.isPending === true || isPendingStr === "pending" || isPendingStr === "evaluating") {
+    return true;
+  }
+
+  // 2. Check history status code (0 or 16 means pending/evaluating in LeetCode)
+  const historyCode = Number(submission.status);
+  if (historyCode === 0 || historyCode === 16 || !FINAL_STATUS_CODES.has(historyCode)) {
+    return true;
+  }
+
+  // 3. Check history statusDisplay
+  const display = String(submission.statusDisplay ?? "").trim().toLowerCase();
+  if (!display || display === "pending" || display === "evaluating") {
+    return true;
+  }
+
+  // 4. Check details statusCode if available
+  if (details) {
+    const detailCode = Number(details.statusCode);
+    if (detailCode === 0 || detailCode === 16 || !FINAL_STATUS_CODES.has(detailCode)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+// ==========================================
 // PHASE C & D: DATA EXTRACTION & BACKEND SYNC
 // ==========================================
-const processSubmission = async (slug: string) => {
+let lastProcessedSubmissionId = "";
+
+const processSubmissionWithTolerance = async (slug: string, explicitSubmissionId?: number, triggerTime?: number) => {
+  if (isFetchingSubmission) {
+    console.log("[LeetSensei Tracker] Already processing a submission, skipping duplicate trigger.");
+    return;
+  }
+  isFetchingSubmission = true;
+
   try {
-    // Feature 2 Guard: Do not track submissions if not logged in
     const loggedIn = await isUserLoggedIn();
     if (!loggedIn) {
+      console.log("[LeetSensei Tracker] User not logged in during submission, showing sign-in modal.");
+      const title = formatSlugTitle(slug);
+      window.postMessage({
+        type: "SHOW_SIGN_IN_MODAL",
+        title,
+        slug,
+        _leetsensei: true
+      }, "*");
       return;
     }
 
-    // 1. URL ID Extraction
-    const urlMatch = window.location.href.match(/\/submissions\/(\d+)/);
-    if (!urlMatch || !urlMatch[1]) {
-      return;
-    }
-    const submissionId = parseInt(urlMatch[1]);
+    const minTimestamp = (triggerTime || Math.floor(Date.now() / 1000)) - 10;
+    const MAX_POLL_ATTEMPTS = 25; // 37.5s maximum judge tolerance
+    const POLL_INTERVAL_MS = 1500;
 
-    // 2. Parallel GraphQL Fetches
-    const detailsQuery = `
-      query submissionDetails($submissionId: Int!) {
-        submissionDetails(submissionId: $submissionId) {
-          runtimePercentile runtimeDistribution memoryPercentile memoryDistribution
-          code timestamp statusCode runtimeError compileError lastTestcase
-          codeOutput expectedOutput totalCorrect totalTestcases stdOutput
-          user { username profile { realName userAvatar } }
-          lang { name verboseName }
-          question { questionId titleSlug hasFrontendPreview }
-        }
-      }
-    `;
-    
     const listQuery = `
       query submissionList($offset: Int!, $limit: Int!, $questionSlug: String!) {
         questionSubmissionList(offset: $offset, limit: $limit, questionSlug: $questionSlug) {
@@ -283,44 +334,120 @@ const processSubmission = async (slug: string) => {
       }
     `;
 
-    const [detailsData, listData] = await Promise.all([
-        fetchGraphQL(detailsQuery, { submissionId }),
-        fetchGraphQL(listQuery, { offset: 0, limit: 20, questionSlug: slug })
-    ]);
+    const detailsQuery = `
+      query submissionDetails($submissionId: Int!) {
+        submissionDetails(submissionId: $submissionId) {
+          runtime runtimeDisplay runtimePercentile runtimeDistribution
+          memory memoryDisplay memoryPercentile memoryDistribution
+          code timestamp statusCode runtimeError compileError lastTestcase
+          codeOutput expectedOutput totalCorrect totalTestcases stdOutput
+          aiJudgeMessage isCompiledLang notes flagType
+          user { username profile { realName userAvatar } }
+          lang { name verboseName }
+          question { questionId titleSlug hasFrontendPreview }
+        }
+      }
+    `;
 
-    const submissionDetails = detailsData?.data?.submissionDetails;
-    const questionSubmissionList = listData?.data?.questionSubmissionList;
+    let submissionId: number | null = explicitSubmissionId || null;
+    let finalSubmissionList: any = null;
+    let latestSubmission: any = null;
+    let submissionDetails: any = null;
 
-    if (!submissionDetails || !questionSubmissionList) return;
+    for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
+      const listData = await fetchGraphQL(listQuery, { offset: 0, limit: 10, questionSlug: slug });
+      finalSubmissionList = listData?.data?.questionSubmissionList;
+      const submissions = finalSubmissionList?.submissions || [];
 
-    // 3. Security Guard 1: The History Browsing Check
+      if (!submissions.length) {
+        console.log(`[LeetSensei Tracker] Attempt ${attempt}/${MAX_POLL_ATTEMPTS}: No submissions found yet. Waiting ${POLL_INTERVAL_MS}ms...`);
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+        continue;
+      }
+
+      if (submissionId) {
+        latestSubmission = submissions.find((s: any) => s.id === String(submissionId)) || submissions[0];
+      } else {
+        latestSubmission = submissions[0];
+        const subTime = parseInt(latestSubmission?.timestamp || "0");
+        // Check if latest submission is still the previous one
+        if (subTime < minTimestamp && latestSubmission?.id === lastProcessedSubmissionId) {
+          console.log(`[LeetSensei Tracker] Attempt ${attempt}/${MAX_POLL_ATTEMPTS}: Submission #${latestSubmission.id} is from a previous run. Waiting for new submission...`);
+          await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+          continue;
+        }
+        submissionId = parseInt(latestSubmission.id);
+      }
+
+      // Check if submission history indicates it's still pending/evaluating
+      if (isSubmissionPending(latestSubmission)) {
+        console.log(`[LeetSensei Tracker] Attempt ${attempt}/${MAX_POLL_ATTEMPTS}: Submission #${submissionId} still evaluating (status: ${latestSubmission.status}, isPending: "${latestSubmission.isPending}"). Waiting ${POLL_INTERVAL_MS}ms...`);
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+        continue;
+      }
+
+      // Submission history shows evaluation is done! Now fetch full details
+      const detailsData = await fetchGraphQL(detailsQuery, { submissionId });
+      submissionDetails = detailsData?.data?.submissionDetails;
+
+      if (!submissionDetails || isSubmissionPending(latestSubmission, submissionDetails)) {
+        console.log(`[LeetSensei Tracker] Attempt ${attempt}/${MAX_POLL_ATTEMPTS}: Submission details #${submissionId} still pending (statusCode: ${submissionDetails?.statusCode ?? "null"}). Waiting ${POLL_INTERVAL_MS}ms...`);
+        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+        continue;
+      }
+
+      // Both history and details are completely evaluated!
+      console.log(`[LeetSensei Tracker] Submission #${submissionId} evaluated successfully! (Status: ${latestSubmission.status}, Code: ${submissionDetails.statusCode})`);
+      break;
+    }
+
+    if (!submissionDetails || !finalSubmissionList || !latestSubmission || isSubmissionPending(latestSubmission, submissionDetails)) {
+      console.warn(`[LeetSensei Tracker] Submission #${submissionId} evaluation timed out after ${MAX_POLL_ATTEMPTS * POLL_INTERVAL_MS / 1000}s. Skipping to prevent recording incomplete data.`);
+      return;
+    }
+
+    // Harmonize final status
+    const finalCode = Number(submissionDetails.statusCode);
+    latestSubmission.status = finalCode;
+
+    // Security Guard 1: Stale submission check (within 3 minutes)
     const submissionTime = parseInt(submissionDetails.timestamp);
     const currentTime = Math.floor(Date.now() / 1000);
-
-    if (currentTime - submissionTime > 120) {
-        return;
+    if (currentTime - submissionTime > 180) {
+      console.log("[LeetSensei Tracker] Skipping stale submission older than 3 minutes.");
+      return;
     }
 
-    // 4. Security Guard 2: The Deduplication Check
-    if (submissionTime <= lastProcessedTimestamp) {
-        return;
+    // Security Guard 2: Deduplication
+    if (submissionTime <= lastProcessedTimestamp || String(submissionId) === lastProcessedSubmissionId) {
+      console.log("[LeetSensei Tracker] Submission already processed, skipping.");
+      return;
     }
     lastProcessedTimestamp = submissionTime;
+    lastProcessedSubmissionId = String(submissionId);
 
-    // Fix missing Prisma field
-    submissionDetails.isCompiledLang = null; 
+    // Fix Prisma compatibility field
+    submissionDetails.isCompiledLang = null;
 
-    // 5. Direct Single Submission Track Call
     const currentLcUsername = submissionDetails.user?.username;
-    if (!currentLcUsername) return;
+    if (!currentLcUsername) {
+      console.warn("[LeetSensei Tracker] No LeetCode username found on submission details.");
+      return;
+    }
+
+    console.log(`[LeetSensei Tracker] Dispatching PROCESS_SUBMISSION for submission #${submissionId} (Status: ${finalCode}, @${currentLcUsername})`);
 
     chrome.runtime.sendMessage({
       type: "PROCESS_SUBMISSION",
-      payload: { data: { submissionDetails, questionSubmissionList } }
+      payload: { data: { submissionDetails, questionSubmissionList: finalSubmissionList } }
     }, (response) => {
       if (chrome.runtime.lastError) {
+        console.warn("[LeetSensei Tracker] Runtime messaging error:", chrome.runtime.lastError);
         return;
       }
+
+      console.log("[LeetSensei Tracker] Backend response received:", response);
+
       if (response && response.success) {
         showToast("🚀 Submission Tracked!");
       } else {
@@ -350,93 +477,35 @@ const processSubmission = async (slug: string) => {
     });
 
   } catch (error) {
-    console.warn("[LeetSensei] Error processing submission:", error);
+    console.warn("[LeetSensei Tracker] Error processing submission:", error);
   } finally {
-    isFetchingSubmission = false; // Release lock
+    isFetchingSubmission = false;
   }
 };
 
 // ==========================================
+// PHASE B: THE SUBMISSION TRIGGER
 // ==========================================
-// PHASE B: THE SUBMISSION TRIGGER (Armed by Click / Shortcut)
-// ==========================================
-let submissionObserver: MutationObserver | null = null;
+let submissionTimer: NodeJS.Timeout | null = null;
 
-const stopObservingDOM = () => {
-  if (submissionObserver) {
-    submissionObserver.disconnect();
-    submissionObserver = null;
-  }
-};
-
-const startObservingDOM = () => {
-  if (submissionObserver) return; // already observing
-
-  const targetNode = document.body;
-  if (!targetNode) return;
-  const config = { childList: true, subtree: true };
-
-  submissionObserver = new MutationObserver(() => {
-    // Stop if we are already processing a submission
-    if (isFetchingSubmission) return;
-
-    // ONLY process if the user explicitly clicked Submit or used the shortcut!
-    if (!isWaitingForSubmission) {
-      stopObservingDOM();
-      return;
-    }
-
-    // Ensure the URL actually has the numeric submission ID before evaluating
-    const urlMatch = window.location.href.match(/\/submissions\/(\d+)/);
-    if (!urlMatch || !urlMatch[1]) return;
-
-    const resultElement = document.querySelector(
-      '[data-e2e-locator="submission-result"], [data-cy="submission-result"]'
-    );
-    
-    if (resultElement) {
-      const text = resultElement.textContent || "";
-      
-      // Ignore intermediate states
-      if (text.includes("Pending") || text.includes("Judging")) return;
-
-      const slug = getProblemSlug();
-      if (slug) {
-        // Disarm trigger and disconnect observer immediately
-        isWaitingForSubmission = false;
-        if (submitTimeout) clearTimeout(submitTimeout);
-        stopObservingDOM();
-
-        isFetchingSubmission = true; // Lock the observer
-        processSubmission(slug);
-      }
-    }
-  });
-
-  submissionObserver.observe(targetNode, config);
-};
-
-const armSubmissionTrigger = async () => {
-  // Guard: If not logged in, show in-page sign-in nudge modal immediately
+const onUserSubmitTriggered = async () => {
   const loggedIn = await isUserLoggedIn();
+  const slug = getProblemSlug();
+  if (!slug) return;
+
   if (!loggedIn) {
-    const slug = getProblemSlug();
-    const title = slug ? formatSlugTitle(slug) : undefined;
+    const title = formatSlugTitle(slug);
     window.postMessage({ type: "SHOW_SIGN_IN_MODAL", title, slug, _leetsensei: true }, "*");
     return;
   }
 
-  isWaitingForSubmission = true;
-  // On-Demand: Start observing DOM only during the submission window
-  startObservingDOM();
+  const triggerTime = Math.floor(Date.now() / 1000);
+  console.log(`[LeetSensei Tracker] Submit action detected at ${triggerTime} for "${slug}". Waiting 1.5s for judge to register...`);
 
-  if (submitTimeout) clearTimeout(submitTimeout);
-  submitTimeout = setTimeout(() => {
-    if (isWaitingForSubmission) {
-      isWaitingForSubmission = false;
-      stopObservingDOM();
-    }
-  }, 30000);
+  if (submissionTimer) clearTimeout(submissionTimer);
+  submissionTimer = setTimeout(() => {
+    processSubmissionWithTolerance(slug, undefined, triggerTime);
+  }, 1500);
 };
 
 const setupSubmitListeners = () => {
@@ -456,7 +525,7 @@ const setupSubmitListeners = () => {
       const isSubmitText = text.startsWith("submit") || text.includes("submit");
 
       if (isSubmitAttr || isSubmitText) {
-        armSubmissionTrigger();
+        onUserSubmitTriggered();
       }
     }
   }, true);
@@ -465,7 +534,7 @@ const setupSubmitListeners = () => {
   document.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       if (window.location.href.includes("/problems/")) {
-        armSubmissionTrigger();
+        onUserSubmitTriggered();
       }
     }
   }, true);
@@ -474,21 +543,15 @@ const setupSubmitListeners = () => {
 // ==========================================
 // INITIALIZE EXTENSION (100% Event-Driven)
 // ==========================================
-// 1. Listen for background route change notifications
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "ROUTE_CHANGED") {
-    stopObservingDOM();
     handleRouteChange(message.url || window.location.href);
   }
 });
 
-// 2. Listen for native browser history popstate navigation
 window.addEventListener("popstate", () => {
-  stopObservingDOM();
   handleRouteChange(window.location.href);
 });
 
-// 3. Initial check on content script injection
 handleRouteChange(window.location.href);
-
 setupSubmitListeners();

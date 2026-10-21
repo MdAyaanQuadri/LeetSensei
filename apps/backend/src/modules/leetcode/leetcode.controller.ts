@@ -33,11 +33,6 @@ import {
     updateLeetcodeStats
 } from "./leetcode.service.js";
 
-// user service 
-import {
-    getUserDataService
-} from "../user/user.service.js"
-
 
 export const linkLeetCodeAccount = async (req: Request, res: Response) => {
     const { data, success, error } = leetcodeUsernameInputSchema.safeParse(req.body);
@@ -240,46 +235,29 @@ export const trackSubmission = async (req: Request, res: Response) => {
 
         throw new ZodParsingError(message, code, details);
     }
-    const userData = await getUserDataService(userId);
-
     const submissionHistoryData = data.data.questionSubmissionList.submissions;
-
     const submissionDetailsData = data.data.submissionDetails;
-
-    if (!userData?.leetcodeStats) {
-        return res.status(400).json({
-            success: false,
-            code: "USER_NOT_LINKED",
-            message: "No LeetCode account linked. Please link your LeetCode account first.",
-        });
-    }
-
-    if (userData.leetcodeStats.userName !== submissionDetailsData.user?.username) {
-        return res.status(400).json({
-            success: false,
-            code: "USERNAME_MISMATCH",
-            message: "The LeetCode username on the submission does not match your linked account.",
-            linkedUsername: userData.leetcodeStats.userName,
-        });
-    }
-
-    if (!userData.leetcodeStats.isVerified) {
-        return res.status(400).json({
-            success: false,
-            code: "USER_NOT_VERIFIED",
-            message: "Your LeetCode account is not verified. Please verify your account first.",
-        });
-    }
-
-
-
-
-    
-
-    await createAndUpdateSubmissionHistory(submissionHistoryData, userId);
 
     const sorted = [...submissionHistoryData].sort((a, b) => b.frontendId - a.frontendId);
     const latestSubmission = sorted[0];
+    const finalStatusCode = Number(submissionDetailsData.statusCode);
+
+    // Defense: If LeetCode judge is still evaluating (status 0 or 16, or isPending === 'Pending')
+    const isPending = (latestSubmission?.isPending && String(latestSubmission.isPending).toLowerCase() === "pending")
+        || finalStatusCode === 0
+        || finalStatusCode === 16
+        || (latestSubmission && (latestSubmission.status === 0 || latestSubmission.status === 16));
+
+    if (isPending) {
+        return res.status(400).json({
+            success: false,
+            code: "SUBMISSION_EVALUATING",
+            message: "Submission is still being evaluated by LeetCode. Please wait for evaluation to complete.",
+        });
+    }
+
+    await createAndUpdateSubmissionHistory(submissionHistoryData, userId);
+
     const submissionId = latestSubmission?.id as string;
 
     let previouslySolved = false;
@@ -290,15 +268,15 @@ export const trackSubmission = async (req: Request, res: Response) => {
         }
     }
 
-    await createSubmissionDetails(submissionDetailsData, submissionId, previouslySolved) ;
+    await createSubmissionDetails(submissionDetailsData, submissionId, previouslySolved);
 
     // Get shared data needed for all 3 scenarios
-    const questionData = await getQuestionBySlug(submissionDetailsData.question.titleSlug) ;
-    const difficulty = questionData?.difficulty as string ;
-    const timestamp = parseInt(sorted[0]?.timestamp as string) ;
-    const status = latestSubmission?.status as number ;
+    const questionData = await getQuestionBySlug(submissionDetailsData.question.titleSlug);
+    const difficulty = questionData?.difficulty || "Medium";
+    const timestamp = parseInt(latestSubmission?.timestamp as string || submissionDetailsData.timestamp.toString());
+    const status = latestSubmission?.status || finalStatusCode;
 
-    await updateLeetcodeStats(userId, previouslySolved, status, timestamp, difficulty) ;
+    await updateLeetcodeStats(userId, previouslySolved, status, timestamp, difficulty);
 
     return res.status(200).json({
         success: true,

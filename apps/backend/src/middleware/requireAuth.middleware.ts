@@ -16,7 +16,8 @@ const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
 
     const clerkId = userId;
     const dbUser = await prisma.user.findUnique({
-        where: { clerkId: userId }
+        where: { clerkId: userId },
+        include: { leetcodeStats: true }
     });
 
     if (!dbUser) {
@@ -25,6 +26,8 @@ const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
     
     res.locals.clerkId = clerkId;
     res.locals.userId = dbUser.id;
+    res.locals.user = dbUser;
+    res.locals.leetcodeStats = dbUser.leetcodeStats;
     next();
 }
 
