@@ -206,29 +206,39 @@ export interface SpeedDataFile {
 // Merged Single Schema for Final Benchmarking
 // ==========================================
 export interface MergedModelCandidate {
-    // rank : number
-    // slug: string;
-    // name: string; // model name
-    // creator: string;
-    // sourceType: string;
-    // contextWindowTokens: number;
+    rank : number
+    name: string; // model name
+    canonicalModelKey :string ;
+    creator: string;
+    sourceType: string;
+    contextWindowTokens: number;
 
-    // // 2. Coding & Deep Benchmark Scores
-    // overAllScore: number
-    // codingScore: number;
-    // reasoningScore: number | null;
-    // mathScore: number | null;
+    // 2. Coding & Deep Benchmark Scores
+    overAllScore: number
+    codingScore: number;
+    reasoningScore: number ;
+    mathScore: number;
+    multimodalGroundedScore: number;
 
-    // // 3. Pricing & Real Financials (INR)
-    // inputPricePerMillion: number;
-    // outputPricePerMillion: number;
-    // isFree: boolean;
-    // monthlyCostINR: number; // based on avg tokens * requests/day * 30 days
+    // 3. Pricing & Real Financials (INR)
+    inputPrice: number;
+    outputPrice: number;
+    isFreePricing: boolean;
+    monthlyCostINR: number; // based on avg tokens * requests/day * 30 days
 
-    // // 4. Performance & Latency SLA
-    // tokensPerSecond: number | null;
-    // ttft: number | null; // Time to First Token in seconds
+    // 4. Performance & Latency SLA
+    tokensPerSecond: number ;
+    ttft: number ; // Time to First Token in seconds
 
+}
+
+export interface MergedModelCandidateNormalised extends MergedModelCandidate {
+    normalisedLatency : number ,
+    normalisedReasoningScore: number ,
+    normalisedCodingScore : number ,
+    normalisedMultimodalGroundedScore :number ,
+    normalisedMathScore : number ,
+    UseCaseScore : number ,
 }
 
 

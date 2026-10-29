@@ -1,0 +1,93 @@
+{
+  "title": "Max Points on a Line",
+  "difficulty": "Hard",
+  "crux": "Find largest collinear subset of N distinct 2D points.",
+  "edgeCases": [
+    "n=1 → return 1, no loop",
+    "n=2 → always return 2",
+    "all collinear → answer equals n",
+    "dx=0 (vertical): float dy/dx undefined, needs sentinel key",
+    "(-2,4) and (2,-4): same slope, different hash without sign normalization",
+    "coords at ±10^4: dy,dx reach 2*10^4, safe in 32-bit GCD",
+    "map not reset per pivot → counts bleed across lines"
+  ],
+  "wrongApproaches": [
+    {
+      "name": "Float slope dy/dx",
+      "verdict": "WA",
+      "signal": "double slope = (double) dy / dx",
+      "reason": "1.0/3.0 != 10.0/30.0 in IEEE-754"
+    },
+    {
+      "name": "atan2 angle",
+      "verdict": "WA",
+      "signal": "Math.atan2(dy, dx)",
+      "reason": "same IEEE-754 imprecision as float slope"
+    },
+    {
+      "name": "Global slope map",
+      "verdict": "WA",
+      "signal": "Map declared outside outer loop",
+      "reason": "non-intersecting lines merge, overcounting"
+    },
+    {
+      "name": "O(N^3) triple cross-product",
+      "verdict": "TLE",
+      "signal": "three nested loops i,j,k",
+      "reason": "27M ops at N=300"
+    }
+  ],
+  "optimal": {
+    "name": "Per-Pivot GCD-Normalized Slope Hash Map",
+    "keyIdea": "For each pivot i, reduce (dy,dx) to every j by GCD into canonical pair, count in local map, answer = localMax+1.",
+    "time": "O(N^2 log M)",
+    "space": "O(N)",
+    "topics": ["hash-table", "math", "geometry"],
+    "invariants": [
+      "dx<0: negate both dy,dx",
+      "dx=0: key=(0,1)",
+      "divide dy,dx by gcd(|dy|,|dx|) before keying",
+      "clear map at start of each pivot i"
+    ],
+    "pitfalls": [
+      "n=1 early return missing → returns 0",
+      "map not reset per pivot → line contamination",
+      "sign not normalized → (-1,2) and (1,-2) collide only after rule",
+      "off-by-one: answer is localMax+1 not localMax"
+    ],
+    "recognizeBy": [
+      "gcd(Math.abs(dy), Math.abs(dx))",
+      "if (dx < 0) { dx=-dx; dy=-dy; }",
+      "Map keyed by int pair or encoded long",
+      "localMax + 1"
+    ]
+  },
+  "alternates": [
+    {
+      "name": "O(N^3) Cross-Product Brute Force",
+      "keyIdea": "Check all triples (i,j,k) for collinearity via integer cross-product.",
+      "time": "O(N^3)",
+      "space": "O(1)",
+      "topics": ["math", "geometry"],
+      "verdict": "TLE",
+      "whyNotOptimal": "TLE at N=300 (27M ops)",
+      "recognizeBy": [
+        "three nested loops i,j,k",
+        "(xj-xi)*(yk-yi) == (xk-xi)*(yj-yi)"
+      ]
+    },
+    {
+      "name": "Per-Pivot Float Slope Map",
+      "keyIdea": "Bucket points per pivot by double dy/dx; vertical lines keyed to infinity.",
+      "time": "O(N^2)",
+      "space": "O(N)",
+      "topics": ["hash-table", "math"],
+      "verdict": "WA",
+      "whyNotOptimal": "IEEE-754 wrong answer on non-integer slopes",
+      "recognizeBy": [
+        "Map<Double, Integer>",
+        "Double.POSITIVE_INFINITY"
+      ]
+    }
+  ]
+}

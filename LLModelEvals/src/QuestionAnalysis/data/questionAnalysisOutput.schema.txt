@@ -1,0 +1,36 @@
+{
+  "title": string,
+  "difficulty": "Easy | Medium | Hard",
+  "crux": string,
+  "edgeCases": [string],
+  "wrongApproaches": [
+    {
+      "name": string,
+      "verdict": "TLE | WA | RE | MLE",
+      "signal": string,
+      "reason": string
+    }
+  ],
+  "optimal": {
+    "name": string,
+    "keyIdea": string,
+    "time": string,
+    "space": string,
+    "topics": [slug],
+    "invariants": [string],
+    "pitfalls": [string],
+    "recognizeBy": [string]
+  },
+  "alternates": [
+    {
+      "name": string,
+      "keyIdea": string,
+      "time": string,
+      "space": string,
+      "topics": [slug],
+      "verdict": "Accepted | TLE | WA | RE | MLE",
+      "whyNotOptimal": string,
+      "recognizeBy": [string]
+    }
+  ]
+}

@@ -189,8 +189,9 @@ export const syncQuestion = async (req: Request, res: Response) => {
             throw new ZodParsingError(message, code, details);
         }
 
-        // check if question exist rough question slug
-        const questionSlug = data.data.question.titleSlug;
+        // check if question exist through question slug
+        const question = data.data.question;
+        const questionSlug = question.titleSlug;
         const questionData = await fetchQuestions(questionSlug);
 
         if (questionData) {
@@ -200,6 +201,27 @@ export const syncQuestion = async (req: Request, res: Response) => {
                 message: "Question already synced",
             });
         }
+
+        // Premium logic parity: Skip if question is paid and user is not premium
+        const isQuestionPremium = question.isPaidOnly === true;
+        const isUserPremium = data.data.userStatus?.isPremium === true;
+        if (isQuestionPremium && !isUserPremium) {
+            return res.status(200).json({
+                success: false,
+                code: "PREMIUM_QUESTION_SKIPPED",
+                message: "Skipping sync for premium question because user does not have LeetCode Premium",
+            });
+        }
+
+        // Guard: Do not save questions without valid content
+        if (!question.content) {
+            return res.status(400).json({
+                success: false,
+                code: "NO_CONTENT",
+                message: "Question content is empty or unavailable",
+            });
+        }
+
         // if not save the question 
         await createQuestions(data);
 

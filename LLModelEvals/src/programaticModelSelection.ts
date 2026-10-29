@@ -1,12 +1,12 @@
 import * as fs from "node:fs/promises";
 
-
 import type {
   ModelBenchmarkRanking,
   ModelPricingSpec,
   ModelDetailProfile,
   ModelSpeedSpec,
   MergedModelCandidate,
+  MergedModelCandidateNormalised
 } from "./types.js";
 
 // Safe cross-platform path resolution relative to this file
@@ -57,24 +57,73 @@ export async function getUsdToInrRate(): Promise<number> {
 
 
 
-export const modelSelectionPrice= async (budget: number, avgInputTokens: number, avgOutputTokens: number, avgReqPerday: number)
-  : Promise<MergedModelCandidate[]> => {
+
+export const modelSelection = async (budget: number, avgInputTokens: number, avgOutputTokens: number, avgReqPerday: number, useCaseFormula: (normalisedLatency: number,
+  normalisedReasoningScore: number,
+  normalisedCodingScore: number,
+  normalisedMathScore: number,
+  normalisedMultimodalGroundedScore: number) => number)
+  : Promise<MergedModelCandidateNormalised[]> => {
   const usdToInr = await getUsdToInrRate();
-  const mergedModelData = codingLeaderboard.map(
+
+  let MIN_CODING_SCORE = Infinity;
+  let MIN_LATENCY_SCORE = Infinity;
+  let MIN_REASONING_SCORE = Infinity;
+  let MIN_MATH_SCORE = Infinity;
+  let MIN_MULTIMODALGROUNDEDSCORE_SCORE = Infinity;
+
+  let MAX_CODING_SCORE = -Infinity;
+  let MAX_LATENCY_SCORE = -Infinity;
+  let MAX_REASONING_SCORE = -Infinity;
+  let MAX_MATH_SCORE = -Infinity;
+  let MAX_MULTIMODALGROUNDEDSCORE_SCORE = -Infinity;
+
+  const mergedModelData: MergedModelCandidate[] = codingLeaderboard.map(
     (model) => {
       const pricing = pricingMap.get(model.canonicalModelKey);
       if (!pricing || pricing.inputPrice == null || pricing.outputPrice == null) {
         return false;
       }
+
+      const modelStats = modelsMap.get(model.canonicalModelKey);
+      const speedStats = speedMap.get(model.canonicalModelKey);
+
+      if (modelStats === undefined || speedStats === undefined) return false;
+
+      const codingScore = modelStats.scores.displayCategoryScores.coding;
+      if (codingScore === null || codingScore === undefined) return false;
+      const reasoningScore = modelStats.scores.displayCategoryScores.reasoning || codingScore;
+      const mathScore = modelStats.scores.displayCategoryScores.math || codingScore;
+      const multimodalGroundedScore = modelStats.scores.displayCategoryScores.multimodalGrounded || 0;
+      const ttft = speedStats.ttft;
+      const tokensPerSecond = speedStats.tokensPerSecond;
+      const latencyScore = ttft + avgOutputTokens / tokensPerSecond;
+      MAX_CODING_SCORE = Math.max(MAX_CODING_SCORE, codingScore);
+      MIN_CODING_SCORE = Math.min(MIN_CODING_SCORE, codingScore);
+
+      MAX_REASONING_SCORE = Math.max(MAX_REASONING_SCORE, reasoningScore);
+      MIN_REASONING_SCORE = Math.min(MIN_REASONING_SCORE, reasoningScore);
+
+      MAX_LATENCY_SCORE = Math.max(MAX_LATENCY_SCORE, latencyScore);
+      MIN_LATENCY_SCORE = Math.min(MIN_LATENCY_SCORE, latencyScore);
+
+      MAX_MATH_SCORE = Math.max(MAX_MATH_SCORE, mathScore);
+      MIN_MATH_SCORE = Math.min(MIN_MATH_SCORE, mathScore);
+
+      MAX_MULTIMODALGROUNDEDSCORE_SCORE = Math.max(MAX_MULTIMODALGROUNDEDSCORE_SCORE, multimodalGroundedScore);
+      MIN_MULTIMODALGROUNDEDSCORE_SCORE = Math.min(MIN_MULTIMODALGROUNDEDSCORE_SCORE, multimodalGroundedScore);
+
+
+
+
+
       const monthlyExpense = ((pricing.inputPrice * avgInputTokens + pricing.outputPrice * avgOutputTokens) * avgReqPerday * usdToInr * 30) / 1000000;
       if (budget < monthlyExpense) return false;
 
 
-      const modelStats = modelsMap.get(model.canonicalModelKey);
-      const speedStats = speedMap.get(model.canonicalModelKey) ;
-
       const modelData = {
         rank: model.rank,
+        name: model.model,
         canonicalModelKey: model.canonicalModelKey,
         creator: model.creator,
         sourceType: model.sourceType,
@@ -83,10 +132,13 @@ export const modelSelectionPrice= async (budget: number, avgInputTokens: number,
 
 
       const modelStatsData = {
-        overAllScore: modelStats?.scores.overallScore,
-        codingScore: modelStats?.scores.displayCategoryScores.coding,
-        reasoningScore: modelStats?.scores.displayCategoryScores.reasoning,
-        mathScore: modelStats?.scores.displayCategoryScores.math,
+        overAllScore: modelStats.scores.overallScore,
+        codingScore,
+        reasoningScore,
+        mathScore,
+        multimodalGroundedScore
+
+        
       }
 
 
@@ -97,13 +149,13 @@ export const modelSelectionPrice= async (budget: number, avgInputTokens: number,
         monthlyCostINR: monthlyExpense
       }
 
-      
+
       const speedData = {
-        tokensPerSecond : speedStats?.tokensPerSecond ,
-        ttft : speedStats?.ttft
+        tokensPerSecond: speedStats.tokensPerSecond,
+        ttft: speedStats?.ttft
       }
 
-      
+
       return {
         ...modelData,
 
@@ -114,8 +166,41 @@ export const modelSelectionPrice= async (budget: number, avgInputTokens: number,
         ...speedData
       }
     }
-  )  .filter((item)=> item !== false);
+  ).filter((item) => item !== false);
+  const mergedModelDataNormailised: MergedModelCandidateNormalised[] = mergedModelData.map(
+    (models) => {
+      const modelsLatency = models.ttft + avgOutputTokens / models.tokensPerSecond;
+      const modelsReasoning = models.reasoningScore;
+      const modelscoding = models.codingScore;
 
-  return mergedModelData
+      const normalisedLatency = (MAX_LATENCY_SCORE - modelsLatency) / (MAX_LATENCY_SCORE - MIN_LATENCY_SCORE);
+      const normalisedReasoningScore = (modelsReasoning - MIN_REASONING_SCORE) / (MAX_REASONING_SCORE - MIN_REASONING_SCORE);
+      const normalisedCodingScore = (modelscoding - MIN_CODING_SCORE) / (MAX_CODING_SCORE - MIN_CODING_SCORE);
+      const normalisedMathScore = (models.mathScore - MIN_MATH_SCORE) / (MAX_MATH_SCORE - MIN_MATH_SCORE);
+      const normalisedMultimodalGroundedScore = (models.multimodalGroundedScore - MIN_MULTIMODALGROUNDEDSCORE_SCORE) / (MAX_MULTIMODALGROUNDEDSCORE_SCORE - MIN_MULTIMODALGROUNDEDSCORE_SCORE);
+
+      return {
+        ...models,
+        normalisedLatency,
+        normalisedReasoningScore,
+        normalisedCodingScore,
+        normalisedMathScore,
+        normalisedMultimodalGroundedScore,
+
+        // for ex -
+        // formula  you can customise 
+        // UseCaseScore = 0.75 * normalisedCodingScore + 0.15 * normalisedReasoningScore + 0.10 * normalisedLatency ;
+        UseCaseScore: useCaseFormula(normalisedLatency,
+          normalisedReasoningScore,
+          normalisedCodingScore,
+          normalisedMathScore,
+          normalisedMultimodalGroundedScore),
+      }
+    }
+  )
+  mergedModelDataNormailised.sort(
+    (a, b) => b.UseCaseScore - a.UseCaseScore
+  )
+  return mergedModelDataNormailised;
 }
 

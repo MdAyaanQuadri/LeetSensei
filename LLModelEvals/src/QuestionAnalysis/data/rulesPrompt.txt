@@ -1,0 +1,24 @@
+
+OUTPUT RULES
+- Output ONE valid JSON object and nothing else: no markdown fences, no explanatory text before or after.
+- Escape all quotes and math symbols inside JSON strings. No trailing commas.
+- Follow the schema below strictly in the exact field order. Earlier fields serve as working notes for later fields.
+- Write concisely: names and signals are a few words; explanations are 1-2 tight sentences.
+- Do not repeat officialTopics; only pick relevant tags for each approach.
+
+WORK IN THIS ORDER
+1. crux: what is fundamentally being asked, in one sentence.
+2. edgeCases: 4-8 concrete edge inputs (e.g. n=1, negative values, duplicates, overflow extremes) linked directly to the constraints.
+3. wrongApproaches: 2-5 intuitive but failing approaches with their verdict, code signal, and failure reason.
+4. optimal: the approach with the best exact time/space complexity.
+5. alternates: up to 5 genuinely different valid approaches (including Brute Force). Merge near-identical variants.
+
+FIELD RULES
+- name: clear canonical pattern name (e.g. "Two Pointers with Sorted Array", "Prefix Sum + Hash Map").
+- topics: choose 2-3 tags ONLY from ALLOWED_SLUGS. Tag what THIS specific approach relies on.
+- time / space: Big-O notation using the problem's exact variable names (e.g. O(N log N), O(N)). Checked against constraints.
+- keyIdea: 1-2 sentences explaining the mechanics.
+- invariants: 2-4 core rules ANY valid implementation of this approach must maintain.
+- pitfalls (optimal only): common subtle bugs (off-by-one, integer overflow, missed base case, uninitialized pointer).
+- whyNotOptimal (alternates only): exact reason it loses to optimal (e.g. "O(N^2) causes TLE on N=10^5", "Requires O(N) extra space").
+- recognizeBy: 2-4 distinct syntax/structural code markers that distinguish this approach from others (e.g. ["deque", "while r < n", "seen.add"]).
