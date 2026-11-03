@@ -1,0 +1,9 @@
+{
+  "dataStructure": "string (e.g., 'Binary Tree' | 'Directed Graph' | '2D Grid Matrix' | 'Elevation Map' | 'Interval Skyline')",
+  "topology": "string (explicit root, parent-child links, directed edges u->v with weights, or matrix dimensions M x N)",
+  "elements": [
+    "string (all exact integers, node labels, or coordinate values without approximation)"
+  ],
+  "visualHighlights": "string (visual features: shaded water regions, highlighted path arrows, node colors, state transitions, or 'None')",
+  "denseSummary": "string (dense 40-80 word factual description for text-only downstream solvers)"
+}

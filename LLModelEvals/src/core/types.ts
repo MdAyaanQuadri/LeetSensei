@@ -242,3 +242,33 @@ export interface MergedModelCandidateNormalised extends MergedModelCandidate {
 }
 
 
+export interface ExampleItem {
+  exampleNumber: number;
+  input: string;
+  output: string;
+  explanation?: string;
+  image?: string;
+}
+
+export interface CleanedQuestion {
+  /** The core problem explanation before examples and constraints */
+  body: string;
+  /** Structured list of examples extracted from <pre> blocks */
+  examples: ExampleItem[];
+  /** Structured list of constraints extracted from the constraints list */
+  constraints: string[];
+  /** Ordered list of image URLs found in the question */
+  imageUrls: string[];
+  /** Fully formatted, cohesive plain text ready to feed to the LLM */
+  fullText: string;
+}
+
+export type RawQuestion = {
+  questionId: string;
+  questionFrontendId: string;
+  title: string;
+  titleSlug: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  content: string; // HTML
+  topicTags: { name: string; slug: string }[];
+};

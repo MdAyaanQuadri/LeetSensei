@@ -11,7 +11,7 @@ import type {
 
 // Safe cross-platform path resolution relative to this file
 const loadData = async (filename: string) => {
-  return fs.readFile(new URL(`../LLMdata/${filename}`, import.meta.url), "utf-8");
+  return fs.readFile(new URL(`../../LLMdata/${filename}`, import.meta.url), "utf-8");
 };
 
 const leaderboardRaw = await loadData("leaderboard.json");

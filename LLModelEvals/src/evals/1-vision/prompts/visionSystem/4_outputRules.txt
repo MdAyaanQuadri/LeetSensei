@@ -1,0 +1,11 @@
+OUTPUT RULES & FORMAT CONSTRAINTS:
+
+- Output ONE valid JSON object and nothing else: NO markdown code fences (```json ... ```), NO introductory filler ("Here is the description...", "Sure!"), and NO concluding remarks.
+- Escape all quotes inside strings. No trailing commas.
+- Keep "denseSummary" strictly between 40 and 80 words with maximum factual density for text-only downstream solvers.
+- Follow the schema strictly in field order:
+  1. "dataStructure": string
+  2. "topology": string
+  3. "elements": string[]
+  4. "visualHighlights": string
+  5. "denseSummary": string

@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fetch": "npx tsx ./src/fetchModelsData.ts",
-    "questionEval": "npx tsx ./src/QuestionAnalysis/questionAnalysisEval.ts",
-    "solnEval": "npx tsx ./src/SolnAnalysis/solnAnalysisEval.ts"
+    "fetch": "npx tsx ./src/core/fetchModelsData.ts",
+    "visionEval": "npx tsx ./src/evals/1-vision/visionEval.ts",
+    "create:vision-golden": "npx tsx ./src/evals/1-vision/scripts/creatingGoldenDataSet.ts",
+    "questionEval": "npx tsx ./src/evals/2-question-analysis/questionEval.ts",
+    "solnEval": "npx tsx ./src/evals/3-solution-analysis/solutionEval.ts"
   },
   "keywords": [],
   "author": "",

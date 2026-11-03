@@ -113,30 +113,77 @@ export function cleanLeetCodeHtml(rawHtml: string): CleanedQuestion {
     }
   );
 
-  // 2. Extract Examples (from <pre> blocks)
+  // 2. Extract Examples (split by Example headers or <pre> blocks)
   const examples: ExampleItem[] = [];
-  const preRegex = /<pre[^>]*>([\s\S]*?)<\/pre>/gi;
-  let preMatch: RegExpExecArray | null;
+  let exampleCounter = 0;
 
-  while ((preMatch = preRegex.exec(workingHtml)) !== null) {
-    let rawPre = (preMatch[1] ?? "");
-    rawPre = rawPre.replace(/<sup>([\s\S]*?)<\/sup>/gi, "^$1");
-    rawPre = rawPre.replace(/<sub>([\s\S]*?)<\/sub>/gi, "_$1");
-    // Strip real HTML tags first to avoid collision with &lt;
-    rawPre = rawPre.replace(/<[a-zA-Z\/][^>]*>/g, "");
-    const rawPreContent = cleanEntitiesAndMath(rawPre).trim();
+  // Split content into individual example blocks:
+  // Matches from "Example X:" up to the next "Example Y:" or "Constraints:" or end of string
+  const exampleBlockRegex = /(?:<strong[^>]*class=["']example["'][^>]*>|<p><strong[^>]*>|<strong>)Example\s*\d+:?[\s\S]*?(?=(?:(?:<strong[^>]*class=["']example["'][^>]*>|<p><strong[^>]*>|<strong>)Example\s*\d+:?|Constraints:?|$))/gi;
+  const exampleBlocks = rawHtml.match(exampleBlockRegex);
 
-    const inputMatch = rawPreContent.match(/Input:\s*([\s\S]*?)(?=(?:Output:|$))/i);
-    const outputMatch = rawPreContent.match(/Output:\s*([\s\S]*?)(?=(?:Explanation:|$))/i);
-    const explMatch = rawPreContent.match(/Explanation:\s*([\s\S]*)/i);
+  if (exampleBlocks && exampleBlocks.length > 0) {
+    for (const block of exampleBlocks) {
+      exampleCounter++;
 
-    if (inputMatch && outputMatch) {
-      const explanation = explMatch?.[1];
-      examples.push({
-        input: inputMatch[1]?.trim() ?? "",
-        output: outputMatch[1]?.trim() ?? "",
-        ...(explanation !== undefined ? { explanation: explanation.trim() } : {})
-      });
+      // Try to parse explicit example number from header (e.g. "Example 2:")
+      const numMatch = block.match(/Example\s*(\d+)/i);
+      const exampleNumber = numMatch && numMatch[1] ? parseInt(numMatch[1], 10) : exampleCounter;
+
+      // Find image URL specifically inside this example block
+      const imgMatch = /<img[^>]+src=["']([^"']+)["'][^>]*\/?>/i.exec(block);
+      const exampleImage = imgMatch ? imgMatch[1] : undefined;
+
+      // Extract input, output, explanation from <pre> inside this block
+      const preMatch = /<pre[^>]*>([\s\S]*?)<\/pre>/i.exec(block);
+      let rawPre = preMatch ? preMatch[1] ?? "" : block;
+
+      rawPre = rawPre.replace(/<sup>([\s\S]*?)<\/sup>/gi, "^$1");
+      rawPre = rawPre.replace(/<sub>([\s\S]*?)<\/sub>/gi, "_$1");
+      rawPre = rawPre.replace(/<[a-zA-Z\/][^>]*>/g, "");
+      const rawPreContent = cleanEntitiesAndMath(rawPre).trim();
+
+      const inputMatch = rawPreContent.match(/Input:\s*([\s\S]*?)(?=(?:Output:|$))/i);
+      const outputMatch = rawPreContent.match(/Output:\s*([\s\S]*?)(?=(?:Explanation:|$))/i);
+      const explMatch = rawPreContent.match(/Explanation:\s*([\s\S]*)/i);
+
+      if (inputMatch && outputMatch) {
+        const explanation = explMatch?.[1];
+        examples.push({
+          exampleNumber,
+          input: inputMatch[1]?.trim() ?? "",
+          output: outputMatch[1]?.trim() ?? "",
+          ...(explanation !== undefined ? { explanation: explanation.trim() } : {}),
+          ...(exampleImage ? { image: exampleImage } : {})
+        });
+      }
+    }
+  } else {
+    // Fallback: if no "Example X:" headers found, parse raw <pre> blocks
+    const preRegex = /<pre[^>]*>([\s\S]*?)<\/pre>/gi;
+    let preMatch: RegExpExecArray | null;
+
+    while ((preMatch = preRegex.exec(workingHtml)) !== null) {
+      exampleCounter++;
+      let rawPre = (preMatch[1] ?? "");
+      rawPre = rawPre.replace(/<sup>([\s\S]*?)<\/sup>/gi, "^$1");
+      rawPre = rawPre.replace(/<sub>([\s\S]*?)<\/sub>/gi, "_$1");
+      rawPre = rawPre.replace(/<[a-zA-Z\/][^>]*>/g, "");
+      const rawPreContent = cleanEntitiesAndMath(rawPre).trim();
+
+      const inputMatch = rawPreContent.match(/Input:\s*([\s\S]*?)(?=(?:Output:|$))/i);
+      const outputMatch = rawPreContent.match(/Output:\s*([\s\S]*?)(?=(?:Explanation:|$))/i);
+      const explMatch = rawPreContent.match(/Explanation:\s*([\s\S]*)/i);
+
+      if (inputMatch && outputMatch) {
+        const explanation = explMatch?.[1];
+        examples.push({
+          exampleNumber: exampleCounter,
+          input: inputMatch[1]?.trim() ?? "",
+          output: outputMatch[1]?.trim() ?? "",
+          ...(explanation !== undefined ? { explanation: explanation.trim() } : {})
+        });
+      }
     }
   }
 

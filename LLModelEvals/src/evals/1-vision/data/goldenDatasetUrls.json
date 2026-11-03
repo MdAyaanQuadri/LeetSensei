@@ -1,0 +1,208 @@
+[
+  {
+    "id": "d32c6b8f-74c6-4ac1-9d1e-50e7a183ae61",
+    "questionId": "42",
+    "questionName": "Trapping Rain Water",
+    "topics": [
+      "Array",
+      "Two Pointers",
+      "Dynamic Programming",
+      "Stack",
+      "Monotonic Stack"
+    ],
+    "exampleNumber": 1,
+    "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]",
+    "output": "6",
+    "explanation": "The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png"
+  },
+  {
+    "id": "388e7567-a355-4c70-9244-45addac654a7",
+    "questionId": "218",
+    "questionName": "The Skyline Problem",
+    "topics": [
+      "Array",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Sweep Line",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "exampleNumber": 1,
+    "input": "buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]",
+    "output": "[[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]",
+    "explanation": "Figure A shows the buildings of the input.\nFigure B shows the skyline formed by those buildings. The red points in figure B represent the key points in the output list.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/12/01/merged.jpg"
+  },
+  {
+    "id": "1013f702-641e-4cdc-b424-bfd3a3f66984",
+    "questionId": "133",
+    "questionName": "Clone Graph",
+    "topics": [
+      "Hash Table",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory"
+    ],
+    "exampleNumber": 1,
+    "input": "adjList = [[2,4],[1,3],[2,4],[1,3]]",
+    "output": "[[2,4],[1,3],[2,4],[1,3]]",
+    "explanation": "There are 4 nodes in the graph.\n1st node (val = 1)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n2nd node (val = 2)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).\n3rd node (val = 3)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n4th node (val = 4)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).",
+    "imageUrl": "https://assets.leetcode.com/uploads/2019/11/04/133_clone_graph_question.png"
+  },
+  {
+    "id": "3387cab9-d1f9-4c44-8902-cc58caffa02d",
+    "questionId": "133",
+    "questionName": "Clone Graph",
+    "topics": [
+      "Hash Table",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory"
+    ],
+    "exampleNumber": 2,
+    "input": "adjList = [[]]",
+    "output": "[[]]",
+    "explanation": "Note that the input contains one empty list. The graph consists of only one node with val = 1 and it does not have any neighbors.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/01/07/graph.png"
+  },
+  {
+    "id": "1361d4ed-c958-42fc-b9fa-68386d3c9ee0",
+    "questionId": "685",
+    "questionName": "Redundant Connection II",
+    "topics": [
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Union-Find",
+      "Graph Theory"
+    ],
+    "exampleNumber": 1,
+    "input": "edges = [[1,2],[1,3],[2,3]]",
+    "output": "[2,3]",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/12/20/graph1.jpg"
+  },
+  {
+    "id": "5ac297f0-8042-4152-9287-52b2d38de9c2",
+    "questionId": "685",
+    "questionName": "Redundant Connection II",
+    "topics": [
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Union-Find",
+      "Graph Theory"
+    ],
+    "exampleNumber": 2,
+    "input": "edges = [[1,2],[2,3],[3,4],[4,1],[1,5]]",
+    "output": "[4,1]",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/12/20/graph2.jpg"
+  },
+  {
+    "id": "22a5c753-49f7-492b-9d39-f5526aa4878d",
+    "questionId": "124",
+    "questionName": "Binary Tree Maximum Path Sum",
+    "topics": [
+      "Dynamic Programming",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ],
+    "exampleNumber": 1,
+    "input": "root = [1,2,3]",
+    "output": "6",
+    "explanation": "The optimal path is 2 -> 1 -> 3 with a path sum of 2 + 1 + 3 = 6.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg"
+  },
+  {
+    "id": "c3c91329-067b-4d40-9b8f-f182d333616a",
+    "questionId": "124",
+    "questionName": "Binary Tree Maximum Path Sum",
+    "topics": [
+      "Dynamic Programming",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ],
+    "exampleNumber": 2,
+    "input": "root = [-10,9,20,null,null,15,7]",
+    "output": "42",
+    "explanation": "The optimal path is 15 -> 20 -> 7 with a path sum of 15 + 20 + 7 = 42.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2020/10/13/exx2.jpg"
+  },
+  {
+    "id": "bfdc9610-a51e-4eda-a7a6-abd938b0a3d9",
+    "questionId": "332",
+    "questionName": "Reconstruct Itinerary",
+    "topics": [
+      "Array",
+      "String",
+      "Depth-First Search",
+      "Graph Theory",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Eulerian Circuit",
+      "Eulerian Path",
+      "Semi-Eulerian Graph"
+    ],
+    "exampleNumber": 1,
+    "input": "tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]",
+    "output": "[\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]",
+    "imageUrl": "https://assets.leetcode.com/uploads/2021/03/14/itinerary1-graph.jpg"
+  },
+  {
+    "id": "2890a3a5-43ee-4a95-ace3-bca65fbe0a74",
+    "questionId": "332",
+    "questionName": "Reconstruct Itinerary",
+    "topics": [
+      "Array",
+      "String",
+      "Depth-First Search",
+      "Graph Theory",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Eulerian Circuit",
+      "Eulerian Path",
+      "Semi-Eulerian Graph"
+    ],
+    "exampleNumber": 2,
+    "input": "tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]",
+    "output": "[\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]",
+    "explanation": "Another possible reconstruction is [\"JFK\",\"SFO\",\"ATL\",\"JFK\",\"ATL\",\"SFO\"] but it is larger in lexical order.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2021/03/14/itinerary2-graph.jpg"
+  },
+  {
+    "id": "5123b01c-a121-4b5b-8dfc-70b2e045def7",
+    "questionId": "130",
+    "questionName": "Surrounded Regions",
+    "topics": [
+      "Array",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Union-Find",
+      "Matrix"
+    ],
+    "exampleNumber": 1,
+    "input": "board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+    "output": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+    "explanation": "In the above diagram, the bottom region is not captured because it is on the edge of the board and cannot be surrounded.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2021/02/19/xogrid.jpg"
+  },
+  {
+    "id": "9c05aa75-364e-4886-bab4-0d1dfe049ede",
+    "questionId": "945",
+    "questionName": "Snakes and Ladders",
+    "topics": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "exampleNumber": 1,
+    "input": "board = [[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,35,-1,-1,13,-1],[-1,-1,-1,-1,-1,-1],[-1,15,-1,-1,-1,-1]]",
+    "output": "4",
+    "explanation": "In the beginning, you start at square 1 (at row 5, column 0).\nYou decide to move to square 2 and must take the ladder to square 15.\nYou then decide to move to square 17 and must take the snake to square 13.\nYou then decide to move to square 14 and must take the ladder to square 35.\nYou then decide to move to square 36, ending the game.\nThis is the lowest possible number of moves to reach the last square, so return 4.",
+    "imageUrl": "https://assets.leetcode.com/uploads/2018/09/23/snakes.png"
+  }
+]

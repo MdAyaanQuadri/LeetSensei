@@ -1,26 +1,10 @@
+import type {ExampleItem} from '../../core/types.js'
 export type LeetCodeTopicSlug = string;
 
 // ==========================================
 // 1. INPUT QUESTION STRUCTURE (Cleaned)
 // ==========================================
-export interface ExampleItem {
-  input: string;
-  output: string;
-  explanation?: string;
-}
 
-export interface CleanedQuestion {
-  /** The core problem explanation before examples and constraints */
-  body: string;
-  /** Structured list of examples extracted from <pre> blocks */
-  examples: ExampleItem[];
-  /** Structured list of constraints extracted from the constraints list */
-  constraints: string[];
-  /** Ordered list of image URLs found in the question */
-  imageUrls: string[];
-  /** Fully formatted, cohesive plain text ready to feed to the LLM */
-  fullText: string;
-}
 
 export interface QuestionAnalysisInput {
   title: string;
