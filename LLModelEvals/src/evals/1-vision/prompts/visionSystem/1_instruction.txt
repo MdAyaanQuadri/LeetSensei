@@ -5,3 +5,7 @@ STRICT CONSTRAINT (NO PROBLEM SOLVING):
 - Describe the visual diagram only.
 - Do NOT attempt to solve the programming problem.
 - Do NOT provide algorithm names, step-by-step solution strategies, time or space complexity, or implementation code.
+
+OUTPUT FORMAT:
+- Output ONE valid JSON object conforming strictly to the OUTPUT SCHEMA and following the pattern in OUTPUT EXAMPLE.
+- Do NOT output markdown code fences (```json ... ```), and do NOT output explanatory text before or after.

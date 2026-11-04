@@ -66,7 +66,53 @@ export interface VisionDatasetItem {
 }
 
 // ==========================================
-// 3. VISION JUDGE EVALUATION RUBRICS
+// 3. UNIFIED EVALUATION REPORT TYPES
+// ==========================================
+export interface JudgeScoreItem {
+  id: string;
+  awarded: number;
+  reason: string;
+}
+
+export interface JudgeEvaluationOutput {
+  personal: JudgeScoreItem[];
+  general: JudgeScoreItem[];
+  total: number;
+}
+
+export interface UnifiedTestCaseReport {
+  testCaseId: string;
+  questionId: string | number;
+  questionName: string;
+  exampleNumber: number;
+  candidateLatencyMs: number;
+  judgeLatencyMs: number;
+  score: string;
+  percentage: string;
+  maxPoints: number;
+  awardedPoints: number;
+  candidateExtraction: VisionExtractionOutput | null;
+  judgeEvaluation: JudgeEvaluationOutput | null;
+  error?: string | undefined;
+}
+
+export interface UnifiedEvaluationReport {
+  model: string;
+  judgeModel: string;
+  executedAt: string;
+  metrics: {
+    totalScore: number;
+    maxScore: number;
+    percentage: string;
+    avgLatencyMs: number;
+    validJsonRate: string;
+    totalCases: number;
+  };
+  scorecard: UnifiedTestCaseReport[];
+}
+
+// ==========================================
+// 4. VISION JUDGE EVALUATION RUBRICS
 // ==========================================
 export interface VisionJudgeRubricScores {
   /** Accuracy of identified data structure and topological connectivity (0-10) */

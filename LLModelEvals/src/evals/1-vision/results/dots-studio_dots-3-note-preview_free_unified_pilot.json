@@ -1,0 +1,87 @@
+{
+  "model": "dots-studio/dots-3-note-preview:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T08:58:01.600Z",
+  "metrics": {
+    "totalScore": 10,
+    "maxScore": 10,
+    "percentage": "100.0%",
+    "avgLatencyMs": 915,
+    "validJsonRate": "100.0%",
+    "totalCases": 1
+  },
+  "scorecard": [
+    {
+      "testCaseId": "d32c6b8f-74c6-4ac1-9d1e-50e7a183ae61",
+      "questionId": "42",
+      "questionName": "Trapping Rain Water",
+      "exampleNumber": 1,
+      "candidateLatencyMs": 915,
+      "judgeLatencyMs": 333,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateExtraction": {
+        "dataStructure": "Elevation Map",
+        "topology": "Sequence of 12 vertical bars of heights [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1] plotted along a horizontal axis with a vertical axis marking heights 0, 1, 2, and 3. Blue-shaded areas represent trapped water between the black elevation bars.",
+        "elements": [
+          "height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",
+          "water_per_column = [0, 0, 1, 0, 1, 2, 1, 0, 0, 1, 0, 0]",
+          "total_trapped_water = 6",
+          "Y-axis labels: 0, 1, 2, 3",
+          "Blue water blocks at column indices: 2, 4, 5, 6, 9"
+        ],
+        "visualHighlights": "Black bars represent the elevation profile. Blue-shaded blocks represent trapped rain water, forming a T-shaped multi-column pool between indices 3 and 7 (specifically covering columns 4, 5, and 6, with column 5 extending down to height 0), a single-column pool at index 2, and another single-column pool at index 9.",
+        "denseSummary": "Visual elevation map representing the Trapping Rain Water problem with input array [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]. Black bars show the height profile up to height 3. Blue blocks visualize the trapped water: 1 unit at index 2, a T-shaped pool of 4 units spanning indices 4 to 6, and 1 unit at index 9, summing to a total of 6 water units."
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "reason": "Candidate explicitly states there are 12 vertical bars in the topology field."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 2,
+            "reason": "Candidate provides the exact bar heights in left-to-right order in both topology and elements fields."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "reason": "Candidate correctly identifies bars as black and trapped water as blue in topology and visualHighlights."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 2,
+            "reason": "Candidate identifies trapped water at indices 2,4,5,6,9 with depths 1,1,2,1,1 via water_per_column array and visualHighlights description."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "reason": "Candidate provides height array showing height 3 at index 7 and water_per_column showing 0 at index 7, implicitly identifying tallest bar and no trapped water above it."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output describes the image without any algorithmic explanation, code, or complexity analysis."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "All visual claims (bar colors, water colors, heights, water positions) are consistent with typical illustration and no incorrect details are present."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Description includes image-specific details such as T-shaped pool, column indices, water depths, and color coding, demonstrating understanding beyond paraphrasing example text."
+          }
+        ],
+        "total": 10
+      }
+    }
+  ]
+}
