@@ -1,0 +1,31 @@
+{
+  "model": "nvidia/nemotron-3.5-lightning:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T17:04:47.194Z",
+  "metrics": {
+    "totalScore": 0,
+    "maxScore": 10,
+    "percentage": "0.0%",
+    "avgLatencyMs": 549,
+    "validJsonRate": "0.0%",
+    "totalCases": 1
+  },
+  "scorecard": [
+    {
+      "testCaseId": "42_optimal",
+      "questionFrontendId": "42",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "solutionType": "optimal",
+      "candidateLatencyMs": 549,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    }
+  ]
+}

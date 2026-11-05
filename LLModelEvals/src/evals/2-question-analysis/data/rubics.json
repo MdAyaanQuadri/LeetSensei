@@ -1,0 +1,762 @@
+[
+  {
+    "questionId": "42",
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Computes total trapped rainwater bounded between elevation bars along the 1D profile.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Identifies n < 3 (returns 0), strictly monotonic increasing/decreasing heights (no trapped water), or flat terrains.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Identifies naive local peak greedy or brute-force scanning per column O(N^2) resulting in TLE/WA.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Identifies Two Pointers O(N) time O(1) space with leftMax and rightMax bounding invariants.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Notes pointer movement direction (advancing smaller max side) or boundary off-by-one errors.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Highlights Prefix/Suffix Max arrays O(N) space or Monotonic Decreasing Stack O(N) space as valid alternatives.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "218",
+    "questionFrontendId": "218",
+    "title": "The Skyline Problem",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Computes key boundary coordinates where the collective building silhouette height changes.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Handles overlapping buildings of identical heights, buildings sharing left/right edges, or non-overlapping separated buildings.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Grid rasterization along x-axis causing O(max_x) space/time TLE or MLE.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Sweep-line with Max-Heap / Multiset O(N log N) time O(N) space tracking active building heights.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Sorting tie-breaking order for building start vs end edges to prevent phantom vertical drops.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Identifies Divide and Conquer merge O(N log N) or Segment Tree as valid alternatives.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "124",
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the maximum sum of any contiguous sequence of nodes in a binary tree going through parent-child connections.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Tree with all negative node values (must return single largest negative node, not 0), single-node tree, or skewed line.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Top-down root-to-leaf path search or greedy traversal failing to consider paths passing through subtrees as root.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Post-order DFS O(N) time O(H) space, returning max(0, node.val + max(left, right)) to parent while updating global sum.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Forgetting to clamp negative branch gains to 0 (contributing negative sum to parent), or initializing global max to 0 instead of -Infinity.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Identifies Divide and Conquer passing structured path-state tuples as an alternate approach.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "1192",
+    "questionFrontendId": "1192",
+    "title": "Critical Connections in a Network",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Identifies all critical bridges whose removal increases the number of connected components in an undirected network.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Tree networks (every edge is critical), simple single cycle (no critical connections), or multiple bridges in series.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Removing each edge one by one and running BFS/DFS O(E * (V+E)) causing TLE on 10^5 edges.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Tarjan's Bridge-Finding DFS O(V + E) time O(V) space maintaining discovery times disc[u] and low-link values low[v].",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Treating the direct parent edge as a back-edge (must skip direct parent to avoid false cycles).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: 2-Edge-Connected Components decomposition or Kosaraju / Hopcroft-Tarjan variants.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "329",
+    "questionFrontendId": "329",
+    "title": "Longest Increasing Path in a Matrix",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the longest strictly increasing path through adjacent orthogonal cells in a 2D matrix.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: 1x1 matrix (returns 1), all matrix elements equal (returns 1), strictly decreasing matrix.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Unmemoized DFS / naive backtracking causing exponential 4^(M*N) TLE.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Memoized DFS or Kahn's Topological Sort O(M*N) time O(M*N) space exploiting DAG property of strictly increasing moves.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Unnecessary visited array/cycle detection (strictly increasing condition inherently guarantees acyclicity).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Topological Sort (peeling indegree 0 cells layer by layer) O(M*N) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "968",
+    "questionFrontendId": "968",
+    "title": "Binary Tree Cameras",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Determines minimum cameras placed on binary tree nodes such that every node is monitored.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Single node tree (requires 1 camera), two-node tree, linear chain.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Top-down greedy or alternate-level BFS placing cameras at odd levels causing WA.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Post-order Bottom-Up Greedy DFS O(N) time O(H) space using 3 states (0: uncovered, 1: has_camera, 2: covered).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Forgetting to check if root itself remains in state 0 (uncovered) after recursion, requiring +1 camera.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: 3-state Tree Dynamic Programming O(N) time tracking [min_with_cam, min_covered_no_cam, min_covered_parent].",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "297",
+    "questionFrontendId": "297",
+    "title": "Serialize and Deserialize Binary Tree",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Encodes binary tree structure and values into a string and reconstructs the identical tree.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Empty tree (root is null), single-node tree, negative values, nodes with identical duplicate values.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Using Inorder + Preorder traversal without null sentinels (fails on duplicate node values).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Preorder DFS or BFS with null markers (e.g. '#') and delimiter O(N) time O(N) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: String parsing with multi-digit integers and negative numbers (e.g. string split vs pointer parsing).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Level-order BFS traversal using a queue O(N) time O(N) space.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "778",
+    "questionFrontendId": "778",
+    "title": "Swim in Rising Water",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the minimum water level t required to form a valid path from (0,0) to (n-1,n-1) in an elevation grid.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: 1x1 grid (returns grid[0][0]), strictly increasing elevations, start elevation higher than target.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Standard unweighted BFS/DFS ignoring elevation ordering, or summing elevations instead of bottleneck max.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Dijkstra's Algorithm (Min-Priority Queue) or Binary Search + BFS O(N^2 log N) time O(N^2) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Initializing time at 0 instead of accounting for start cell elevation max(time, grid[0][0]).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Kruskal's Algorithm with Disjoint Set Union (Union-Find) connecting cells by sorted elevation.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "4",
+    "questionFrontendId": "4",
+    "title": "Median of Two Sorted Arrays",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the median of two sorted arrays in optimal O(log(min(m, n))) runtime complexity.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: One array empty (m=0 or n=0), non-overlapping array ranges, single element total (m+n=1).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Merging arrays into a single sorted list O(m+n) time or space, violating the strict logarithmic time requirement.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Binary Search on partition boundary of smaller array O(log(min(m, n))) time O(1) space, maintaining maxLeft <= minRight invariants.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Partition at index 0 or length needing +/- Infinity sentinels, or even vs odd combined length median formulas.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: K-th element elimination via binary search O(log(m + n)) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "10",
+    "questionFrontendId": "10",
+    "title": "Regular Expression Matching",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Implements full-string regular expression matching supporting '.' (any char) and '*' (zero or more of preceding char).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Empty string matching pattern with wildcard repetitions (e.g. 'a*b*c*'), string matching '.*', consecutive asterisks.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Greedy matching of '*' without backtracking, failing on inputs like s='aab', p='c*a*b'.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: 2D Dynamic Programming O(M*N) time O(M*N) space; dp[i][j] handles '*' via zero-occurrence dp[i][j-2] or char match dp[i-1][j].",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Initializing base cases when string is empty (dp[0][j] valid only when pattern can match 0 chars via '*').",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Top-down recursion with 2D memoization table O(M*N) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "23",
+    "questionFrontendId": "23",
+    "title": "Merge k Sorted Lists",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Merges k sorted linked lists into one single sorted linked list in O(N log k) time.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: lists is empty (lists=[]), lists contains only empty lists ([[]]), or lists of heavily unequal lengths.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Merging lists sequentially one by one O(k^2 * N) causing TLE for large k.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Min-Priority Queue (Heap) or Divide & Conquer merge O(N log k) time O(k) space polling smallest node.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Null pointer exceptions on empty list heads in input array, or losing next pointer when enqueuing to heap.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Pairwise Divide and Conquer merge O(N log k) time O(1) auxiliary space.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "32",
+    "questionFrontendId": "32",
+    "title": "Longest Valid Parentheses",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the length of the longest contiguous substring of well-formed parentheses.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Empty string, entirely open parentheses '(((((', reversed brackets ')()()(', or multiple disjoint valid clusters.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Counter increment without tracking disconnect boundary indices, producing WA on broken clusters.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Stack storing indices initialized with -1, or Two-Pass Left/Right counters O(N) time O(1) or O(N) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Forgetting base index -1 in stack (leads to off-by-one lengths) or not checking both directions in two-pass counter.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: 1D Dynamic Programming O(N) time O(N) space where dp[i] tracks valid length ending at index i.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "41",
+    "questionFrontendId": "41",
+    "title": "First Missing Positive",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the smallest missing positive integer in unsorted array in strict O(N) time and O(1) auxiliary space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Array containing negative numbers and zeroes, duplicates, array=[1] (returns 2), array containing all 1 to n.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Sorting array O(N log N) or using Hash Set O(N) space, violating problem constraints.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Index as Hash Key (Cyclic Sort) O(N) time O(1) auxiliary space, placing each value x in [1, n] at index x - 1.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Infinite swap loop on duplicate elements (must swap only if nums[i] != nums[nums[i]-1]).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Sign negation marking visited indices negative in 2-pass in-place traversal O(N) time O(1) space.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "76",
+    "questionFrontendId": "76",
+    "title": "Minimum Window Substring",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the minimum length contiguous substring of s containing all characters of t including duplicates in O(N) time.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Length of s less than t (returns ''), duplicate characters in t, exact match s == t, no valid window exists.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Brute force checking all O(N^2) substrings with hashmap comparison causing TLE on N=10^5.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Two-Pointer Sliding Window with Character Frequency Hash Map O(M + N) time O(1) space tracking matched character count.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Character frequency count exceeding required target frequency, or off-by-one substring slice indices.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Filtered Sliding Window tracking only indices of characters in s that exist in t.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "239",
+    "questionFrontendId": "239",
+    "title": "Sliding Window Maximum",
+    "difficulty": "Hard",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Computes maximum value in every sliding window of size k moving across the array in O(N) time.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: k=1 (returns original array), k=n (single maximum), strictly decreasing/increasing arrays, negative numbers.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Linear scan of each window O(N * k) causing TLE on N=10^5, k=10^4.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Monotonic Decreasing Deque storing indices O(N) time O(k) space with front maintaining current maximum.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Evicting out-of-window indices from the front (i - k >= deque.front()), or breaking monotonic invariant at back.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Max-Heap with lazy removal O(N log N) or Prefix/Suffix Block Partitioning O(N) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "133",
+    "questionFrontendId": "133",
+    "title": "Clone Graph",
+    "difficulty": "Medium",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Creates a deep copy of a connected undirected graph preserving original adjacency topology without sharing node references.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Empty graph (null pointer), single node with no neighbors, graph with self-loops or cycles.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Shallow copy of neighbor lists, or graph traversal without visited map causing infinite cycle recursion.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: BFS or DFS with Hash Map mapping original nodes to cloned nodes O(V + E) time O(V) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Registering node in clone map after recursing neighbor edges instead of before (leads to infinite loop on cycles).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Iterative BFS queue traversal with node-to-clone hash map O(V + E) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "200",
+    "questionFrontendId": "200",
+    "title": "Number of Islands",
+    "difficulty": "Medium",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Counts the number of 4-directionally connected components of '1's (land) in a 2D binary grid.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Grid with all '0's (returns 0), grid with all '1's (returns 1), 1x1 grid, non-square rectangular grids.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Checking row and column neighbors independently without multi-hop graph traversal causing wrong count.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: BFS / DFS sinking visited land ('1' -> '0') in-place O(M*N) time O(M*N) space (call stack or queue).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Boundary check off-by-one errors (row < 0, row >= m), or counting diagonal adjacencies (problem permits only orthogonal).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Disjoint Set Union (Union-Find) with path compression O(M*N) time.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "146",
+    "questionFrontendId": "146",
+    "title": "LRU Cache",
+    "difficulty": "Medium",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Designs an LRU Cache data structure supporting get(key) and put(key, value) in strict O(1) average time complexity.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Capacity = 1, updating an existing key (must refresh recency without increasing count), get on missing key returns -1.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Array or Vector storing access sequence causing O(N) element shifts on every get/put.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Hash Map + Doubly Linked List with dummy head and dummy tail nodes O(1) time O(capacity) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Evicting node from DLL but forgetting to delete key from hash map, or failing to update DLL pointers on existing key overwrite.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: Built-in Ordered Map (e.g. Java LinkedHashMap with removeEldestEntry override).",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "210",
+    "questionFrontendId": "210",
+    "title": "Course Schedule II",
+    "difficulty": "Medium",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Determines a valid topological course ordering given prerequisite dependencies, or returns empty array if cycle exists.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Disconnected prerequisite components, no prerequisites at all, cycle presence (returns []), single course.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Greedy DFS without cycle detection states (visited vs visiting) leading to infinite loop or invalid order.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Kahn's Algorithm (BFS with In-degrees) or 3-Color DFS O(V + E) time O(V + E) space.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Reversing edge direction meaning (prerequisite [a, b] means b -> a), or accepting partial order when cycle exists.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: DFS with 3-state coloring and post-order reverse topological stack.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "questionId": "560",
+    "questionFrontendId": "560",
+    "title": "Subarray Sum Equals K",
+    "difficulty": "Medium",
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Crux: Finds the total number of continuous subarrays whose elements sum up to target k.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Edge Cases: Negative numbers in array, zeros in array, k=0, single-element subarray equals k, no subarray sum matches.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Wrong Approach: Two-Pointer Sliding Window causing WA because negative numbers break the monotonicity of window sums.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Optimal Mechanics: Prefix Sum + Hash Map of prefix sum frequencies O(N) time O(N) space, checking map for (prefixSum - k).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Pitfalls: Forgetting the base case map.set(0, 1) needed for valid subarrays starting at index 0.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Alternates: O(N^2) Prefix Sum array brute force with O(1) space.",
+        "maxPoints": 1
+      }
+    ]
+  }
+]

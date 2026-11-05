@@ -1,0 +1,25 @@
+{
+  "topics": {
+    "canSolveWith": ["two-pointers", "dynamic-programming", "monotonic-stack"],
+    "userUsed": ["dynamic-programming"]
+  },
+  "complexity": {
+    "userTime": "O(n)",
+    "userSpace": "O(n)",
+    "optimalTime": "O(n)",
+    "optimalSpace": "O(1)",
+    "isTimeOptimal": true,
+    "isSpaceOptimal": false,
+    "guidance": "Your dynamic programming approach uses O(n) auxiliary memory for precomputing left and right boundary arrays. You can optimize memory down to O(1) space using a two-pointer technique moving inward from both ends based on the lower boundary height."
+  },
+  "codeQuality": {
+    "strengths": [
+      "Correctly handles edge cases where the input elevation array has fewer than 3 bars",
+      "Explicit array precomputation makes the trapped water calculation logic easy to follow"
+    ],
+    "improvements": [
+      "Cryptic variable names `l` and `r` should be renamed to `leftMax` and `rightMax` for better readability",
+      "Repeated Math.min/Math.max calls inside the loop could be streamlined"
+    ]
+  }
+}

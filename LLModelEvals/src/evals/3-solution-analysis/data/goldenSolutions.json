@@ -1,0 +1,150 @@
+[
+  {
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "body": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+    "questionAnalysis": {
+      "crux": "Calculate total trapped rainwater bounded between elevation bars along the 1D profile.",
+      "optimalTimeComplexity": "O(n)",
+      "optimalSpaceComplexity": "O(1)",
+      "allowedTopicSlugs": [
+        "array",
+        "two-pointers",
+        "dynamic-programming",
+        "monotonic-stack"
+      ]
+    },
+    "submission": {
+      "submissionId": "sub_42_opt",
+      "language": "Python3",
+      "code": "class Solution:\n    def trap(self, height: list[int]) -> int:\n        if not height:\n            return 0\n        left, right = 0, len(height) - 1\n        left_max, right_max = height[left], height[right]\n        water = 0\n        while left < right:\n            if left_max < right_max:\n                left += 1\n                left_max = max(left_max, height[left])\n                water += left_max - height[left]\n            else:\n                right -= 1\n                right_max = max(right_max, height[right])\n                water += right_max - height[right]\n        return water",
+      "runtimePercentile": 95.4,
+      "memoryPercentile": 91.2
+    }
+  },
+  {
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "body": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+    "questionAnalysis": {
+      "crux": "Calculate total trapped rainwater bounded between elevation bars along the 1D profile.",
+      "optimalTimeComplexity": "O(n)",
+      "optimalSpaceComplexity": "O(1)",
+      "allowedTopicSlugs": [
+        "array",
+        "two-pointers",
+        "dynamic-programming",
+        "monotonic-stack"
+      ]
+    },
+    "submission": {
+      "submissionId": "sub_42_subopt",
+      "language": "Python3",
+      "code": "class Solution:\n    def trap(self, height: list[int]) -> int:\n        n = len(height)\n        if n == 0:\n            return 0\n        l_max = [0] * n\n        r_max = [0] * n\n        l_max[0] = height[0]\n        for i in range(1, n):\n            l_max[i] = max(l_max[i - 1], height[i])\n        r_max[n - 1] = height[n - 1]\n        for i in range(n - 2, -1, -1):\n            r_max[i] = max(r_max[i + 1], height[i])\n        total = 0\n        for i in range(n):\n            total += min(l_max[i], r_max[i]) - height[i]\n        return total",
+      "runtimePercentile": 52.1,
+      "memoryPercentile": 24.8
+    }
+  },
+  {
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "body": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.\n\nThe path sum of a path is the sum of the node's values in the path.\n\nGiven the root of a binary tree, return the maximum path sum of any non-empty path.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "questionAnalysis": {
+      "crux": "Find maximum path sum between any two nodes in a binary tree.",
+      "optimalTimeComplexity": "O(n)",
+      "optimalSpaceComplexity": "O(h)",
+      "allowedTopicSlugs": [
+        "tree",
+        "depth-first-search",
+        "dynamic-programming",
+        "binary-tree"
+      ]
+    },
+    "submission": {
+      "submissionId": "sub_124_opt",
+      "language": "Python3",
+      "code": "# Definition for a binary tree node.\n# class TreeNode:\n#     def __init__(self, val=0, left=None, right=None):\n#         self.val = val\n#         self.left = left\n#         self.right = right\nclass Solution:\n    def maxPathSum(self, root: Optional[TreeNode]) -> int:\n        max_sum = float('-inf')\n        def max_gain(node):\n            nonlocal max_sum\n            if not node:\n                return 0\n            left_gain = max(max_gain(node.left), 0)\n            right_gain = max(max_gain(node.right), 0)\n            price_newpath = node.val + left_gain + right_gain\n            max_sum = max(max_sum, price_newpath)\n            return node.val + max(left_gain, right_gain)\n        max_gain(root)\n        return max_sum",
+      "runtimePercentile": 89.2,
+      "memoryPercentile": 74
+    }
+  },
+  {
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "Hard",
+    "body": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.\n\nThe path sum of a path is the sum of the node's values in the path.\n\nGiven the root of a binary tree, return the maximum path sum of any non-empty path.",
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "questionAnalysis": {
+      "crux": "Find maximum path sum between any two nodes in a binary tree.",
+      "optimalTimeComplexity": "O(n)",
+      "optimalSpaceComplexity": "O(h)",
+      "allowedTopicSlugs": [
+        "tree",
+        "depth-first-search",
+        "dynamic-programming",
+        "binary-tree"
+      ]
+    },
+    "submission": {
+      "submissionId": "sub_124_subopt",
+      "language": "Python3",
+      "code": "class Solution:\n    def maxPathSum(self, root: Optional[TreeNode]) -> int:\n        def get_branch_max(node):\n            if not node:\n                return 0\n            return node.val + max(0, max(get_branch_max(node.left), get_branch_max(node.right)))\n\n        def traverse(node):\n            if not node:\n                return float('-inf')\n            cur = node.val + max(0, get_branch_max(node.left)) + max(0, get_branch_max(node.right))\n            return max(cur, traverse(node.left), traverse(node.right))\n\n        return traverse(root)",
+      "runtimePercentile": 12.3,
+      "memoryPercentile": 30.1
+    }
+  },
+  {
+    "questionFrontendId": "329",
+    "title": "Longest Increasing Path in a Matrix",
+    "difficulty": "Hard",
+    "body": "Given an m x n integers matrix, return the length of the longest increasing path in matrix.\n\nFrom each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).",
+    "constraints": [
+      "m == matrix.length",
+      "n == matrix[i].length",
+      "1 <= m, n <= 200",
+      "0 <= matrix[i][j] <= 2^31 - 1"
+    ],
+    "questionAnalysis": {
+      "crux": "Find length of longest strictly increasing path moving in 4 directions in a matrix.",
+      "optimalTimeComplexity": "O(m * n)",
+      "optimalSpaceComplexity": "O(m * n)",
+      "allowedTopicSlugs": [
+        "array",
+        "dynamic-programming",
+        "depth-first-search",
+        "breadth-first-search",
+        "graph",
+        "topological-sort",
+        "memoization",
+        "matrix"
+      ]
+    },
+    "submission": {
+      "submissionId": "sub_329_opt",
+      "language": "Python3",
+      "code": "class Solution:\n    def longestIncreasingPath(self, matrix: list[list[int]]) -> int:\n        if not matrix or not matrix[0]:\n            return 0\n        m, n = len(matrix), len(matrix[0])\n        memo = {}\n\n        def dfs(r: int, c: int) -> int:\n            if (r, c) in memo:\n                return memo[(r, c)]\n            val = matrix[r][c]\n            res = 1\n            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > val:\n                    res = max(res, 1 + dfs(nr, nc))\n            memo[(r, c)] = res\n            return res\n\n        return max(dfs(r, c) for r in range(m) for c in range(n))",
+      "runtimePercentile": 87.5,
+      "memoryPercentile": 82.1
+    }
+  }
+]

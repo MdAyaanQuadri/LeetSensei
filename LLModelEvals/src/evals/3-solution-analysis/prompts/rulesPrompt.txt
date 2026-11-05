@@ -1,0 +1,18 @@
+GUIDELINES AND RULES:
+
+1. TOPICS SPECIFICATION:
+   - Topic strings in `canSolveWith` and `userUsed` must be lower-case kebab-case slugs (e.g., "two-pointers", "dynamic-programming", "monotonic-stack", "binary-search", "hash-table", "depth-first-search", "breadth-first-search", "sliding-window", "union-find", "heap-priority-queue", "graph", "trie").
+   - `userUsed` must strictly contain only the techniques present in the submitted code.
+
+2. ASYMPTOTIC NOTATION:
+   - Use standard mathematical Big-O syntax: "O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n^2)", "O(V + E)".
+   - Auxiliary space complexity refers strictly to extra memory allocated by the algorithm beyond the inputs and expected return value.
+
+3. OPTIMALITY & GUIDANCE:
+   - `optimalTime` and `optimalSpace` must match the Question Analysis capsule.
+   - If `isTimeOptimal: true` AND `isSpaceOptimal: true`, `guidance` MUST be strictly null (not an empty string).
+   - If either is false, `guidance` must explain WHY the current pattern is suboptimal (e.g. repeated scans, extra allocation) and WHAT algorithmic insight unlocks the optimal complexity.
+
+4. CODE QUALITY & LANGUAGE IDIOMS:
+   - Base all feedback directly on the submitted code. Never hallucinate variable names or features not in the code.
+   - Respect language conventions (e.g. idiomatic Python vs modern C++ vs Java).

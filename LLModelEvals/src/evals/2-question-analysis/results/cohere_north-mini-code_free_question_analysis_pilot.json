@@ -1,0 +1,220 @@
+{
+  "model": "cohere/north-mini-code:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T13:47:18.994Z",
+  "metrics": {
+    "totalScore": 10,
+    "maxScore": 10,
+    "percentage": "100.0%",
+    "avgLatencyMs": 1515,
+    "validJsonRate": "100.0%",
+    "totalCases": 1
+  },
+  "scorecard": [
+    {
+      "questionId": "42",
+      "questionFrontendId": "42",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 1515,
+      "judgeLatencyMs": 611,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "Trapping Rain Water",
+        "difficulty": "Hard",
+        "crux": "Calculate total trapped water between bars based on max left/right heights for each position.",
+        "edgeCases": [
+          "n=1: no water, must return 0",
+          "all zeros: water never trapped, return 0",
+          "strictly increasing: no valleys, water=0",
+          "strictly decreasing: no valleys, water=0",
+          "two peaks with large valley: water fills valley up to min height",
+          "height[i]=10^5 extremes: large values but bounded sum",
+          "height length=2*10^4: need O(n) not O(n^2)",
+          "duplicates: plateaus stop water flow if not lower than neighbors",
+          "max at one end: no right/left bound for interior bars"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Naive left/right max scanning per index",
+            "verdict": "TLE",
+            "signal": "Two loops over array computing maxLeft[i] and maxRight[i] for each i",
+            "reason": "O(N) space + O(N) time per index yields O(N^2) total."
+          },
+          {
+            "name": "Two pointers without maintaining maxes",
+            "verdict": "WA",
+            "signal": "Two moving pointers comparing current heights only",
+            "reason": "Misses cases where a lower bar is bounded by higher but non-adjacent walls."
+          },
+          {
+            "name": "Stack simulation only for peak valleys",
+            "verdict": "TLE",
+            "signal": "Using stack to track monotonic heights per index",
+            "reason": "Stack approach also ends up O(N) per index in worst case."
+          }
+        ],
+        "optimal": {
+          "name": "Two Pointers with Left/Right Max Tracking",
+          "keyIdea": "Traverse with left and right pointers, tracking max heights seen from each side; water at lower side uses its own max to compute depth.",
+          "time": "O(N)",
+          "space": "O(1)",
+          "topics": [
+            "two-pointers",
+            "array",
+            "greedy"
+          ],
+          "invariants": [
+            "leftMax >= max of heights[left..right] inclusive",
+            "rightMax >= max of heights[left..right] inclusive",
+            "while (left < right) compare height[left] and height[right]",
+            "update water using the smaller max side"
+          ],
+          "pitfalls": [
+            "Initialize leftMax/rightMax = 0, but need actual heights at boundaries",
+            "Off-by-one: do not add water when height equals current max (no trap)",
+            "Pointer update must move the lower side to continue capturing water beyond",
+            "Overflow: accumulate water in long to avoid int sum overflow"
+          ],
+          "recognizeBy": [
+            "int left = 0, right = n-1",
+            "long water = 0",
+            "if (height[left] < height[right]) { leftMax = Math.max(leftMax, height[left]); water += leftMax - height[left]; left++; } else { ... }"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Prefix Max + Suffix Max Arrays",
+            "keyIdea": "Precompute leftMax array and rightMax array then sum min(leftMax[i], rightMax[i]) - height[i] for each i.",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "array",
+              "prefix-sum"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "O(N) extra memory and two passes may exceed limits for n=2*10^4 and space constraints.",
+            "recognizeBy": [
+              "int[] left = new int[n]; left[0]=height[0]",
+              "int[] right = new int[n]; right[n-1]=height[n-1]",
+              "for (i) left[i]=Math.max(left[i-1], height[i])"
+            ]
+          },
+          {
+            "name": "Brute Force per Index",
+            "keyIdea": "For each index, scan left for max and right for max, accumulate water = min(leftMax, rightMax) - height[i].",
+            "time": "O(N^2)",
+            "space": "O(1)",
+            "topics": [
+              "array",
+              "brute-force"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "Quadratic time fails for n up to 2*10^4.",
+            "recognizeBy": [
+              "for (i) { int l=0, r=0; ... }"
+            ]
+          },
+          {
+            "name": "Dynamic Programming on valleys",
+            "keyIdea": "DP[i] stores water trapped at i; use DP[i] = max(0, min(leftMax, rightMax) - height[i]).",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "dynamic-programming",
+              "array"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "Extra DP array and repeated min/max calculations add overhead but still O(N).",
+            "recognizeBy": [
+              "int[] dp = new int[n];",
+              "for (i) dp[i] = Math.max(0, Math.min(leftMax[i], rightMax[i]) - height[i]);"
+            ]
+          },
+          {
+            "name": "Monotonic Stack with area calculation",
+            "keyIdea": "Use stack to store indices of increasing heights; when a higher bar is encountered, pop and compute trapped water using stack top and current bar.",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "stack",
+              "array"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "Stack operations add constant overhead and extra memory, still linear but slower in practice.",
+            "recognizeBy": [
+              "Deque<Integer> stack;",
+              "int curr = height[i]; while (!stack.isEmpty() && height[stack.peek()] < curr) ..."
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Calculate total trapped water between bars based on max left/right heights for each position.",
+            "reason": "The crux correctly captures the fundamental algorithmic task: computing trapped water using the maximum heights to the left and right of each position."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=1: no water, must return 0",
+            "reason": "The edgeCases array explicitly includes n=1, strictly increasing, strictly decreasing, all zeros, and other boundary scenarios required by the rubric."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Naive left/right max scanning per index",
+            "reason": "The wrongApproaches section identifies a naive per-index scanning approach with correct verdict (TLE) and explains the O(N^2) failure mechanism."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "leftMax >= max of heights[left..right] inclusive",
+            "reason": "The optimal section identifies the Two Pointers algorithm with O(N) time and O(1) space, and lists multiple operational invariants including leftMax/rightMax bounding invariants and pointer movement logic."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "Pointer update must move the lower side to continue capturing water beyond",
+            "reason": "The pitfalls array explicitly notes the pointer movement direction (advancing the smaller max side) and off-by-one boundary errors."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Prefix Max + Suffix Max Arrays",
+            "reason": "The alternates section includes Prefix/Suffix Max arrays (O(N) space) and Monotonic Stack (O(N) space) as distinct valid alternatives with correct complexities."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "The output is valid JSON matching the required schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Big-O notation is correct and consistent: optimal O(N) time O(1) space, alternates correctly state O(N) time O(N) space or O(N^2) time O(1) space using problem variable N."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are compact (1-2 sentences), using arrows and symbols where appropriate; no bloated prose or implementation code outside recognizeBy snippets."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs (two-pointers, array, greedy, prefix-sum, brute-force, dynamic-programming, stack) are standard LeetCode slugs."
+          }
+        ],
+        "total": 10
+      }
+    }
+  ]
+}

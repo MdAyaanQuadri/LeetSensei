@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SolutionAnalysisOutput",
+  "type": "object",
+  "required": ["topics", "complexity", "codeQuality"],
+  "additionalProperties": false,
+  "properties": {
+    "topics": {
+      "type": "object",
+      "required": ["canSolveWith", "userUsed"],
+      "additionalProperties": false,
+      "properties": {
+        "canSolveWith": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Standard LeetCode topic tags applicable to solve this question."
+        },
+        "userUsed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The specific algorithmic topics or techniques the user actually implemented in their code."
+        }
+      }
+    },
+    "complexity": {
+      "type": "object",
+      "required": [
+        "userTime",
+        "userSpace",
+        "optimalTime",
+        "optimalSpace",
+        "isTimeOptimal",
+        "isSpaceOptimal",
+        "guidance"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "userTime": {
+          "type": "string",
+          "description": "Big-O time complexity of the user's submitted code, e.g. 'O(n)', 'O(n^2)'."
+        },
+        "userSpace": {
+          "type": "string",
+          "description": "Big-O auxiliary space complexity of the user's submitted code, e.g. 'O(1)', 'O(n)'."
+        },
+        "optimalTime": {
+          "type": "string",
+          "description": "The optimal Big-O time complexity for this problem provided in the Question Analysis capsule."
+        },
+        "optimalSpace": {
+          "type": "string",
+          "description": "The optimal Big-O auxiliary space complexity for this problem provided in the Question Analysis capsule."
+        },
+        "isTimeOptimal": {
+          "type": "boolean",
+          "description": "true if the user's time complexity matches or is asymptotically equal to the optimal time complexity, else false."
+        },
+        "isSpaceOptimal": {
+          "type": "boolean",
+          "description": "true if the user's space complexity matches or is asymptotically equal to the optimal space complexity, else false."
+        },
+        "guidance": {
+          "type": ["string", "null"],
+          "description": "null if BOTH isTimeOptimal and isSpaceOptimal are true. Otherwise, concise pedagogical guidance explaining how to optimize the algorithm and reach optimal complexity."
+        }
+      }
+    },
+    "codeQuality": {
+      "type": "object",
+      "required": ["strengths", "improvements"],
+      "additionalProperties": false,
+      "properties": {
+        "strengths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "1 to 3 concise bullet points identifying verified strengths in the code (e.g. edge case handling, zero allocations)."
+        },
+        "improvements": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "1 to 3 concise, actionable suggestions for cleaner variable naming, modularity, or idiom improvements."
+        }
+      }
+    }
+  }
+}

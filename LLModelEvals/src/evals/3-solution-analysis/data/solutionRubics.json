@@ -1,0 +1,304 @@
+[
+  {
+    "testCaseId": "42_optimal",
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "solutionType": "optimal",
+    "expectedUserUsedTopics": [
+      "two-pointers"
+    ],
+    "expectedUserTime": "O(n)",
+    "expectedUserSpace": "O(1)",
+    "optimalTime": "O(n)",
+    "optimalSpace": "O(1)",
+    "isTimeOptimal": true,
+    "isSpaceOptimal": true,
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "name": "User Time Complexity",
+        "description": "Accurately identifies O(n) single-pass two-pointer time complexity.",
+        "maxPoints": 1,
+        "expectedValue": "O(n)"
+      },
+      {
+        "id": "PR_2",
+        "name": "User Space Complexity",
+        "description": "Accurately identifies O(1) auxiliary space complexity.",
+        "maxPoints": 1,
+        "expectedValue": "O(1)"
+      },
+      {
+        "id": "PR_3",
+        "name": "Optimality Recognition",
+        "description": "Marks isTimeOptimal: true and isSpaceOptimal: true.",
+        "maxPoints": 1,
+        "expectedValue": true
+      },
+      {
+        "id": "PR_4",
+        "name": "Guidance Null Check",
+        "description": "Sets guidance to null because both time and space are optimal.",
+        "maxPoints": 1,
+        "expectedValue": null
+      },
+      {
+        "id": "PR_5",
+        "name": "Detected Topic Tag",
+        "description": "Identifies 'two-pointers' in userUsed.",
+        "maxPoints": 1,
+        "expectedValue": [
+          "two-pointers"
+        ]
+      },
+      {
+        "id": "PR_6",
+        "name": "Code Quality Grounding",
+        "description": "Praises O(1) pointer movement and cleanly identifies edge case check.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "testCaseId": "42_suboptimal",
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "solutionType": "suboptimal",
+    "expectedUserUsedTopics": [
+      "dynamic-programming"
+    ],
+    "expectedUserTime": "O(n)",
+    "expectedUserSpace": "O(n)",
+    "optimalTime": "O(n)",
+    "optimalSpace": "O(1)",
+    "isTimeOptimal": true,
+    "isSpaceOptimal": false,
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "name": "User Time Complexity",
+        "description": "Accurately identifies O(n) linear array scanning time.",
+        "maxPoints": 1,
+        "expectedValue": "O(n)"
+      },
+      {
+        "id": "PR_2",
+        "name": "User Space Complexity",
+        "description": "Accurately identifies O(n) auxiliary space due to l_max and r_max lists.",
+        "maxPoints": 1,
+        "expectedValue": "O(n)"
+      },
+      {
+        "id": "PR_3",
+        "name": "Optimality Recognition",
+        "description": "Marks isTimeOptimal: true and isSpaceOptimal: false.",
+        "maxPoints": 1,
+        "expectedValue": false
+      },
+      {
+        "id": "PR_4",
+        "name": "Optimisation Guidance",
+        "description": "Explains how two-pointer scan reduces auxiliary memory from O(n) to O(1).",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "name": "Detected Topic Tag",
+        "description": "Identifies 'dynamic-programming' or 'array' in userUsed.",
+        "maxPoints": 1,
+        "expectedValue": [
+          "dynamic-programming"
+        ]
+      },
+      {
+        "id": "PR_6",
+        "name": "Code Quality Grounding",
+        "description": "Notes variable naming (l_max, r_max) or redundant passes.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "testCaseId": "124_optimal",
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "solutionType": "optimal",
+    "expectedUserUsedTopics": [
+      "depth-first-search",
+      "tree"
+    ],
+    "expectedUserTime": "O(n)",
+    "expectedUserSpace": "O(h)",
+    "optimalTime": "O(n)",
+    "optimalSpace": "O(h)",
+    "isTimeOptimal": true,
+    "isSpaceOptimal": true,
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "name": "User Time Complexity",
+        "description": "Identifies single pass DFS visiting each node once: O(n).",
+        "maxPoints": 1,
+        "expectedValue": "O(n)"
+      },
+      {
+        "id": "PR_2",
+        "name": "User Space Complexity",
+        "description": "Identifies recursion call stack space: O(h) or O(n) worst-case.",
+        "maxPoints": 1,
+        "expectedValue": "O(h)"
+      },
+      {
+        "id": "PR_3",
+        "name": "Optimality Recognition",
+        "description": "Marks isTimeOptimal: true and isSpaceOptimal: true.",
+        "maxPoints": 1,
+        "expectedValue": true
+      },
+      {
+        "id": "PR_4",
+        "name": "Guidance Null Check",
+        "description": "Sets guidance strictly to null.",
+        "maxPoints": 1,
+        "expectedValue": null
+      },
+      {
+        "id": "PR_5",
+        "name": "Detected Topic Tag",
+        "description": "Identifies 'depth-first-search' or 'tree' in userUsed.",
+        "maxPoints": 1,
+        "expectedValue": [
+          "depth-first-search"
+        ]
+      },
+      {
+        "id": "PR_6",
+        "name": "Code Quality Grounding",
+        "description": "Highlights clean negative path pruning with max(gain, 0).",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "testCaseId": "124_suboptimal",
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "solutionType": "suboptimal",
+    "expectedUserUsedTopics": [
+      "depth-first-search",
+      "tree"
+    ],
+    "expectedUserTime": "O(n^2)",
+    "expectedUserSpace": "O(h)",
+    "optimalTime": "O(n)",
+    "optimalSpace": "O(h)",
+    "isTimeOptimal": false,
+    "isSpaceOptimal": true,
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "name": "User Time Complexity",
+        "description": "Accurately identifies O(n^2) time due to recomputing branch max per node.",
+        "maxPoints": 1,
+        "expectedValue": "O(n^2)"
+      },
+      {
+        "id": "PR_2",
+        "name": "User Space Complexity",
+        "description": "Identifies recursion call stack depth O(h).",
+        "maxPoints": 1,
+        "expectedValue": "O(h)"
+      },
+      {
+        "id": "PR_3",
+        "name": "Optimality Recognition",
+        "description": "Marks isTimeOptimal: false and isSpaceOptimal: true.",
+        "maxPoints": 1,
+        "expectedValue": false
+      },
+      {
+        "id": "PR_4",
+        "name": "Optimisation Guidance",
+        "description": "Explains how a bottom-up post-order DFS can compute max path in a single O(n) pass.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "name": "Detected Topic Tag",
+        "description": "Identifies 'depth-first-search' in userUsed.",
+        "maxPoints": 1,
+        "expectedValue": [
+          "depth-first-search"
+        ]
+      },
+      {
+        "id": "PR_6",
+        "name": "Code Quality Grounding",
+        "description": "Cites get_branch_max and redundant traverse recursion calls.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "testCaseId": "329_optimal",
+    "questionFrontendId": "329",
+    "title": "Longest Increasing Path in a Matrix",
+    "solutionType": "optimal",
+    "expectedUserUsedTopics": [
+      "depth-first-search",
+      "memoization"
+    ],
+    "expectedUserTime": "O(m * n)",
+    "expectedUserSpace": "O(m * n)",
+    "optimalTime": "O(m * n)",
+    "optimalSpace": "O(m * n)",
+    "isTimeOptimal": true,
+    "isSpaceOptimal": true,
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "name": "User Time Complexity",
+        "description": "Identifies O(m * n) time due to each cell computed exactly once.",
+        "maxPoints": 1,
+        "expectedValue": "O(m * n)"
+      },
+      {
+        "id": "PR_2",
+        "name": "User Space Complexity",
+        "description": "Identifies O(m * n) memoization hash table + call stack.",
+        "maxPoints": 1,
+        "expectedValue": "O(m * n)"
+      },
+      {
+        "id": "PR_3",
+        "name": "Optimality Recognition",
+        "description": "Marks isTimeOptimal: true and isSpaceOptimal: true.",
+        "maxPoints": 1,
+        "expectedValue": true
+      },
+      {
+        "id": "PR_4",
+        "name": "Guidance Null Check",
+        "description": "Sets guidance to null.",
+        "maxPoints": 1,
+        "expectedValue": null
+      },
+      {
+        "id": "PR_5",
+        "name": "Detected Topic Tag",
+        "description": "Identifies 'depth-first-search' and 'memoization' in userUsed.",
+        "maxPoints": 1,
+        "expectedValue": [
+          "depth-first-search",
+          "memoization"
+        ]
+      },
+      {
+        "id": "PR_6",
+        "name": "Code Quality Grounding",
+        "description": "Praises clean 4-directional loop tuple iteration.",
+        "maxPoints": 1
+      }
+    ]
+  }
+]
