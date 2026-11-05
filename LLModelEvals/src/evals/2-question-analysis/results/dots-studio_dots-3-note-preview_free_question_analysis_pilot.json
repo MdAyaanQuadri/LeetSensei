@@ -1,0 +1,29 @@
+{
+  "model": "dots-studio/dots-3-note-preview:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T13:42:33.116Z",
+  "metrics": {
+    "totalScore": 0,
+    "maxScore": 10,
+    "percentage": "0.0%",
+    "avgLatencyMs": 2976,
+    "validJsonRate": "0.0%",
+    "totalCases": 1
+  },
+  "scorecard": [
+    {
+      "questionId": "42",
+      "questionFrontendId": "42",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 2976,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null
+    }
+  ]
+}

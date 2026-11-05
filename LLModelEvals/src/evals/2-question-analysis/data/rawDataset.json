@@ -1,0 +1,590 @@
+[
+  {
+    "questionId": "42",
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "titleSlug": "trapping-rain-water",
+    "difficulty": "Hard",
+    "content": "<p>Given <code>n</code> non-negative integers representing an elevation map where the width of each bar is <code>1</code>, compute how much water it can trap after raining.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img src=\"https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png\" style=\"width: 412px; height: 161px;\" />\n<pre>\n<strong>Input:</strong> height = [0,1,0,2,1,0,1,3,2,1,2,1]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> height = [4,2,0,3,2,5]\n<strong>Output:</strong> 9\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == height.length</code></li>\n\t<li><code>1 &lt;= n &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= height[i] &lt;= 10<sup>5</sup></code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Two Pointers",
+        "slug": "two-pointers"
+      },
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Stack",
+        "slug": "stack"
+      },
+      {
+        "name": "Monotonic Stack",
+        "slug": "monotonic-stack"
+      }
+    ]
+  },
+  {
+    "questionId": "218",
+    "questionFrontendId": "218",
+    "title": "The Skyline Problem",
+    "titleSlug": "the-skyline-problem",
+    "difficulty": "Hard",
+    "content": "<p>A city&#39;s <strong>skyline</strong> is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Given the locations and heights of all the buildings, return <em>the <strong>skyline</strong> formed by these buildings collectively</em>.</p>\n\n<p>The geometric information of each building is given in the array <code>buildings</code> where <code>buildings[i] = [left<sub>i</sub>, right<sub>i</sub>, height<sub>i</sub>]</code>:</p>\n\n<ul>\n\t<li><code>left<sub>i</sub></code> is the x coordinate of the left edge of the <code>i<sup>th</sup></code> building.</li>\n\t<li><code>right<sub>i</sub></code> is the x coordinate of the right edge of the <code>i<sup>th</sup></code> building.</li>\n\t<li><code>height<sub>i</sub></code> is the height of the <code>i<sup>th</sup></code> building.</li>\n</ul>\n\n<p>You may assume all buildings are perfect rectangles grounded on an absolutely flat surface at height <code>0</code>.</p>\n\n<p>The <strong>skyline</strong> should be represented as a list of &quot;key points&quot; <strong>sorted by their x-coordinate</strong> in the form <code>[[x<sub>1</sub>,y<sub>1</sub>],[x<sub>2</sub>,y<sub>2</sub>],...]</code>. Each key point is the left endpoint of some horizontal segment in the skyline except the last point in the list, which always has a y-coordinate <code>0</code> and is used to mark the skyline&#39;s termination where the rightmost building ends. Any ground between the leftmost and rightmost buildings should be part of the skyline&#39;s contour.</p>\n\n<p><b>Note:</b> There must be no consecutive horizontal lines of equal height in the output skyline. For instance, <code>[...,[2 3],[4 5],[7 5],[11 5],[12 7],...]</code> is not acceptable; the three lines of height 5 should be merged into one in the final output as such: <code>[...,[2 3],[4 5],[12 7],...]</code></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/12/01/merged.jpg\" style=\"width: 800px; height: 331px;\" />\n<pre>\n<strong>Input:</strong> buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]\n<strong>Output:</strong> [[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]\n<strong>Explanation:</strong>\nFigure A shows the buildings of the input.\nFigure B shows the skyline formed by those buildings. The red points in figure B represent the key points in the output list.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> buildings = [[0,2,3],[2,5,3]]\n<strong>Output:</strong> [[0,3],[5,0]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= buildings.length &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= left<sub>i</sub> &lt; right<sub>i</sub> &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>1 &lt;= height<sub>i</sub> &lt;= 2<sup>31</sup> - 1</code></li>\n\t<li><code>buildings</code> is sorted by <code>left<sub>i</sub></code> in&nbsp;non-decreasing order.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Divide and Conquer",
+        "slug": "divide-and-conquer"
+      },
+      {
+        "name": "Binary Indexed Tree",
+        "slug": "binary-indexed-tree"
+      },
+      {
+        "name": "Segment Tree",
+        "slug": "segment-tree"
+      },
+      {
+        "name": "Sweep Line",
+        "slug": "sweep-line"
+      },
+      {
+        "name": "Sorting",
+        "slug": "sorting"
+      },
+      {
+        "name": "Heap (Priority Queue)",
+        "slug": "heap-priority-queue"
+      },
+      {
+        "name": "Ordered Set",
+        "slug": "ordered-set"
+      }
+    ]
+  },
+  {
+    "questionId": "124",
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "titleSlug": "binary-tree-maximum-path-sum",
+    "difficulty": "Hard",
+    "content": "<p>A <strong>path</strong> in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence <strong>at most once</strong>. Note that the path does not need to pass through the root.</p>\n\n<p>The <strong>path sum</strong> of a path is the sum of the node&#39;s values in the path.</p>\n\n<p>Given the <code>root</code> of a binary tree, return <em>the maximum <strong>path sum</strong> of any <strong>non-empty</strong> path</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/13/exx1.jpg\" style=\"width: 322px; height: 182px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3]\n<strong>Output:</strong> 6\n<strong>Explanation:</strong> The optimal path is 2 -&gt; 1 -&gt; 3 with a path sum of 2 + 1 + 3 = 6.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/10/13/exx2.jpg\" />\n<pre>\n<strong>Input:</strong> root = [-10,9,20,null,null,15,7]\n<strong>Output:</strong> 42\n<strong>Explanation:</strong> The optimal path is 15 -&gt; 20 -&gt; 7 with a path sum of 15 + 20 + 7 = 42.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 3 * 10<sup>4</sup>]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Tree",
+        "slug": "tree"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Binary Tree",
+        "slug": "binary-tree"
+      },
+      {
+        "name": "DP on Trees",
+        "slug": "dp-on-trees"
+      }
+    ]
+  },
+  {
+    "questionId": "1300",
+    "questionFrontendId": "1192",
+    "title": "Critical Connections in a Network",
+    "titleSlug": "critical-connections-in-a-network",
+    "difficulty": "Hard",
+    "content": "<p>There are <code>n</code> servers numbered from <code>0</code> to <code>n - 1</code> connected by undirected server-to-server <code>connections</code> forming a network where <code>connections[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> represents a connection between servers <code>a<sub>i</sub></code> and <code>b<sub>i</sub></code>. Any server can reach other servers directly or indirectly through the network.</p>\n\n<p>A <em>critical connection</em> is a connection that, if removed, will make some servers unable to reach some other server.</p>\n\n<p>Return all critical connections in the network in any order.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/09/03/1537_ex1_2.png\" style=\"width: 198px; height: 248px;\" />\n<pre>\n<strong>Input:</strong> n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]\n<strong>Output:</strong> [[1,3]]\n<strong>Explanation:</strong> [[3,1]] is also accepted.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> n = 2, connections = [[0,1]]\n<strong>Output:</strong> [[0,1]]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>2 &lt;= n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>n - 1 &lt;= connections.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>0 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt;= n - 1</code></li>\n\t<li><code>a<sub>i</sub> != b<sub>i</sub></code></li>\n\t<li>There are no repeated connections.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Graph Theory",
+        "slug": "graph"
+      },
+      {
+        "name": "Biconnected Component",
+        "slug": "biconnected-component"
+      },
+      {
+        "name": "Bridge (Graph)",
+        "slug": "bridge-graph"
+      }
+    ]
+  },
+  {
+    "questionId": "329",
+    "questionFrontendId": "329",
+    "title": "Longest Increasing Path in a Matrix",
+    "titleSlug": "longest-increasing-path-in-a-matrix",
+    "difficulty": "Hard",
+    "content": "<p>Given an <code>m x n</code> integers <code>matrix</code>, return <em>the length of the longest increasing path in </em><code>matrix</code>.</p>\n\n<p>From each cell, you can either move in four directions: left, right, up, or down. You <strong>may not</strong> move <strong>diagonally</strong> or move <strong>outside the boundary</strong> (i.e., wrap-around is not allowed).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/05/grid1.jpg\" style=\"width: 242px; height: 242px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[9,9,4],[6,6,8],[2,1,1]]\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest increasing path is <code>[1, 2, 6, 9]</code>.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/01/27/tmp-grid.jpg\" style=\"width: 253px; height: 253px;\" />\n<pre>\n<strong>Input:</strong> matrix = [[3,4,5],[3,2,6],[2,2,1]]\n<strong>Output:</strong> 4\n<strong>Explanation: </strong>The longest increasing path is <code>[3, 4, 5, 6]</code>. Moving diagonally is not allowed.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> matrix = [[1]]\n<strong>Output:</strong> 1\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == matrix.length</code></li>\n\t<li><code>n == matrix[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 200</code></li>\n\t<li><code>0 &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Graph Theory",
+        "slug": "graph"
+      },
+      {
+        "name": "Topological Sort",
+        "slug": "topological-sort"
+      },
+      {
+        "name": "Memoization",
+        "slug": "memoization"
+      },
+      {
+        "name": "Matrix",
+        "slug": "matrix"
+      },
+      {
+        "name": "Directed Acyclic Graph",
+        "slug": "directed-acyclic-graph"
+      }
+    ]
+  },
+  {
+    "questionId": "1008",
+    "questionFrontendId": "968",
+    "title": "Binary Tree Cameras",
+    "titleSlug": "binary-tree-cameras",
+    "difficulty": "Hard",
+    "content": "<p>You are given the <code>root</code> of a binary tree. We install cameras on the tree nodes where each camera at a node can monitor its parent, itself, and its immediate children.</p>\n\n<p>Return <em>the minimum number of cameras needed to monitor all nodes of the tree</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_01.png\" style=\"width: 138px; height: 163px;\" />\n<pre>\n<strong>Input:</strong> root = [0,0,null,0,0]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> One camera is enough to monitor all nodes if placed as shown.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2018/12/29/bst_cameras_02.png\" style=\"width: 139px; height: 312px;\" />\n<pre>\n<strong>Input:</strong> root = [0,0,null,0,null,0,null,null,0]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[1, 1000]</code>.</li>\n\t<li><code>Node.val == 0</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Tree",
+        "slug": "tree"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Binary Tree",
+        "slug": "binary-tree"
+      },
+      {
+        "name": "DP on Trees",
+        "slug": "dp-on-trees"
+      }
+    ]
+  },
+  {
+    "questionId": "297",
+    "questionFrontendId": "297",
+    "title": "Serialize and Deserialize Binary Tree",
+    "titleSlug": "serialize-and-deserialize-binary-tree",
+    "difficulty": "Hard",
+    "content": "<p>Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.</p>\n\n<p>Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.</p>\n\n<p><strong>Clarification:</strong> The input/output format is the same as <a href=\"https://support.leetcode.com/hc/en-us/articles/32442719377939-How-to-create-test-cases-on-LeetCode#h_01J5EGREAW3NAEJ14XC07GRW1A\" target=\"_blank\">how LeetCode serializes a binary tree</a>. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/09/15/serdeser.jpg\" style=\"width: 442px; height: 324px;\" />\n<pre>\n<strong>Input:</strong> root = [1,2,3,null,null,4,5]\n<strong>Output:</strong> [1,2,3,null,null,4,5]\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> root = []\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the tree is in the range <code>[0, 10<sup>4</sup>]</code>.</li>\n\t<li><code>-1000 &lt;= Node.val &lt;= 1000</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "String",
+        "slug": "string"
+      },
+      {
+        "name": "Tree",
+        "slug": "tree"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Design",
+        "slug": "design"
+      },
+      {
+        "name": "Binary Tree",
+        "slug": "binary-tree"
+      }
+    ]
+  },
+  {
+    "questionId": "794",
+    "questionFrontendId": "778",
+    "title": "Swim in Rising Water",
+    "titleSlug": "swim-in-rising-water",
+    "difficulty": "Hard",
+    "content": "<p>You are given an <code>n x n</code> integer matrix <code>grid</code> where each value <code>grid[i][j]</code> represents the elevation at that point <code>(i, j)</code>.</p>\n\n<p>It starts raining, and water gradually rises over time. At time <code>t</code>, the water level is <code>t</code>, meaning <strong>any</strong> cell with elevation less than equal to <code>t</code> is submerged or reachable.</p>\n\n<p>You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most <code>t</code>. You can swim infinite distances in zero time. Of course, you must stay within the boundaries of the grid during your swim.</p>\n\n<p>Return <em>the minimum time until you can reach the bottom right square </em><code>(n - 1, n - 1)</code><em> if you start at the top left square </em><code>(0, 0)</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/29/swim1-grid.jpg\" style=\"width: 164px; height: 165px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,2],[1,3]]\n<strong>Output:</strong> 3\nExplanation:\nAt time 0, you are in grid location (0, 0).\nYou cannot go anywhere else because 4-directionally adjacent neighbors have a higher elevation than t = 0.\nYou cannot reach point (1, 1) until time 3.\nWhen the depth of water is 3, we can swim anywhere inside the grid.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2021/06/29/swim2-grid-1.jpg\" style=\"width: 404px; height: 405px;\" />\n<pre>\n<strong>Input:</strong> grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]\n<strong>Output:</strong> 16\n<strong>Explanation:</strong> The final route is shown.\nWe need to wait until time 16 so that (0, 0) and (4, 4) are connected.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>n == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= n &lt;= 50</code></li>\n\t<li><code>0 &lt;= grid[i][j] &lt;&nbsp;n<sup>2</sup></code></li>\n\t<li>Each value <code>grid[i][j]</code> is <strong>unique</strong>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Binary Search",
+        "slug": "binary-search"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Union-Find",
+        "slug": "union-find"
+      },
+      {
+        "name": "Minimax",
+        "slug": "minimax-algorithm"
+      },
+      {
+        "name": "Heap (Priority Queue)",
+        "slug": "heap-priority-queue"
+      },
+      {
+        "name": "Matrix",
+        "slug": "matrix"
+      },
+      {
+        "name": "Dijkstra's Algorithm",
+        "slug": "dijkstra"
+      }
+    ]
+  },
+  {
+    "questionId": "4",
+    "questionFrontendId": "4",
+    "title": "Median of Two Sorted Arrays",
+    "titleSlug": "median-of-two-sorted-arrays",
+    "difficulty": "Hard",
+    "content": "<p>Given two sorted arrays <code>nums1</code> and <code>nums2</code> of size <code>m</code> and <code>n</code> respectively, return <strong>the median</strong> of the two sorted arrays.</p>\n\n<p>The overall run time complexity should be <code>O(log (m+n))</code>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,3], nums2 = [2]\n<strong>Output:</strong> 2.00000\n<strong>Explanation:</strong> merged array = [1,2,3] and median is 2.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums1 = [1,2], nums2 = [3,4]\n<strong>Output:</strong> 2.50000\n<strong>Explanation:</strong> merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>nums1.length == m</code></li>\n\t<li><code>nums2.length == n</code></li>\n\t<li><code>0 &lt;= m &lt;= 1000</code></li>\n\t<li><code>0 &lt;= n &lt;= 1000</code></li>\n\t<li><code>1 &lt;= m + n &lt;= 2000</code></li>\n\t<li><code>-10<sup>6</sup> &lt;= nums1[i], nums2[i] &lt;= 10<sup>6</sup></code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Binary Search",
+        "slug": "binary-search"
+      },
+      {
+        "name": "Divide and Conquer",
+        "slug": "divide-and-conquer"
+      }
+    ]
+  },
+  {
+    "questionId": "10",
+    "questionFrontendId": "10",
+    "title": "Regular Expression Matching",
+    "titleSlug": "regular-expression-matching",
+    "difficulty": "Hard",
+    "content": "<p>Given an input string <code>s</code>&nbsp;and a pattern <code>p</code>, implement regular expression matching with support for <code>&#39;.&#39;</code> and <code>&#39;*&#39;</code> where:</p>\n\n<ul>\n\t<li><code>&#39;.&#39;</code> Matches any single character.​​​​</li>\n\t<li><code>&#39;*&#39;</code> Matches zero or more of the preceding element.</li>\n</ul>\n\n<p>Return a boolean indicating whether the matching covers the entire input string (not partial).</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;a&quot;\n<strong>Output:</strong> false\n<strong>Explanation:</strong> &quot;a&quot; does not match the entire string &quot;aa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;aa&quot;, p = &quot;a*&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> &#39;*&#39; means zero or more of the preceding element, &#39;a&#39;. Therefore, by repeating &#39;a&#39; once, it becomes &quot;aa&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ab&quot;, p = &quot;.*&quot;\n<strong>Output:</strong> true\n<strong>Explanation:</strong> &quot;.*&quot; means &quot;zero or more (*) of any character (.)&quot;.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= s.length&nbsp;&lt;= 20</code></li>\n\t<li><code>1 &lt;= p.length&nbsp;&lt;= 20</code></li>\n\t<li><code>s</code> contains only lowercase English letters.</li>\n\t<li><code>p</code> contains only lowercase English letters, <code>&#39;.&#39;</code>, and&nbsp;<code>&#39;*&#39;</code>.</li>\n\t<li>It is guaranteed for each appearance of the character <code>&#39;*&#39;</code>, there will be a previous valid character to match.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "String",
+        "slug": "string"
+      },
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Recursion",
+        "slug": "recursion"
+      }
+    ]
+  },
+  {
+    "questionId": "23",
+    "questionFrontendId": "23",
+    "title": "Merge k Sorted Lists",
+    "titleSlug": "merge-k-sorted-lists",
+    "difficulty": "Hard",
+    "content": "<p>You are given an array of <code>k</code> linked-lists <code>lists</code>, each linked-list is sorted in ascending order.</p>\n\n<p><em>Merge all the linked-lists into one sorted linked-list and return it.</em></p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = [[1,4,5],[1,3,4],[2,6]]\n<strong>Output:</strong> [1,1,2,3,4,4,5,6]\n<strong>Explanation:</strong> The linked-lists are:\n[\n  1-&gt;4-&gt;5,\n  1-&gt;3-&gt;4,\n  2-&gt;6\n]\nmerging them into one sorted linked list:\n1-&gt;1-&gt;2-&gt;3-&gt;4-&gt;4-&gt;5-&gt;6\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = []\n<strong>Output:</strong> []\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> lists = [[]]\n<strong>Output:</strong> []\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>k == lists.length</code></li>\n\t<li><code>0 &lt;= k &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= lists[i].length &lt;= 500</code></li>\n\t<li><code>-10<sup>4</sup> &lt;= lists[i][j] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>lists[i]</code> is sorted in <strong>ascending order</strong>.</li>\n\t<li>The sum of <code>lists[i].length</code> will not exceed <code>10<sup>4</sup></code>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Linked List",
+        "slug": "linked-list"
+      },
+      {
+        "name": "Divide and Conquer",
+        "slug": "divide-and-conquer"
+      },
+      {
+        "name": "Heap (Priority Queue)",
+        "slug": "heap-priority-queue"
+      },
+      {
+        "name": "Merge Sort",
+        "slug": "merge-sort"
+      },
+      {
+        "name": "Tournament Sort",
+        "slug": "tournament-sort"
+      }
+    ]
+  },
+  {
+    "questionId": "32",
+    "questionFrontendId": "32",
+    "title": "Longest Valid Parentheses",
+    "titleSlug": "longest-valid-parentheses",
+    "difficulty": "Hard",
+    "content": "<p>Given a string containing just the characters <code>&#39;(&#39;</code> and <code>&#39;)&#39;</code>, return <em>the length of the longest valid (well-formed) parentheses </em><span data-keyword=\"substring-nonempty\"><em>substring</em></span>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;(()&quot;\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> The longest valid parentheses substring is &quot;()&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;)()())&quot;\n<strong>Output:</strong> 4\n<strong>Explanation:</strong> The longest valid parentheses substring is &quot;()()&quot;.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;&quot;\n<strong>Output:</strong> 0\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>0 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code></li>\n\t<li><code>s[i]</code> is <code>&#39;(&#39;</code>, or <code>&#39;)&#39;</code>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "String",
+        "slug": "string"
+      },
+      {
+        "name": "Dynamic Programming",
+        "slug": "dynamic-programming"
+      },
+      {
+        "name": "Stack",
+        "slug": "stack"
+      },
+      {
+        "name": "Bracket Sequences",
+        "slug": "bracket-sequences"
+      }
+    ]
+  },
+  {
+    "questionId": "41",
+    "questionFrontendId": "41",
+    "title": "First Missing Positive",
+    "titleSlug": "first-missing-positive",
+    "difficulty": "Hard",
+    "content": "<p>Given an unsorted integer array <code>nums</code>. Return the <em>smallest positive integer</em> that is <em>not present</em> in <code>nums</code>.</p>\n\n<p>You must implement an algorithm that runs in <code>O(n)</code> time and uses <code>O(1)</code> auxiliary space.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,2,0]\n<strong>Output:</strong> 3\n<strong>Explanation:</strong> The numbers in the range [1,2] are all in the array.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [3,4,-1,1]\n<strong>Output:</strong> 2\n<strong>Explanation:</strong> 1 is in the array but 2 is missing.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [7,8,9,11,12]\n<strong>Output:</strong> 1\n<strong>Explanation:</strong> The smallest positive integer 1 is missing.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Hash Table",
+        "slug": "hash-table"
+      }
+    ]
+  },
+  {
+    "questionId": "76",
+    "questionFrontendId": "76",
+    "title": "Minimum Window Substring",
+    "titleSlug": "minimum-window-substring",
+    "difficulty": "Hard",
+    "content": "<p>Given two strings <code>s</code> and <code>t</code> of lengths <code>m</code> and <code>n</code> respectively, return <em>the <strong>minimum window</strong></em> <span data-keyword=\"substring-nonempty\"><strong><em>substring</em></strong></span><em> of </em><code>s</code><em> such that every character in </em><code>t</code><em> (<strong>including duplicates</strong>) is included in the window</em>. If there is no such substring, return <em>the empty string </em><code>&quot;&quot;</code>.</p>\n\n<p>The testcases will be generated such that the answer is <strong>unique</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;ADOBECODEBANC&quot;, t = &quot;ABC&quot;\n<strong>Output:</strong> &quot;BANC&quot;\n<strong>Explanation:</strong> The minimum window substring &quot;BANC&quot; includes &#39;A&#39;, &#39;B&#39;, and &#39;C&#39; from string t.\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;, t = &quot;a&quot;\n<strong>Output:</strong> &quot;a&quot;\n<strong>Explanation:</strong> The entire string s is the minimum window.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> s = &quot;a&quot;, t = &quot;aa&quot;\n<strong>Output:</strong> &quot;&quot;\n<strong>Explanation:</strong> Both &#39;a&#39;s from t must be included in the window.\nSince the largest window of s only has one &#39;a&#39;, return empty string.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == s.length</code></li>\n\t<li><code>n == t.length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 10<sup>5</sup></code></li>\n\t<li><code>s</code> and <code>t</code> consist of uppercase and lowercase English letters.</li>\n</ul>\n\n<p>&nbsp;</p>\n<p><strong>Follow up:</strong> Could you find an algorithm that runs in <code>O(m + n)</code> time?</p>\n",
+    "topicTags": [
+      {
+        "name": "Hash Table",
+        "slug": "hash-table"
+      },
+      {
+        "name": "String",
+        "slug": "string"
+      },
+      {
+        "name": "Sliding Window",
+        "slug": "sliding-window"
+      }
+    ]
+  },
+  {
+    "questionId": "239",
+    "questionFrontendId": "239",
+    "title": "Sliding Window Maximum",
+    "titleSlug": "sliding-window-maximum",
+    "difficulty": "Hard",
+    "content": "<p>You are given an array of integers&nbsp;<code>nums</code>, there is a sliding window of size <code>k</code> which is moving from the very left of the array to the very right. You can only see the <code>k</code> numbers in the window. Each time the sliding window moves right by one position.</p>\n\n<p>Return <em>the max sliding window</em>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1,3,-1,-3,5,3,6,7], k = 3\n<strong>Output:</strong> [3,3,5,5,6,7]\n<strong>Explanation:</strong> \nWindow position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       <strong>3</strong>\n 1 [3  -1  -3] 5  3  6  7       <strong>3</strong>\n 1  3 [-1  -3  5] 3  6  7      <strong> 5</strong>\n 1  3  -1 [-3  5  3] 6  7       <strong>5</strong>\n 1  3  -1  -3 [5  3  6] 7       <strong>6</strong>\n 1  3  -1  -3  5 [3  6  7]      <strong>7</strong>\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums = [1], k = 1\n<strong>Output:</strong> [1]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code></li>\n\t<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>\n\t<li><code>1 &lt;= k &lt;= nums.length</code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Queue",
+        "slug": "queue"
+      },
+      {
+        "name": "Sliding Window",
+        "slug": "sliding-window"
+      },
+      {
+        "name": "Heap (Priority Queue)",
+        "slug": "heap-priority-queue"
+      },
+      {
+        "name": "Monotonic Queue",
+        "slug": "monotonic-queue"
+      },
+      {
+        "name": "Range Minimum/Maximum Query",
+        "slug": "range-minimum-maximum-query"
+      }
+    ]
+  },
+  {
+    "questionId": "133",
+    "questionFrontendId": "133",
+    "title": "Clone Graph",
+    "titleSlug": "clone-graph",
+    "difficulty": "Medium",
+    "content": "<p>Given a reference of a node in a <strong><a href=\"https://en.wikipedia.org/wiki/Connectivity_(graph_theory)#Connected_graph\" target=\"_blank\">connected</a></strong> undirected graph.</p>\n\n<p>Return a <a href=\"https://en.wikipedia.org/wiki/Object_copying#Deep_copy\" target=\"_blank\"><strong>deep copy</strong></a> (clone) of the graph.</p>\n\n<p>Each node in the graph contains a value (<code>int</code>) and a list (<code>List[Node]</code>) of its neighbors.</p>\n\n<pre>\nclass Node {\n    public int val;\n    public List&lt;Node&gt; neighbors;\n}\n</pre>\n\n<p>&nbsp;</p>\n\n<p><strong>Test case format:</strong></p>\n\n<p>For simplicity, each node&#39;s value is the same as the node&#39;s index (1-indexed). For example, the first node with <code>val == 1</code>, the second node with <code>val == 2</code>, and so on. The graph is represented in the test case using an adjacency list.</p>\n\n<p><b>An adjacency list</b> is a collection of unordered <b>lists</b> used to represent a finite graph. Each list describes the set of neighbors of a node in the graph.</p>\n\n<p>The given node will always be the first node with <code>val = 1</code>. You must return the <strong>copy of the given node</strong> as a reference to the cloned graph.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2019/11/04/133_clone_graph_question.png\" style=\"width: 454px; height: 500px;\" />\n<pre>\n<strong>Input:</strong> adjList = [[2,4],[1,3],[2,4],[1,3]]\n<strong>Output:</strong> [[2,4],[1,3],[2,4],[1,3]]\n<strong>Explanation:</strong> There are 4 nodes in the graph.\n1st node (val = 1)&#39;s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n2nd node (val = 2)&#39;s neighbors are 1st node (val = 1) and 3rd node (val = 3).\n3rd node (val = 3)&#39;s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n4th node (val = 4)&#39;s neighbors are 1st node (val = 1) and 3rd node (val = 3).\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n<img alt=\"\" src=\"https://assets.leetcode.com/uploads/2020/01/07/graph.png\" style=\"width: 163px; height: 148px;\" />\n<pre>\n<strong>Input:</strong> adjList = [[]]\n<strong>Output:</strong> [[]]\n<strong>Explanation:</strong> Note that the input contains one empty list. The graph consists of only one node with val = 1 and it does not have any neighbors.\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> adjList = []\n<strong>Output:</strong> []\n<strong>Explanation:</strong> This an empty graph, it does not have any nodes.\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li>The number of nodes in the graph is in the range <code>[0, 100]</code>.</li>\n\t<li><code>1 &lt;= Node.val &lt;= 100</code></li>\n\t<li><code>Node.val</code> is unique for each node.</li>\n\t<li>There are no repeated edges and no self-loops in the graph.</li>\n\t<li>The Graph is connected and all nodes can be visited starting from the given node.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Hash Table",
+        "slug": "hash-table"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Graph Theory",
+        "slug": "graph"
+      }
+    ]
+  },
+  {
+    "questionId": "200",
+    "questionFrontendId": "200",
+    "title": "Number of Islands",
+    "titleSlug": "number-of-islands",
+    "difficulty": "Medium",
+    "content": "<p>Given an <code>m x n</code> 2D binary grid <code>grid</code> which represents a map of <code>&#39;1&#39;</code>s (land) and <code>&#39;0&#39;</code>s (water), return <em>the number of islands</em>.</p>\n\n<p>An <strong>island</strong> is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [\n  [&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;]\n]\n<strong>Output:</strong> 1\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> grid = [\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;1&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],\n  [&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;1&quot;,&quot;1&quot;]\n]\n<strong>Output:</strong> 3\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>m == grid.length</code></li>\n\t<li><code>n == grid[i].length</code></li>\n\t<li><code>1 &lt;= m, n &lt;= 300</code></li>\n\t<li><code>grid[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Union-Find",
+        "slug": "union-find"
+      },
+      {
+        "name": "Matrix",
+        "slug": "matrix"
+      }
+    ]
+  },
+  {
+    "questionId": "146",
+    "questionFrontendId": "146",
+    "title": "LRU Cache",
+    "titleSlug": "lru-cache",
+    "difficulty": "Medium",
+    "content": "<p>Design a data structure that follows the constraints of a <strong><a href=\"https://en.wikipedia.org/wiki/Cache_replacement_policies#LRU\" target=\"_blank\">Least Recently Used (LRU) cache</a></strong>.</p>\n\n<p>Implement the <code>LRUCache</code> class:</p>\n\n<ul>\n\t<li><code>LRUCache(int capacity)</code> Initialize the LRU cache with <strong>positive</strong> size <code>capacity</code>.</li>\n\t<li><code>int get(int key)</code> Return the value of the <code>key</code> if the key exists, otherwise return <code>-1</code>.</li>\n\t<li><code>void put(int key, int value)</code> Update the value of the <code>key</code> if the <code>key</code> exists. Otherwise, add the <code>key-value</code> pair to the cache. If the number of keys exceeds the <code>capacity</code> from this operation, <strong>evict</strong> the least recently used key.</li>\n</ul>\n\n<p>The functions <code>get</code> and <code>put</code> must each run in <code>O(1)</code> average time complexity.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input</strong>\n[&quot;LRUCache&quot;, &quot;put&quot;, &quot;put&quot;, &quot;get&quot;, &quot;put&quot;, &quot;get&quot;, &quot;put&quot;, &quot;get&quot;, &quot;get&quot;, &quot;get&quot;]\n[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]\n<strong>Output</strong>\n[null, null, null, 1, null, -1, null, -1, 3, 4]\n\n<strong>Explanation</strong>\nLRUCache lRUCache = new LRUCache(2);\nlRUCache.put(1, 1); // cache is {1=1}\nlRUCache.put(2, 2); // cache is {1=1, 2=2}\nlRUCache.get(1);    // return 1\nlRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}\nlRUCache.get(2);    // returns -1 (not found)\nlRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}\nlRUCache.get(1);    // return -1 (not found)\nlRUCache.get(3);    // return 3\nlRUCache.get(4);    // return 4\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= capacity &lt;= 3000</code></li>\n\t<li><code>0 &lt;= key &lt;= 10<sup>4</sup></code></li>\n\t<li><code>0 &lt;= value &lt;= 10<sup>5</sup></code></li>\n\t<li>At most <code>2 * 10<sup>5</sup></code> calls will be made to <code>get</code> and <code>put</code>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Hash Table",
+        "slug": "hash-table"
+      },
+      {
+        "name": "Linked List",
+        "slug": "linked-list"
+      },
+      {
+        "name": "Design",
+        "slug": "design"
+      },
+      {
+        "name": "Doubly-Linked List",
+        "slug": "doubly-linked-list"
+      }
+    ]
+  },
+  {
+    "questionId": "210",
+    "questionFrontendId": "210",
+    "title": "Course Schedule II",
+    "titleSlug": "course-schedule-ii",
+    "difficulty": "Medium",
+    "content": "<p>There are a total of <code>numCourses</code> courses you have to take, labeled from <code>0</code> to <code>numCourses - 1</code>. You are given an array <code>prerequisites</code> where <code>prerequisites[i] = [a<sub>i</sub>, b<sub>i</sub>]</code> indicates that you <strong>must</strong> take course <code>b<sub>i</sub></code> first if you want to take course <code>a<sub>i</sub></code>.</p>\n\n<ul>\n\t<li>For example, the pair <code>[0, 1]</code>, indicates that to take course <code>0</code> you have to first take course <code>1</code>.</li>\n</ul>\n\n<p>Return <em>the ordering of courses you should take to finish all courses</em>. If there are many valid answers, return <strong>any</strong> of them. If it is impossible to finish all courses, return <strong>an empty array</strong>.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 2, prerequisites = [[1,0]]\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong> There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].\n</pre>\n\n<p><strong class=\"example\">Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]\n<strong>Output:</strong> [0,2,1,3]\n<strong>Explanation:</strong> There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3].\n</pre>\n\n<p><strong class=\"example\">Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> numCourses = 1, prerequisites = []\n<strong>Output:</strong> [0]\n</pre>\n\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= numCourses &lt;= 2000</code></li>\n\t<li><code>0 &lt;= prerequisites.length &lt;= numCourses * (numCourses - 1)</code></li>\n\t<li><code>prerequisites[i].length == 2</code></li>\n\t<li><code>0 &lt;= a<sub>i</sub>, b<sub>i</sub> &lt; numCourses</code></li>\n\t<li><code>a<sub>i</sub> != b<sub>i</sub></code></li>\n\t<li>All the pairs <code>[a<sub>i</sub>, b<sub>i</sub>]</code> are <strong>distinct</strong>.</li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Depth-First Search",
+        "slug": "depth-first-search"
+      },
+      {
+        "name": "Breadth-First Search",
+        "slug": "breadth-first-search"
+      },
+      {
+        "name": "Graph Theory",
+        "slug": "graph"
+      },
+      {
+        "name": "Topological Sort",
+        "slug": "topological-sort"
+      }
+    ]
+  },
+  {
+    "questionId": "560",
+    "questionFrontendId": "560",
+    "title": "Subarray Sum Equals K",
+    "titleSlug": "subarray-sum-equals-k",
+    "difficulty": "Medium",
+    "content": "<p>Given an array of integers <code>nums</code> and an integer <code>k</code>, return <em>the total number of subarrays whose sum equals to</em> <code>k</code>.</p>\n\n<p>A subarray is a contiguous <strong>non-empty</strong> sequence of elements within an array.</p>\n\n<p>&nbsp;</p>\n<p><strong class=\"example\">Example 1:</strong></p>\n<pre><strong>Input:</strong> nums = [1,1,1], k = 2\n<strong>Output:</strong> 2\n</pre><p><strong class=\"example\">Example 2:</strong></p>\n<pre><strong>Input:</strong> nums = [1,2,3], k = 3\n<strong>Output:</strong> 2\n</pre>\n<p>&nbsp;</p>\n<p><strong>Constraints:</strong></p>\n\n<ul>\n\t<li><code>1 &lt;= nums.length &lt;= 2 * 10<sup>4</sup></code></li>\n\t<li><code>-1000 &lt;= nums[i] &lt;= 1000</code></li>\n\t<li><code>-10<sup>7</sup> &lt;= k &lt;= 10<sup>7</sup></code></li>\n</ul>\n",
+    "topicTags": [
+      {
+        "name": "Array",
+        "slug": "array"
+      },
+      {
+        "name": "Hash Table",
+        "slug": "hash-table"
+      },
+      {
+        "name": "Prefix Sum",
+        "slug": "prefix-sum"
+      }
+    ]
+  }
+]

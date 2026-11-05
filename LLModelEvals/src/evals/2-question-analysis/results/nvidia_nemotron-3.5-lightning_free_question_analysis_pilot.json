@@ -1,0 +1,232 @@
+{
+  "model": "nvidia/nemotron-3.5-lightning:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T13:48:02.812Z",
+  "metrics": {
+    "totalScore": 10,
+    "maxScore": 10,
+    "percentage": "100.0%",
+    "avgLatencyMs": 543,
+    "validJsonRate": "100.0%",
+    "totalCases": 1
+  },
+  "scorecard": [
+    {
+      "questionId": "42",
+      "questionFrontendId": "42",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 543,
+      "judgeLatencyMs": 409,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "Trapping Rain Water",
+        "difficulty": "Hard",
+        "crux": "Given an elevation map, find total units of water trapped between bars after rain.",
+        "edgeCases": [
+          "n=1 → 0 water trapped, single column",
+          "strictly increasing height → 0 water, no valleys",
+          "strictly decreasing height → 0 water, no valleys",
+          "height = [0,0,0] → 0 water, flat ground",
+          "height = [5,0,5] → 5 water, bounded by two tall bars",
+          "max height at ends → 0 water, water flows out",
+          "large plateau at max height → water trapped only between plateaus"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Naive Left-Right Max Precomputation",
+            "verdict": "TLE",
+            "signal": "two nested loops scanning left and right for each index",
+            "reason": "O(N^2) time with N up to 2*10^4 causes TLE"
+          },
+          {
+            "name": "Brute Force Water per Cell",
+            "verdict": "TLE",
+            "signal": "for each i, find max left and max right by linear scan",
+            "reason": "repeatedly scans same subarrays, quadratic complexity"
+          },
+          {
+            "name": "Two Pointers without tracking left_max/right_max",
+            "verdict": "WA",
+            "signal": "move pointer based only on height comparison",
+            "reason": "loses track of bounding max, computes wrong water amount"
+          },
+          {
+            "name": "Monotonic Stack storing only heights",
+            "verdict": "WA",
+            "signal": "stack.push(height[i]) without indices",
+            "reason": "cannot compute width between bars, water amount incorrect"
+          },
+          {
+            "name": "Sorting heights descending",
+            "verdict": "WA",
+            "signal": "sort height array, accumulate differences",
+            "reason": "destroys positional information, geometry invalid"
+          }
+        ],
+        "optimal": {
+          "name": "Two Pointers with Left/Right Max Tracking",
+          "keyIdea": "Maintain left_max and right pointers moving inward; water at each step bounded by min(left_max, right_max) - height[ptr], move the side with smaller max.",
+          "time": "O(N)",
+          "space": "O(1)",
+          "topics": [
+            "two-pointers",
+            "prefix-sum",
+            "greedy"
+          ],
+          "invariants": [
+            "left_max = max(height[0..left]) always tracked",
+            "right_max = max(height[right..n-1]) always tracked",
+            "water added = min(left_max, right_max) - height[ptr] when positive",
+            "pointer with smaller bounding max moves inward each iteration"
+          ],
+          "pitfalls": [
+            "forgetting to update left_max/right_max before computing water",
+            "moving the wrong pointer when left_max == right_max (any direction works but must be consistent)",
+            "integer overflow not an issue as heights <= 10^5 and n <= 2*10^4, max water <= 2*10^9 fits 32-bit int"
+          ],
+          "recognizeBy": [
+            "left = 0; right = n-1",
+            "while left < right:",
+            "if height[left] < height[right]: process left else process right"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Prefix Max + Suffix Max + Sum Difference",
+            "keyIdea": "Compute left_max[i] = max height to left of i, right_max[i] = max height to right of i, water[i] = min(left_max[i], right_max[i]) - height[i], sum all water[i].",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "prefix-sum",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N) extra space for two arrays vs O(1) two-pointer solution",
+            "recognizeBy": [
+              "int[] leftMax = new int[n];",
+              "int[] rightMax = new int[n];",
+              "for i in 1..n-1: leftMax[i] = max(leftMax[i-1], height[i-1])"
+            ]
+          },
+          {
+            "name": "Monotonic Decreasing Stack",
+            "keyIdea": "Maintain stack of indices with decreasing heights; when a higher bar arrives, pop and compute water trapped between the popped bar, the new bar, and the stack top.",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "stack",
+              "monotonic-queue"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N) stack space; two-pointer uses O(1) space",
+            "recognizeBy": [
+              "while stack not empty and height[i] > height[stack.top()]:",
+              "h = height[stack.pop()]; left = stack.isEmpty() ? 0 : height[stack.top()];"
+            ]
+          },
+          {
+            "name": "Brute Force Left/Right Max Scan",
+            "keyIdea": "For each index i, scan left to find max height, scan right to find max height, add min(maxLeft, maxRight) - height[i] to total.",
+            "time": "O(N^2)",
+            "space": "O(1)",
+            "topics": [
+              "brute-force",
+              "two-pointers"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "Nested loops give O(N^2); N=2*10^4 gives 2*10^8 ops, TLE on LeetCode",
+            "recognizeBy": [
+              "for i in 0..n-1:",
+              "  for j in 0..i: maxLeft = max(maxLeft, height[j])",
+              "  for k in i..n-1: maxRight = max(maxRight, height[k])"
+            ]
+          },
+          {
+            "name": "Divide and Conquer Recursion",
+            "keyIdea": "Recursively split array at global maximum, solve left and right subproblems, combine results.",
+            "time": "O(N log N) average, O(N^2) worst case",
+            "space": "O(log N) recursion stack",
+            "topics": [
+              "divide-and-conquer",
+              "recursion"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Worst-case O(N^2) when array is sorted; recursion overhead vs simple two-pointer",
+            "recognizeBy": [
+              "find index of global max",
+              "recursive call on left segment",
+              "recursive call on right segment"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Given an elevation map, find total units of water trapped between bars after rain.",
+            "reason": "Crux accurately captures the fundamental algorithmic task of computing total trapped rainwater bounded between elevation bars."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=1 → 0 water trapped, single column; strictly increasing height → 0 water, no valleys; strictly decreasing height → 0 water, no valleys; height = [0,0,0] → 0 water, flat ground",
+            "reason": "Edge cases identify n < 3 (n=1), strictly monotonic increasing/decreasing heights, and flat terrains, matching the rubric."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Brute Force Water per Cell, verdict: TLE, signal: for each i, find max left and max right by linear scan, reason: repeatedly scans same subarrays, quadratic complexity",
+            "reason": "Wrong approach identifies brute-force scanning per column O(N^2) resulting in TLE, matching the rubric."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Two Pointers with Left/Right Max Tracking; left_max = max(height[0..left]) always tracked; right_max = max(height[right..n-1]) always tracked; water added = min(left_max, right_max) - height[ptr] when positive; pointer with smaller bounding max moves inward each iteration",
+            "reason": "Optimal mechanics identifies Two Pointers O(N) time O(1) space with leftMax and rightMax bounding invariants, matching the rubric."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "moving the wrong pointer when left_max == right_max (any direction works but must be consistent)",
+            "reason": "Pitfalls note pointer movement direction (advancing smaller max side) and boundary off-by-one errors, matching the rubric."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Prefix Max + Suffix Max + Sum Difference; Monotonic Decreasing Stack",
+            "reason": "Alternates highlight Prefix/Suffix Max arrays O(N) space and Monotonic Decreasing Stack O(N) space as valid alternatives, matching the rubric."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Big-O asymptotic notation uses valid problem variable names (N) and is consistent with constraints for optimal and all alternates."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are tight (1-2 sentences) using compact symbols (->, O(N), etc.) with no bloated prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs are standard LeetCode slugs (two-pointers, prefix-sum, greedy, stack, monotonic-queue, dynamic-programming, brute-force, divide-and-conquer, recursion)."
+          }
+        ],
+        "total": 10
+      }
+    }
+  ]
+}

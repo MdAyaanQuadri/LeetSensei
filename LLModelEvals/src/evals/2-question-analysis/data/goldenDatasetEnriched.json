@@ -1,0 +1,729 @@
+[
+  {
+    "questionId": "42",
+    "questionFrontendId": "42",
+    "title": "Trapping Rain Water",
+    "titleSlug": "trapping-rain-water",
+    "difficulty": "Hard",
+    "body": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]",
+        "output": "6",
+        "explanation": "The above elevation map (black section) is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water (blue section) are being trapped.",
+        "imageDescription": "[Diagram: Elevation Map]\nTopology: A 1D sequence of 10 vertical columns representing ground heights of [1, 0, 2, 0, 1, 3, 2, 1, 2, 1] with blue-shaded regions indicating trapped water levels up to height 2 in the valleys. The Y-axis on the left marks elevations 0, 1, 2, 3.\nVisual Highlights: Blue-shaded regions representing trapped rain water, notably a T-shaped blue block in columns 4-5 and separate blue segments in column 2 and column 8, contrasting with the black ground bars.\nDescription: Visual representation of a 1D elevation map for the trapping rain water problem. Black bars show the ground profile with peak heights of 3, while blue-shaded blocks highlight the trapped water volumes in the valleys, showing water levels rising up to height 2 in columns with lower ground heights."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "height = [4,2,0,3,2,5]",
+        "output": "9"
+      }
+    ],
+    "constraints": [
+      "n == height.length",
+      "1 <= n <= 2 * 10^4",
+      "0 <= height[i] <= 10^5"
+    ],
+    "officialTopics": [
+      "Array",
+      "Two Pointers",
+      "Dynamic Programming",
+      "Stack",
+      "Monotonic Stack"
+    ]
+  },
+  {
+    "questionId": "218",
+    "questionFrontendId": "218",
+    "title": "The Skyline Problem",
+    "titleSlug": "the-skyline-problem",
+    "difficulty": "Hard",
+    "body": "A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Given the locations and heights of all the buildings, return the skyline formed by these buildings collectively.\n\nThe geometric information of each building is given in the array buildings where buildings[i] = [left_i, right_i, height_i]:\n\n\n• left_i is the x coordinate of the left edge of the i^th building.\n\n• right_i is the x coordinate of the right edge of the i^th building.\n\n• height_i is the height of the i^th building.\n\nYou may assume all buildings are perfect rectangles grounded on an absolutely flat surface at height 0.\n\nThe skyline should be represented as a list of \"key points\" sorted by their x-coordinate in the form [[x_1,y_1],[x_2,y_2],...]. Each key point is the left endpoint of some horizontal segment in the skyline except the last point in the list, which always has a y-coordinate 0 and is used to mark the skyline's termination where the rightmost building ends. Any ground between the leftmost and rightmost buildings should be part of the skyline's contour.\n\nNote: There must be no consecutive horizontal lines of equal height in the output skyline. For instance, [...,[2 3],[4 5],[7 5],[11 5],[12 7],...] is not acceptable; the three lines of height 5 should be merged into one in the final output as such: [...,[2 3],[4 5],[12 7],...]",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]",
+        "output": "[[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]",
+        "explanation": "Figure A shows the buildings of the input.\nFigure B shows the skyline formed by those buildings. The red points in figure B represent the key points in the output list.",
+        "imageDescription": "[Diagram: Interval Skyline / Building Contour]\nTopology: Panel A shows five overlapping colored rectangular buildings on a 2D grid (x: 0-25, y: 0-15). Panel B shows the merged skyline contour line with key vertices highlighted as red dots. Buildings: Blue [2, 9] height 10, Red [3, 7] height 15, Green [5, 12] height 12, Purple [15, 20] height 10, Yellow [19, 24] height 8. Skyline key vertices: (2, 10), (3, 15), (7, 12), (12, 0), (15, 10), (20, 8), (24, 0).\nVisual Highlights: Panel A features five distinct colored blocks (blue, red, green, purple, yellow) representing buildings. Panel B shows a black step-like contour line representing the skyline, with key transition vertices highlighted as large red dots.\nDescription: The diagram illustrates the skyline problem, showing five colored rectangular buildings of varying heights and positions in Panel A, and the resulting step-like contour line in Panel B. The contour line merges the overlapping heights, dropping to zero between x=12 and x=15, and highlights key transition vertices with red dots at coordinates (2,10), (3,15), (7,12), (12,0), (15,10), (20,8), and (24,0)."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "buildings = [[0,2,3],[2,5,3]]",
+        "output": "[[0,3],[5,0]]"
+      }
+    ],
+    "constraints": [
+      "1 <= buildings.length <= 10^4",
+      "0 <= left_i < right_i <= 2^31 - 1",
+      "1 <= height_i <= 2^31 - 1",
+      "buildings is sorted by left_i in non-decreasing order."
+    ],
+    "officialTopics": [
+      "Array",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Sweep Line",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ]
+  },
+  {
+    "questionId": "124",
+    "questionFrontendId": "124",
+    "title": "Binary Tree Maximum Path Sum",
+    "titleSlug": "binary-tree-maximum-path-sum",
+    "difficulty": "Hard",
+    "body": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.\n\nThe path sum of a path is the sum of the node's values in the path.\n\nGiven the root of a binary tree, return the maximum path sum of any non-empty path.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "root = [1,2,3]",
+        "output": "6",
+        "explanation": "The optimal path is 2 -> 1 -> 3 with a path sum of 2 + 1 + 3 = 6.",
+        "imageDescription": "[Diagram: Binary Tree]\nTopology: Root: 1. Left child: 2, Right child: 3. Both 2 and 3 are leaf nodes with no children.\nVisual Highlights: None (unweighted, single-color tree nodes without shaded regions or path highlights)\nDescription: Simple binary tree with root node 1, having a left child node 2 and a right child node 3. Both child nodes are leaves with no further descendants. The tree is presented in a standard black-and-white layout with no special visual highlights."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "root = [-10,9,20,null,null,15,7]",
+        "output": "42",
+        "explanation": "The optimal path is 15 -> 20 -> 7 with a path sum of 15 + 20 + 7 = 42.",
+        "imageDescription": "[Diagram: Binary Tree]\nTopology: Root is -10. Left child of -10 is 9 (leaf). Right child of -10 is 20. Left child of 20 is 15 (leaf). Right child of 20 is 7 (leaf).\nVisual Highlights: None (unweighted, single-color tree nodes with black borders and white backgrounds, no shaded regions or path highlights)\nDescription: A binary tree rooted at node -10, branching into a leaf node 9 on the left and an internal node 20 on the right. Node 20 further branches into leaf nodes 15 on the left and 7 on the right. All nodes are represented as white circles with black outlines containing integer values."
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 3 * 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "officialTopics": [
+      "Dynamic Programming",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ]
+  },
+  {
+    "questionId": "1300",
+    "questionFrontendId": "1192",
+    "title": "Critical Connections in a Network",
+    "titleSlug": "critical-connections-in-a-network",
+    "difficulty": "Hard",
+    "body": "There are n servers numbered from 0 to n - 1 connected by undirected server-to-server connections forming a network where connections[i] = [a_i, b_i] represents a connection between servers a_i and b_i. Any server can reach other servers directly or indirectly through the network.\n\nA critical connection is a connection that, if removed, will make some servers unable to reach some other server.\n\nReturn all critical connections in the network in any order.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]",
+        "output": "[[1,3]]",
+        "explanation": "[[3,1]] is also accepted.",
+        "imageDescription": "[Diagram: Graph (Undirected)]\nTopology: Nodes 0, 1, and 2 form a triangular cycle with edges (1, 2), (2, 0), and (0, 1). Node 3 is a leaf node connected only to node 1 via a vertical bridge edge labeled 'critical'.\nVisual Highlights: The vertical edge connecting node 1 to node 3 is labeled 'critical' on its left, indicating a bridge/critical connection. Nodes 0, 1, and 2 form a visually closed triangle, while node 3 hangs as a pendant leaf node at the bottom.\nDescription: A graph consisting of four nodes (0, 1, 2, 3) where nodes 0, 1, and 2 form a triangular cycle. Node 3 is a leaf node connected to node 1 by a vertical edge labeled 'critical', highlighting the bridge edge in the network."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "n = 2, connections = [[0,1]]",
+        "output": "[[0,1]]"
+      }
+    ],
+    "constraints": [
+      "2 <= n <= 10^5",
+      "n - 1 <= connections.length <= 10^5",
+      "0 <= a_i, b_i <= n - 1",
+      "a_i != b_i",
+      "There are no repeated connections."
+    ],
+    "officialTopics": [
+      "Depth-First Search",
+      "Graph Theory",
+      "Biconnected Component",
+      "Bridge (Graph)"
+    ]
+  },
+  {
+    "questionId": "329",
+    "questionFrontendId": "329",
+    "title": "Longest Increasing Path in a Matrix",
+    "titleSlug": "longest-increasing-path-in-a-matrix",
+    "difficulty": "Hard",
+    "body": "Given an m x n integers matrix, return the length of the longest increasing path in matrix.\n\nFrom each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "matrix = [[9,9,4],[6,6,8],[2,1,1]]",
+        "output": "4",
+        "explanation": "The longest increasing path is [1, 2, 6, 9].",
+        "imageDescription": "[Diagram: 2D Grid Matrix]\nTopology: 3x3 grid matrix with values row 0: [9, 9, 4], row 1: [6, 6, 8], row 2: [2, 1, 1]. A highlighted directed path starts at cell (2, 1) with value 1, goes left to cell (2, 0) with value 2, then goes vertically up cell (1, 0) with value 6, and finally cell (0, 0) with value 9.\nVisual Highlights: The first column (cells (0,0), (1,0), (2,0) with values 9, 6, 2) is shaded in light grey, forming a vertical highlighted corridor. Black directional arrows show a horizontal step leftwards from 1 to 2, followed by two vertical steps upwards: 2 to 6, and 6 to 9.\nDescription: A 3x3 grid matrix contains values [[9, 9, 4], [6, 6, 8], [2, 1, 1]]. A visual path highlight shades the first column grey, showing a trajectory that starts at value 1 in the bottom row, moves horizontally to value 2, then proceeds vertically upwards through value 6 to value 9, guided by black arrows."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "matrix = [[3,4,5],[3,2,6],[2,2,1]]",
+        "output": "4",
+        "explanation": "The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+        "imageDescription": "[Diagram: 2D Grid Matrix]\nTopology: A 3x3 grid matrix with values: Row 0: 3, 4, 5; Row 1: 3, 2, 6; Row 2: 2, 2, 1. A highlighted directed path starts at cell (0,0) with value 3, goes right to (0,1) with value 4, then right to (0,2) with value 5, and down to (1,2) with value 6.\nVisual Highlights: The cells containing values 3, 4, 5, and 6 are shaded in light grey, forming an inverted L-shaped path. Black arrows indicate the path direction: horizontal arrow from 3 to 4, horizontal arrow from 4 to 5, and vertical arrow pointing downwards from 5 to 6. The remaining grid cells are white.\nDescription: A 3x3 grid matrix containing integer values: top row is 3, 4, 5; middle row is 3, 2, 6; bottom row is 2, 2, 1. A highlighted grey path traces the sequence 3 -> 4 -> 5 -> 6, guided by black directional arrows showing horizontal movement to the right followed by a vertical drop downwards."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "matrix = [[1]]",
+        "output": "1"
+      }
+    ],
+    "constraints": [
+      "m == matrix.length",
+      "n == matrix[i].length",
+      "1 <= m, n <= 200",
+      "0 <= matrix[i][j] <= 2^31 - 1"
+    ],
+    "officialTopics": [
+      "Array",
+      "Dynamic Programming",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Topological Sort",
+      "Memoization",
+      "Matrix",
+      "Directed Acyclic Graph"
+    ]
+  },
+  {
+    "questionId": "1008",
+    "questionFrontendId": "968",
+    "title": "Binary Tree Cameras",
+    "titleSlug": "binary-tree-cameras",
+    "difficulty": "Hard",
+    "body": "You are given the root of a binary tree. We install cameras on the tree nodes where each camera at a node can monitor its parent, itself, and its immediate children.\n\nReturn the minimum number of cameras needed to monitor all nodes of the tree.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "root = [0,0,null,0,0]",
+        "output": "1",
+        "explanation": "One camera is enough to monitor all nodes if placed as shown.",
+        "imageDescription": "[Diagram: Binary Tree]\nTopology: Tree with 4 nodes: a root node at the top, connected to a central node, which branches into two leaf nodes at the bottom (top -> middle -> bottom-left, bottom-right).\nVisual Highlights: The central node features a prominent black camera icon inside the circle, indicating a camera placement, while the other three nodes are plain empty circles.\nDescription: A four-node tree structure representing a camera placement configuration, likely for the Binary Tree Cameras problem. A top node connects to a central node marked with a camera icon, which branches into two bottom leaf nodes. The camera on the central node covers itself, its parent, and its two child leaves."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "root = [0,0,null,0,null,0,null,null,0]",
+        "output": "2",
+        "explanation": "At least two cameras are needed to monitor all nodes of the tree. The above image shows one of the valid configurations of camera placement.",
+        "imageDescription": "[Diagram: Linked List / Path Graph]\nTopology: A linear chain of 5 nodes connected sequentially from top to bottom: Node 1 -> Node 2 -> Node 3 -> Node 4 -> Node 5, forming a vertical zig-zag path.\nVisual Highlights: The second and fourth nodes from the top contain a black camera symbol inside the circle, indicating camera placement, while the first, third, and fifth nodes are empty. The nodes are aligned in a vertical zig-zag chain connected by thin grey lines.\nDescription: Visual representation of a linear chain of five nodes arranged in a vertical zig-zag layout. The second and fourth nodes from the top are marked with camera icons, indicating monitored states, while the remaining nodes are empty circles. All nodes are sequentially linked by directed edges forming a simple path."
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range [1, 1000].",
+      "Node.val == 0"
+    ],
+    "officialTopics": [
+      "Dynamic Programming",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ]
+  },
+  {
+    "questionId": "297",
+    "questionFrontendId": "297",
+    "title": "Serialize and Deserialize Binary Tree",
+    "titleSlug": "serialize-and-deserialize-binary-tree",
+    "difficulty": "Hard",
+    "body": "Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.\n\nDesign an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.\n\nClarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "root = [1,2,3,null,null,4,5]",
+        "output": "[1,2,3,null,null,4,5]",
+        "imageDescription": "[Diagram: Binary Tree]\nTopology: Root is node 1, with left child 2 and right child 3. Node 2 is a leaf node with no children. Node 3 has left child 4 and right child 5, both of which are leaf nodes.\nVisual Highlights: None (unweighted, single-color tree nodes without shaded regions or path highlights)\nDescription: Binary tree rooted at node 1, branching down to leaf node 2 on the left and internal node 3 on the right. Node 3 splits into leaf nodes 4 and 5. The visual representation consists of five circular nodes with black borders, white fills, and bold black numerical labels connected by straight black lines."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "root = []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range [0, 10^4].",
+      "-1000 <= Node.val <= 1000"
+    ],
+    "officialTopics": [
+      "String",
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Design",
+      "Binary Tree"
+    ]
+  },
+  {
+    "questionId": "794",
+    "questionFrontendId": "778",
+    "title": "Swim in Rising Water",
+    "titleSlug": "swim-in-rising-water",
+    "difficulty": "Hard",
+    "body": "You are given an n x n integer matrix grid where each value grid[i][j] represents the elevation at that point (i, j).\n\nIt starts raining, and water gradually rises over time. At time t, the water level is t, meaning any cell with elevation less than equal to t is submerged or reachable.\n\nYou can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares individually are at most t. You can swim infinite distances in zero time. Of course, you must stay within the boundaries of the grid during your swim.\n\nReturn the minimum time until you can reach the bottom right square (n - 1, n - 1) if you start at the top left square (0, 0).",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "grid = [[0,2],[1,3]]",
+        "output": "3",
+        "explanation": "At time 0, you are in grid location (0, 0).\nYou cannot go anywhere else because 4-directionally adjacent neighbors have a higher elevation than t = 0.\nYou cannot reach point (1, 1) until time 3.\nWhen the depth of water is 3, we can swim anywhere inside the grid.",
+        "imageDescription": "[Diagram: 2D Grid Matrix]\nTopology: A 2x2 grid matrix with 2 rows and 2 columns. The cell values are positioned as: top-left is 0, top-right is 2, bottom-left is 1, bottom-right is 3.\nVisual Highlights: None (plain black and white grid with black dividing lines, no colors, arrows, or shaded regions)\nDescription: A simple 2x2 grid matrix divided into four equal quadrants by a central black cross. The top-left cell contains the value 0, the top-right cell contains 2, the bottom-left cell contains 1, and the bottom-right cell contains 3. The diagram is minimalist with no extra visual highlights, color fills, or directional arrows."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]",
+        "output": "16",
+        "explanation": "The final route is shown.\nWe need to wait until time 16 so that (0, 0) and (4, 4) are connected.",
+        "imageDescription": "[Diagram: 2D Grid Matrix]\nTopology: 5x5 grid matrix with values from 0 to 24 arranged in a non-standard spiral sequence. Rows are fully connected horizontally, columns vertically, forming a grid graph structure.\nVisual Highlights: Alternating color scheme: rows 0, 2, and 4 are completely shaded light blue, along with cell (row 1, col 4) value 5 and cell (row 3, col 0) value 11. The cells containing values 24-21 (row 1, cols 0-3) and 17-20 (row 3, cols 1-4) are highlighted in white, forming two offset horizontal white bands inside a blue grid structure.\nDescription: This visual depicts a 5x5 grid matrix populated with integers 0 through 24. The layout uses a distinct color coding where full rows 0, 2, and 4 are colored light blue, along with key boundary cells in rows 1 and 3. Two horizontal white segments break the blue grid, containing values 24-21 and 17-20 respectively, highlighting a specific zig-zag path structure."
+      }
+    ],
+    "constraints": [
+      "n == grid.length",
+      "n == grid[i].length",
+      "1 <= n <= 50",
+      "0 <= grid[i][j] < n^2",
+      "Each value grid[i][j] is unique."
+    ],
+    "officialTopics": [
+      "Array",
+      "Binary Search",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Union-Find",
+      "Minimax",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Dijkstra's Algorithm"
+    ]
+  },
+  {
+    "questionId": "4",
+    "questionFrontendId": "4",
+    "title": "Median of Two Sorted Arrays",
+    "titleSlug": "median-of-two-sorted-arrays",
+    "difficulty": "Hard",
+    "body": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.\n\nThe overall run time complexity should be O(log (m+n)).",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "nums1 = [1,3], nums2 = [2]",
+        "output": "2.00000",
+        "explanation": "merged array = [1,2,3] and median is 2."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "nums1 = [1,2], nums2 = [3,4]",
+        "output": "2.50000",
+        "explanation": "merged array = [1,2,3,4] and median is (2 + 3) / 2 = 2.5."
+      }
+    ],
+    "constraints": [
+      "nums1.length == m",
+      "nums2.length == n",
+      "0 <= m <= 1000",
+      "0 <= n <= 1000",
+      "1 <= m + n <= 2000",
+      "-10^6 <= nums1[i], nums2[i] <= 10^6"
+    ],
+    "officialTopics": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer"
+    ]
+  },
+  {
+    "questionId": "10",
+    "questionFrontendId": "10",
+    "title": "Regular Expression Matching",
+    "titleSlug": "regular-expression-matching",
+    "difficulty": "Hard",
+    "body": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where:\n\n\n• '.' Matches any single character.​​​​\n\n• '*' Matches zero or more of the preceding element.\n\nReturn a boolean indicating whether the matching covers the entire input string (not partial).",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "s = \"aa\", p = \"a\"",
+        "output": "false",
+        "explanation": "\"a\" does not match the entire string \"aa\"."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "s = \"aa\", p = \"a*\"",
+        "output": "true",
+        "explanation": "'*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes \"aa\"."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "s = \"ab\", p = \".*\"",
+        "output": "true",
+        "explanation": "\".*\" means \"zero or more (*) of any character (.)\"."
+      }
+    ],
+    "constraints": [
+      "1 <= s.length <= 20",
+      "1 <= p.length <= 20",
+      "s contains only lowercase English letters.",
+      "p contains only lowercase English letters, '.', and '*'.",
+      "It is guaranteed for each appearance of the character '*', there will be a previous valid character to match."
+    ],
+    "officialTopics": [
+      "String",
+      "Dynamic Programming",
+      "Recursion"
+    ]
+  },
+  {
+    "questionId": "23",
+    "questionFrontendId": "23",
+    "title": "Merge k Sorted Lists",
+    "titleSlug": "merge-k-sorted-lists",
+    "difficulty": "Hard",
+    "body": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.\n\nMerge all the linked-lists into one sorted linked-list and return it.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "lists = [[1,4,5],[1,3,4],[2,6]]",
+        "output": "[1,1,2,3,4,4,5,6]",
+        "explanation": "The linked-lists are:\n[\n  1->4->5,\n  1->3->4,\n  2->6\n]\nmerging them into one sorted linked list:\n1->1->2->3->4->4->5->6"
+      },
+      {
+        "exampleNumber": 2,
+        "input": "lists = []",
+        "output": "[]"
+      },
+      {
+        "exampleNumber": 3,
+        "input": "lists = [[]]",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "k == lists.length",
+      "0 <= k <= 10^4",
+      "0 <= lists[i].length <= 500",
+      "-10^4 <= lists[i][j] <= 10^4",
+      "lists[i] is sorted in ascending order.",
+      "The sum of lists[i].length will not exceed 10^4."
+    ],
+    "officialTopics": [
+      "Linked List",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Merge Sort",
+      "Tournament Sort"
+    ]
+  },
+  {
+    "questionId": "32",
+    "questionFrontendId": "32",
+    "title": "Longest Valid Parentheses",
+    "titleSlug": "longest-valid-parentheses",
+    "difficulty": "Hard",
+    "body": "Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses substring.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "s = \"(()\"",
+        "output": "2",
+        "explanation": "The longest valid parentheses substring is \"()\"."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "s = \")()())\"",
+        "output": "4",
+        "explanation": "The longest valid parentheses substring is \"()()\"."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "s = \"\"",
+        "output": "0"
+      }
+    ],
+    "constraints": [
+      "0 <= s.length <= 3 * 10^4",
+      "s[i] is '(', or ')'."
+    ],
+    "officialTopics": [
+      "String",
+      "Dynamic Programming",
+      "Stack",
+      "Bracket Sequences"
+    ]
+  },
+  {
+    "questionId": "41",
+    "questionFrontendId": "41",
+    "title": "First Missing Positive",
+    "titleSlug": "first-missing-positive",
+    "difficulty": "Hard",
+    "body": "Given an unsorted integer array nums. Return the smallest positive integer that is not present in nums.\n\nYou must implement an algorithm that runs in O(n) time and uses O(1) auxiliary space.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "nums = [1,2,0]",
+        "output": "3",
+        "explanation": "The numbers in the range [1,2] are all in the array."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "nums = [3,4,-1,1]",
+        "output": "2",
+        "explanation": "1 is in the array but 2 is missing."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "nums = [7,8,9,11,12]",
+        "output": "1",
+        "explanation": "The smallest positive integer 1 is missing."
+      }
+    ],
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-2^31 <= nums[i] <= 2^31 - 1"
+    ],
+    "officialTopics": [
+      "Array",
+      "Hash Table"
+    ]
+  },
+  {
+    "questionId": "76",
+    "questionFrontendId": "76",
+    "title": "Minimum Window Substring",
+    "titleSlug": "minimum-window-substring",
+    "difficulty": "Hard",
+    "body": "Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string \"\".\n\nThe testcases will be generated such that the answer is unique.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "s = \"ADOBECODEBANC\", t = \"ABC\"",
+        "output": "\"BANC\"",
+        "explanation": "The minimum window substring \"BANC\" includes 'A', 'B', and 'C' from string t."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "s = \"a\", t = \"a\"",
+        "output": "\"a\"",
+        "explanation": "The entire string s is the minimum window."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "s = \"a\", t = \"aa\"",
+        "output": "\"\"",
+        "explanation": "Both 'a's from t must be included in the window.\nSince the largest window of s only has one 'a', return empty string."
+      }
+    ],
+    "constraints": [
+      "m == s.length",
+      "n == t.length",
+      "1 <= m, n <= 10^5",
+      "s and t consist of uppercase and lowercase English letters."
+    ],
+    "officialTopics": [
+      "Hash Table",
+      "String",
+      "Sliding Window"
+    ]
+  },
+  {
+    "questionId": "239",
+    "questionFrontendId": "239",
+    "title": "Sliding Window Maximum",
+    "titleSlug": "sliding-window-maximum",
+    "difficulty": "Hard",
+    "body": "You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.\n\nReturn the max sliding window.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3",
+        "output": "[3,3,5,5,6,7]",
+        "explanation": "Window position                Max\n---------------               -----\n[1  3  -1] -3  5  3  6  7       3\n 1 [3  -1  -3] 5  3  6  7       3\n 1  3 [-1  -3  5] 3  6  7       5\n 1  3  -1 [-3  5  3] 6  7       5\n 1  3  -1  -3 [5  3  6] 7       6\n 1  3  -1  -3  5 [3  6  7]      7"
+      },
+      {
+        "exampleNumber": 2,
+        "input": "nums = [1], k = 1",
+        "output": "[1]"
+      }
+    ],
+    "constraints": [
+      "1 <= nums.length <= 10^5",
+      "-10^4 <= nums[i] <= 10^4",
+      "1 <= k <= nums.length"
+    ],
+    "officialTopics": [
+      "Array",
+      "Queue",
+      "Sliding Window",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Range Minimum/Maximum Query"
+    ]
+  },
+  {
+    "questionId": "133",
+    "questionFrontendId": "133",
+    "title": "Clone Graph",
+    "titleSlug": "clone-graph",
+    "difficulty": "Medium",
+    "body": "Given a reference of a node in a connected undirected graph.\n\nReturn a deep copy (clone) of the graph.\n\nEach node in the graph contains a value (int) and a list (List[Node]) of its neighbors.\n\nclass Node {\n    public int val;\n    public List<Node> neighbors;\n}\n\n\n\nTest case format:\n\nFor simplicity, each node's value is the same as the node's index (1-indexed). For example, the first node with val == 1, the second node with val == 2, and so on. The graph is represented in the test case using an adjacency list.\n\nAn adjacency list is a collection of unordered lists used to represent a finite graph. Each list describes the set of neighbors of a node in the graph.\n\nThe given node will always be the first node with val = 1. You must return the copy of the given node as a reference to the cloned graph.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "adjList = [[2,4],[1,3],[2,4],[1,3]]",
+        "output": "[[2,4],[1,3],[2,4],[1,3]]",
+        "explanation": "There are 4 nodes in the graph.\n1st node (val = 1)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n2nd node (val = 2)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).\n3rd node (val = 3)'s neighbors are 2nd node (val = 2) and 4th node (val = 4).\n4th node (val = 4)'s neighbors are 1st node (val = 1) and 3rd node (val = 3).",
+        "imageDescription": "[Diagram: Undirected Graph (Cloning Illustration)]\nTopology: Four cyclic graphs of 4 nodes arranged in a square layout. Original Graph (yellow nodes) has cycle 1-2-3-4-1 (positions: 1 top-left, 2 top-right, 3 bottom-right, 4 bottom-left). Top-right graph (yellow) has identical layout and labels, crossed out. Middle-right graph (blue nodes) has identical layout and labels, representing the correct clone. Bottom-right graph (pink nodes) has permuted labels (top-left 1, top-right 3, bottom-right 2, bottom-left 4) showing incorrect neighbor connections, crossed out.\nVisual Highlights: Three arrows originate from the Original Graph: a grey horizontal arrow points to the valid blue clone in the middle-right; a crossed-out diagonal arrow points to the top-right yellow graph (same reference); another crossed-out diagonal arrow points to the bottom-right pink graph (messed up connections). Node colors highlight the state: yellow for original/same reference, blue for correct clone, pink for incorrect topology clone. Text labels inside each graph explain the validity of each representation.\nDescription: The diagram illustrates the concept of cloning a graph with four nodes (1, 2, 3, 4) arranged in a cycle. The original graph has yellow nodes. A grey arrow points to the correct clone in blue, where new nodes have the exact same connections. Two crossed-out arrows point to invalid attempts: the top one shows returning the same yellow graph reference, and the bottom one shows a pink graph where nodes are cloned but shuffled, breaking the original connection topology."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "adjList = [[]]",
+        "output": "[[]]",
+        "explanation": "Note that the input contains one empty list. The graph consists of only one node with val = 1 and it does not have any neighbors.",
+        "imageDescription": "[Diagram: Binary Tree]\nTopology: Root: 1. No left or right child nodes are present, forming a single-node tree structure.\nVisual Highlights: None (single black circle node with value 1, no colors, highlights, or extra elements)\nDescription: The diagram illustrates a solitary node representing a binary tree of size one. The single node contains the integer value 1, enclosed within a standard black circular border. No arrows, child branches, secondary nodes, or color-coded highlights are present, showing a basic, unconnected tree vertex in isolation."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "adjList = []",
+        "output": "[]",
+        "explanation": "This an empty graph, it does not have any nodes."
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the graph is in the range [0, 100].",
+      "1 <= Node.val <= 100",
+      "Node.val is unique for each node.",
+      "There are no repeated edges and no self-loops in the graph.",
+      "The Graph is connected and all nodes can be visited starting from the given node."
+    ],
+    "officialTopics": [
+      "Hash Table",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory"
+    ]
+  },
+  {
+    "questionId": "200",
+    "questionFrontendId": "200",
+    "title": "Number of Islands",
+    "titleSlug": "number-of-islands",
+    "difficulty": "Medium",
+    "body": "Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.\n\nAn island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "grid = [\n  [\"1\",\"1\",\"1\",\"1\",\"0\"],\n  [\"1\",\"1\",\"0\",\"1\",\"0\"],\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"0\",\"0\",\"0\",\"0\",\"0\"]\n]",
+        "output": "1"
+      },
+      {
+        "exampleNumber": 2,
+        "input": "grid = [\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"1\",\"1\",\"0\",\"0\",\"0\"],\n  [\"0\",\"0\",\"1\",\"0\",\"0\"],\n  [\"0\",\"0\",\"0\",\"1\",\"1\"]\n]",
+        "output": "3"
+      }
+    ],
+    "constraints": [
+      "m == grid.length",
+      "n == grid[i].length",
+      "1 <= m, n <= 300",
+      "grid[i][j] is '0' or '1'."
+    ],
+    "officialTopics": [
+      "Array",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Union-Find",
+      "Matrix"
+    ]
+  },
+  {
+    "questionId": "146",
+    "questionFrontendId": "146",
+    "title": "LRU Cache",
+    "titleSlug": "lru-cache",
+    "difficulty": "Medium",
+    "body": "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.\n\nImplement the LRUCache class:\n\n\n• LRUCache(int capacity) Initialize the LRU cache with positive size capacity.\n\n• int get(int key) Return the value of the key if the key exists, otherwise return -1.\n\n• void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.\n\nThe functions get and put must each run in O(1) average time complexity.",
+    "examples": [],
+    "constraints": [
+      "LRUCache(int capacity) Initialize the LRU cache with positive size capacity.",
+      "int get(int key) Return the value of the key if the key exists, otherwise return -1.",
+      "void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key."
+    ],
+    "officialTopics": [
+      "Hash Table",
+      "Linked List",
+      "Design",
+      "Doubly-Linked List"
+    ]
+  },
+  {
+    "questionId": "210",
+    "questionFrontendId": "210",
+    "title": "Course Schedule II",
+    "titleSlug": "course-schedule-ii",
+    "difficulty": "Medium",
+    "body": "There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [a_i, b_i] indicates that you must take course b_i first if you want to take course a_i.\n\n\n• For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.\n\nReturn the ordering of courses you should take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "numCourses = 2, prerequisites = [[1,0]]",
+        "output": "[0,1]",
+        "explanation": "There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1]."
+      },
+      {
+        "exampleNumber": 2,
+        "input": "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]",
+        "output": "[0,2,1,3]",
+        "explanation": "There are a total of 4 courses to take. To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be taken after you finished course 0.\nSo one correct course order is [0,1,2,3]. Another correct ordering is [0,2,1,3]."
+      },
+      {
+        "exampleNumber": 3,
+        "input": "numCourses = 1, prerequisites = []",
+        "output": "[0]"
+      }
+    ],
+    "constraints": [
+      "1 <= numCourses <= 2000",
+      "0 <= prerequisites.length <= numCourses * (numCourses - 1)",
+      "prerequisites[i].length == 2",
+      "0 <= a_i, b_i < numCourses",
+      "a_i != b_i",
+      "All the pairs [a_i, b_i] are distinct."
+    ],
+    "officialTopics": [
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ]
+  },
+  {
+    "questionId": "560",
+    "questionFrontendId": "560",
+    "title": "Subarray Sum Equals K",
+    "titleSlug": "subarray-sum-equals-k",
+    "difficulty": "Medium",
+    "body": "Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.\n\nA subarray is a contiguous non-empty sequence of elements within an array.",
+    "examples": [
+      {
+        "exampleNumber": 1,
+        "input": "nums = [1,1,1], k = 2",
+        "output": "2"
+      },
+      {
+        "exampleNumber": 2,
+        "input": "nums = [1,2,3], k = 3",
+        "output": "2"
+      }
+    ],
+    "constraints": [
+      "1 <= nums.length <= 2 * 10^4",
+      "-1000 <= nums[i] <= 1000",
+      "-10^7 <= k <= 10^7"
+    ],
+    "officialTopics": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ]
+  }
+]

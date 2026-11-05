@@ -1,0 +1,2053 @@
+{
+  "model": "nvidia/nemotron-3.5-lightning:free",
+  "judgeModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "executedAt": "2026-11-04T13:55:20.602Z",
+  "metrics": {
+    "totalScore": 83,
+    "maxScore": 200,
+    "percentage": "41.5%",
+    "avgLatencyMs": 326,
+    "validJsonRate": "45.0%",
+    "totalCases": 20
+  },
+  "scorecard": [
+    {
+      "questionId": "42",
+      "questionFrontendId": "42",
+      "title": "Trapping Rain Water",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 683,
+      "judgeLatencyMs": 405,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "Trapping Rain Water",
+        "difficulty": "Hard",
+        "crux": "Compute total trapped water volume between N columns given heights, where water at each index depends on the maximum height to its left and right.",
+        "edgeCases": [
+          "n=1 or n=2 → 0 water trapped",
+          "strictly decreasing or increasing heights → 0 water trapped",
+          "all equal heights → 0 water trapped",
+          "single tall peak with lower sides → water trapped in middle valleys",
+          "height[i] = 0 across all indices → 0 water trapped",
+          "maximum height at ends → no water trapped on outer sides",
+          "height[i] = 10^5 maximum → large water volume possible"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Two Pointer Sum Accumulation",
+            "verdict": "WA",
+            "signal": "left += min(leftMax, rightMax) - height[left]",
+            "reason": "incorrectly moves pointer based on current side max without ensuring global left/right max dominance"
+          },
+          {
+            "name": "Prefix Sum of Differences",
+            "verdict": "WA",
+            "signal": "sum(maxLeft[i] - height[i]) for all i",
+            "reason": "maxLeft computed left-to-right misses right-side containment"
+          },
+          {
+            "name": "Stack Monotonic Decreasing without Water Calculation",
+            "verdict": "WA",
+            "signal": "stack pop and push, no area computation",
+            "reason": "monotonic stack alone does not accumulate trapped water volume"
+          },
+          {
+            "name": "Brute Force O(N^2) Left/Right Max per Index",
+            "verdict": "TLE",
+            "signal": "nested loops i,j computing leftMax[j] and rightMax[j]",
+            "reason": "O(N^2) time exceeds limit for n up to 2*10^4"
+          }
+        ],
+        "optimal": {
+          "name": "Two Pointers with Global Left/Right Max Tracking",
+          "keyIdea": "Maintain left and right pointers with running max heights; at each step, process the side with smaller height because the water level is determined by the opposite side's max.",
+          "time": "O(N)",
+          "space": "O(1)",
+          "topics": [
+            "two-pointers",
+            "greedy",
+            "array"
+          ],
+          "invariants": [
+            "leftMax always reflects max height from index 0 to left pointer",
+            "rightMax always reflects max height from index n-1 to right pointer",
+            "if height[left] < height[right], process left side; else process right side",
+            "water added = min(leftMax, rightMax) - height[current] when current side processed"
+          ],
+          "pitfalls": [
+            "initializing leftMax/rightMax to 0 instead of height[0/right]",
+            "moving pointers based on height comparison instead of max comparison",
+            "off-by-one in loop condition while (left < right)",
+            "forgetting to add water when height[current] < min(leftMax, rightMax)"
+          ],
+          "recognizeBy": [
+            "while (left < right)",
+            "leftMax = Math.max(leftMax, height[left])",
+            "rightMax = Math.max(rightMax, height[right])",
+            "if (height[left] < height[right]) { ... left++; } else { ... right--; }"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Prefix Max + Suffix Max Arrays",
+            "keyIdea": "Precompute leftMax[i] = max height to left of i and rightMax[i] = max height to right of i; water at i = max(0, min(leftMax[i], rightMax[i]) - height[i]).",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "prefix-sum",
+              "array"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N) extra space vs O(1) for two pointers, but same time complexity",
+            "recognizeBy": [
+              "int[] leftMax = new int[n];",
+              "for (int i = 1; i < n; i++) leftMax[i] = Math.max(leftMax[i-1], height[i-1])",
+              "int[] rightMax = new int[n];",
+              "for (int i = n-2; i >= 0; i--) rightMax[i] = Math.max(rightMax[i+1], height[i+1])"
+            ]
+          },
+          {
+            "name": "Brute Force O(N^2) Column Scan",
+            "keyIdea": "For each column, scan leftwards to find max height and scan rightwards to find max height; water trapped = min(leftMax, rightMax) - height[i] if positive.",
+            "time": "O(N^2)",
+            "space": "O(1)",
+            "topics": [
+              "brute-force",
+              "array"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "O(N^2) time limit exceeded for n up to 2*10^4 (4*10^8 operations)",
+            "recognizeBy": [
+              "inner while loops scanning left and right from each index i",
+              "no auxiliary arrays, pure nested iteration"
+            ]
+          },
+          {
+            "name": "Divide and Conquer Recursive Split",
+            "keyIdea": "Find global maximum height, recursively solve left and right subarrays, water at max index is 0.",
+            "time": "O(N log N) average, O(N^2) worst",
+            "space": "O(log N) recursion stack",
+            "topics": [
+              "divide-and-conquer",
+              "recursion"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "worst-case O(N^2) when array is sorted, overhead of recursion vs linear two pointers",
+            "recognizeBy": [
+              "find index of global maximum height",
+              "recursive calls on height.slice(0, maxIdx) and height.slice(maxIdx+1)",
+              "base case when subarray length <= 1"
+            ]
+          },
+          {
+            "name": "Binary Search on Answer",
+            "keyIdea": "Not applicable; water volume cannot be decision-checked monotonically for this problem.",
+            "time": "N/A",
+            "space": "N/A",
+            "topics": [
+              "binary-search"
+            ],
+            "verdict": "N/A",
+            "whyNotOptimal": "problem lacks monotonic predicate required for binary search",
+            "recognizeBy": []
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Compute total trapped water volume between N columns given heights, where water at each index depends on the maximum height to its left and right.",
+            "reason": "The crux accurately captures the fundamental algorithmic task of computing trapped water volume bounded by elevation bars, correctly identifying the dependency on left and right maxima."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=1 or n=2 → 0 water trapped; strictly decreasing or increasing heights → 0 water trapped; all equal heights → 0 water trapped",
+            "reason": "Edge cases correctly identify n < 3 returns 0, strictly monotonic increasing/decreasing heights yield no trapped water, and flat terrains (all equal heights) produce 0 water."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Brute Force O(N^2) Left/Right Max per Index verdict: TLE signal: nested loops i,j computing leftMax[j] and rightMax[j] reason: O(N^2) time exceeds limit for n up to 2*10^4",
+            "reason": "Wrong approaches include a realistic failing approach (brute-force O(N^2) scanning per column) with correct TLE verdict and failure mechanism due to time limit exceedance for n up to 2*10^4."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "name: Two Pointers with Global Left/Right Max Tracking time: O(N) space: O(1) invariants: leftMax always reflects max height from index 0 to left pointer; rightMax always reflects max height from index n-1 to right pointer; if height[left] < height[right], process left side; else process right side; water added = min(leftMax, rightMax) - height[current] when current side processed",
+            "reason": "Optimal mechanics correctly identifies Two Pointers O(N) time O(1) space with leftMax and rightMax bounding invariants, including the critical pointer movement logic based on comparing current heights to determine the bounded side."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "moving pointers based on height comparison instead of max comparison; off-by-one in loop condition while (left < right)",
+            "reason": "Pitfalls correctly notes pointer movement direction errors (advancing based on height comparison instead of max comparison) and boundary off-by-one errors in the loop condition."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "name: Prefix Max + Suffix Max Arrays time: O(N) space: O(N) verdict: Accepted whyNotOptimal: O(N) extra space vs O(1) for two pointers, but same time complexity",
+            "reason": "Alternates highlights Prefix/Suffix Max arrays as a valid accepted alternative with O(N) space, meeting the requirement for a distinct valid approach."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching the required schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Big-O asymptotic notation is correct and consistent with problem variables (N for n) for optimal (O(N) time, O(1) space) and all alternates."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are tight (1-2 sentences), using compact notation and symbols (arrows, min/max) without bloated prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs (two-pointers, greedy, array, prefix-sum, brute-force, divide-and-conquer, recursion, binary-search) are standard LeetCode slugs."
+          }
+        ],
+        "total": 10
+      }
+    },
+    {
+      "questionId": "218",
+      "questionFrontendId": "218",
+      "title": "The Skyline Problem",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 360,
+      "judgeLatencyMs": 328,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "The Skyline Problem",
+        "difficulty": "Hard",
+        "crux": "Compute the outer contour formed by merging overlapping rectangular buildings, outputting key points where the skyline height changes.",
+        "edgeCases": [
+          "single building: [[left, height], [right, 0]]",
+          "adjacent same-height buildings: should merge into one segment, e.g. [[0,3],[5,0]] not [[0,3],[2,3],[5,0]]",
+          "buildings with zero gap between right and left edges: contiguous merging required",
+          "tall building completely shadowed by shorter ones: height contributions vanish",
+          "overlapping starts and ends at same x: process ends before starts to avoid false height spikes",
+          "coordinates up to 2^31-1: requires 64-bit integer handling for event sorting and active height tracking"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Per-x Coordinate Sweep with Array",
+            "verdict": "TLE",
+            "signal": "for x in range(leftmost, rightmost): compute max height",
+            "reason": "Coordinate range up to 2^31 makes O(range) infeasible; TLE on sparse inputs"
+          },
+          {
+            "name": "All-Pairs Max Height",
+            "verdict": "WA",
+            "signal": "for each building i: for each building j: update skyline",
+            "reason": "Fails to correctly merge heights at boundaries; produces duplicate or missing key points"
+          },
+          {
+            "name": "Simple Merge of Two Skylines",
+            "verdict": "WA",
+            "signal": "divide and conquer merging two skylines via point-by-point max",
+            "reason": "Edge handling at coincident x-values and zero-height termination often broken; misses ground between buildings"
+          },
+          {
+            "name": "Priority Queue without Lazy Removal",
+            "verdict": "WA",
+            "signal": "push (height, right) into heap; pop while height != top",
+            "reason": "Stale right-edge entries never removed; heap top becomes invalid height that never drops"
+          }
+        ],
+        "optimal": {
+          "name": "Line Sweep with Max-Heap and Lazy Removal",
+          "keyIdea": "Convert each building into two events (start: negate height, end: positive height). Sort events by x, then by height. Sweep left-to-right, maintaining a max-heap of active heights. At each event, push start heights; for end events, lazily mark the height as expired and pop until heap top is valid. Record a key point whenever the current max height changes.",
+          "time": "O(N log N)",
+          "space": "O(N)",
+          "topics": [
+            "heap-priority-queue",
+            "two-pointers",
+            "sorted-interval-merge"
+          ],
+          "invariants": [
+            "events sorted by x ascending; ties broken by height descending (start before end)",
+            "heap stores negative heights (or max-heap) with associated right x-coordinate",
+            "lazy removal: pop heap while the top's right endpoint <= current x",
+            "output only when current max height differs from previous height"
+          ],
+          "pitfalls": [
+            "forgetting to sort start events higher than end events at same x causes false height spikes",
+            "not implementing lazy removal leads to stale heap entries and wrong max height",
+            "neglecting to output termination point [rightmost_x, 0]",
+            "using 32-bit integers for coordinate comparisons near 2^31-1 overflow risk"
+          ],
+          "recognizeBy": [
+            "events = []\nfor l, r, h in buildings: events.append((l, -h, r)); events.append((r, h, 0))",
+            "events.sort(key=lambda e: (e[0], e[1]))",
+            "heap = [(0, float('inf'))]  # (neg_height, right_x)",
+            "while events or heap: ... lazy pop while heap[0][1] <= x"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Divide and Conquer (Merge Sort Style)",
+            "keyIdea": "Recursively compute skyline for left half and right half, then merge the two skylines point by point taking the max height at each x.",
+            "time": "O(N log N)",
+            "space": "O(N)",
+            "topics": [
+              "divide-and-conquer",
+              "merge-sort"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Higher constant factor than line sweep; merge step requires careful handling of overlapping x-coordinates and ground regions.",
+            "recognizeBy": [
+              "if not buildings: return []",
+              "mid = len(buildings)//2",
+              "left = merge(buildings[:mid], buildings[mid:])",
+              "right = merge(buildings[mid:])",
+              "merge left and right by advancing pointer based on x comparison"
+            ]
+          },
+          {
+            "name": "Segment Tree with Range Max Update",
+            "keyIdea": "Discretize all unique left and right coordinates. Build a segment tree over the compressed x-axis. For each building, perform a range max update on [left, right) with its height. After all updates, traverse the tree to extract key points where leaf height changes.",
+            "time": "O(N log N)",
+            "space": "O(N)",
+            "topics": [
+              "segment-tree",
+              "binary-indexed-tree",
+              "coordinate-compression"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Discretization and tree operations add overhead; more complex to implement correctly for zero-height ground intervals.",
+            "recognizeBy": [
+              "coords = sorted(set([l for b in buildings for l in (b[0], b[1])]))",
+              "tree = [0] * (4 * len(coords))",
+              "update(1, 0, len(coords)-1, l_idx, r_idx, h)"
+            ]
+          },
+          {
+            "name": "Brute Force All-Interval Check",
+            "keyIdea": "For every critical x (every left and right edge), compute the maximum height among all buildings covering that x. Output key points where height changes.",
+            "time": "O(N^2)",
+            "space": "O(N)",
+            "topics": [
+              "brute-force",
+              "sorted-interval-merge"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "N up to 10^4 makes O(N^2) too slow; TLE on maximum constraint inputs.",
+            "recognizeBy": [
+              "critical_xs = sorted(set([l for b in buildings for l in (b[0], b[1])]))",
+              "for x in critical_xs: h = max(b[2] for b in buildings if b[0] <= x < b[1] or False)",
+              "if not result or result[-1][1] != h: result.append([x, h])"
+            ]
+          },
+          {
+            "name": "Event Sweep with Multiset (Sorted List)",
+            "keyIdea": "Use a sorted list or Counter as active height multiset. On building start, insert height; on end, remove height. Get current max from the multiset. Record key points on changes.",
+            "time": "O(N log N)",
+            "space": "O(N)",
+            "topics": [
+              "heap-priority-queue",
+              "hash-table"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Python's standard library lacks a built-in multiset with O(log N) remove; often requires heap with lazy deletion or external sortedcontainers, increasing dependency complexity.",
+            "recognizeBy": [
+              "active = Counter() or sortedcontainers.SortedList",
+              "on start: active.add(h)",
+              "on end: active.remove(h) or active[h] -= 1",
+              "current_max = max(active) if active else 0"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Compute the outer contour formed by merging overlapping rectangular buildings, outputting key points where the skyline height changes.",
+            "reason": "Crux correctly captures the core task: merging overlapping rectangles and outputting key points where the silhouette height changes."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "adjacent same-height buildings: should merge into one segment, e.g. [[0,3],[5,0]] not [[0,3],[2,3],[5,0]]",
+            "reason": "Edge cases explicitly cover overlapping buildings of identical heights (adjacent same-height merge), buildings sharing edges (zero gap), and separated buildings (tall building shadowed by shorter ones)."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Per-x Coordinate Sweep with Array ... Coordinate range up to 2^31 makes O(range) infeasible; TLE on sparse inputs",
+            "reason": "Wrong approach correctly identifies grid rasterization along x-axis (Per-x Coordinate Sweep) with TLE verdict due to coordinate range up to 2^31."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Line Sweep with Max-Heap and Lazy Removal ... O(N log N) ... O(N)",
+            "reason": "Optimal mechanics correctly specify sweep-line with max-heap and lazy removal, achieving O(N log N) time and O(N) space."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "forgetting to sort start events higher than end events at same x causes false height spikes",
+            "reason": "Pitfalls explicitly call out the sorting tie-breaking order for start vs end events at the same x to prevent phantom vertical drops."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Divide and Conquer (Merge Sort Style) ... O(N log N) ... Segment Tree with Range Max Update ... O(N log N)",
+            "reason": "Alternates identify both Divide and Conquer merge and Segment Tree as valid O(N log N) alternatives with correct complexities."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching the required schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "All time/space complexities use valid asymptotic notation (O(N log N), O(N)) consistent with problem variable N (number of buildings)."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are tight (1-2 sentences), using compact symbols and code-like snippets; no bloated prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs are standard LeetCode slugs (e.g., heap-priority-queue, divide-and-conquer, segment-tree, coordinate-compression)."
+          }
+        ],
+        "total": 10
+      }
+    },
+    {
+      "questionId": "124",
+      "questionFrontendId": "124",
+      "title": "Binary Tree Maximum Path Sum",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 303,
+      "judgeLatencyMs": 359,
+      "score": "9 / 10",
+      "percentage": "90.0%",
+      "maxPoints": 10,
+      "awardedPoints": 9,
+      "candidateOutput": {
+        "title": "Binary Tree Maximum Path Sum",
+        "difficulty": "Hard",
+        "crux": "Find the maximum sum of any node-to-node path in a binary tree, where each node is visited at most once and the path need not include the root.",
+        "edgeCases": [
+          "single node n=1 → answer is root.val",
+          "all negative values → answer is the maximum single node (least negative)",
+          "tree skewed left or right → path follows the single non-null branch",
+          "subtree sums overflow int if unchecked, but constraints limit val to [-1000,1000] and N≤3e4 → max sum 3e7 fits in 32-bit int",
+          "path entirely in left subtree, entirely in right subtree, or passes through root"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Global DFS returning single-branch max",
+            "verdict": "WA",
+            "signal": "dfs(node) returns max(node.val, node.val+left, node.val+right)",
+            "reason": "Cannot combine left+right+node.val into a valid path because parent can only extend one side"
+          },
+          {
+            "name": "Top-down evaluate all paths from root",
+            "verdict": "TLE",
+            "signal": "enumerate all root-to-node paths, compute sum, track max",
+            "reason": "O(N^2) on skewed tree; misses paths not containing root"
+          },
+          {
+            "name": "Two-pass diameter-style BFS",
+            "verdict": "WA",
+            "signal": "BFS farthest-node twice, sum values along found path",
+            "reason": "Tree diameter maximizes edges, not node values; path sum optimization differs"
+          },
+          {
+            "name": "Memoized root-to-leaf sums only",
+            "verdict": "WA",
+            "signal": "dp[node] = max path sum from node to any leaf",
+            "reason": "Ignores paths that turn at a node, combining left and right branches"
+          }
+        ],
+        "optimal": {
+          "name": "Post-order DFS with Global Max Tracking",
+          "keyIdea": "Recursively compute the max gain from left and right children; at each node, compute priceNewPath = node.val + max(0, leftGain) + max(0, rightGain) and update global answer; return node.val + max(max(0, leftGain), max(0, rightGain)) to parent.",
+          "time": "O(N)",
+          "space": "O(H) recursion stack",
+          "topics": [
+            "tree",
+            "depth-first-search",
+            "binary-tree"
+          ],
+          "invariants": [
+            "leftGain / rightGain are never negative (clamped to 0)",
+            "global maximum updated at every node with priceNewPath",
+            "returned value to parent is node.val + max(leftGain, rightGain) only (no both)",
+            "base case: null node returns gain 0"
+          ],
+          "pitfalls": [
+            "forgetting to clamp gains to 0 → including negative children reduces sum",
+            "returning left+right+node.val to parent → invalid path (node used twice)",
+            "initializing global answer to 0 → fails when all nodes negative; must init to -inf or root.val",
+            "not handling null children → null → 0 gain is correct but must be explicit"
+          ],
+          "recognizeBy": [
+            "max(0, dfs(left)) / max(0, dfs(right))",
+            "ans = max(ans, node.val + leftGain + rightGain)",
+            "return node.val + max(leftGain, rightGain)",
+            "post-order traversal order (left, right, node)"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Brute Force Enumerate All Paths via DFS",
+            "keyIdea": "Start DFS from every node, explore all downward paths, compute sum, track max.",
+            "time": "O(N^2)",
+            "space": "O(H)",
+            "topics": [
+              "tree",
+              "depth-first-search",
+              "brute-force"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "O(N^2) time exceeds O(N) for N up to 3*10^4",
+            "recognizeBy": [
+              "outer loop over all nodes as path start",
+              "inner DFS only goes downwards (no upward then down)",
+              "no global variable updated across starts"
+            ]
+          },
+          {
+            "name": "Two-Global-Max DP on Tree",
+            "keyIdea": "First DFS computes max downward path from each node; second DFS propagates the global max path sum that includes ancestors.",
+            "time": "O(N)",
+            "space": "O(N) explicit stack",
+            "topics": [
+              "tree",
+              "dynamic-programming",
+              "depth-first-search"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Same O(N) time as optimal but higher constant factor and O(N) extra space for memo vs O(H) recursion",
+            "recognizeBy": [
+              "two separate DFS passes",
+              "dp1[node] = node.val + max(0, dp1[left], dp1[right])",
+              "dp2 propagation via parent reference"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Find the maximum sum of any node-to-node path in a binary tree, where each node is visited at most once and the path need not include the root.",
+            "reason": "Candidate crux explicitly captures the fundamental task: maximum sum of any node-to-node path with node-visited-once constraint and no root requirement, fully matching the rubric's definition of contiguous parent-child sequence."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "all negative values → answer is the maximum single node (least negative)",
+            "reason": "Edge cases list includes the required all-negative scenario with correct behavior (return least negative), plus single node (n=1 → answer is root.val) and skewed tree (tree skewed left or right → path follows the single non-null branch), satisfying all rubric-mandated edge cases."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Top-down evaluate all paths from root, verdict: TLE, signal: enumerate all root-to-node paths, compute sum, track max, reason: O(N^2) on skewed tree; misses paths not containing root",
+            "reason": "Candidate presents a realistic top-down root-to-leaf search with correct TLE verdict and precise failure mechanism (O(N^2) on skewed tree and misses non-root paths), exactly matching the rubric's wrong-approach criterion."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Recursively compute the max gain from left and right children; at each node, compute priceNewPath = node.val + max(0, leftGain) + max(0, rightGain) and update global answer; return node.val + max(max(0, leftGain), max(0, rightGain)) to parent.",
+            "reason": "Optimal section correctly identifies post-order DFS with O(N) time and O(H) space, returning max(0, node.val + max(left, right)) to parent while updating global sum via priceNewPath, and lists four operational invariants (clamped gains, global max update, single-branch return, null-base-case) meeting the 2+ invariant requirement."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "forgetting to clamp gains to 0 → including negative children reduces sum, initializing global answer to 0 → fails when all nodes negative; must init to -inf or root.val",
+            "reason": "Pitfalls explicitly include the two rubric-mandated subtle traps: forgetting to clamp negative branch gains to 0 and initializing global max to 0 instead of -Infinity."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 0,
+            "evidence": "Two-Global-Max DP on Tree, keyIdea: First DFS computes max downward path from each node; second DFS propagates the global max path sum that includes ancestors.",
+            "reason": "Rubric requires a divide-and-conquer approach passing structured path-state tuples as the alternate. Candidate provides a two-pass DP with memoization instead, which is a different paradigm and does not satisfy the specific required alternate."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON with exact schema keys (title, difficulty, crux, edgeCases, wrongApproaches, optimal, alternates); no markdown fences or conversational prose present."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Optimal time O(N) and space O(H) use correct asymptotic notation with problem variables; alternates list O(N^2) and O(N) with consistent notation."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are concise (1-2 sentences), use compact symbols (arrows, max(0, ...)), and contain no implementation code or wordy prose."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs (tree, depth-first-search, binary-tree, dynamic-programming, brute-force) are standard LeetCode slugs."
+          }
+        ],
+        "total": 9
+      }
+    },
+    {
+      "questionId": "1300",
+      "questionFrontendId": "1192",
+      "title": "Critical Connections in a Network",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 413,
+      "judgeLatencyMs": 339,
+      "score": "7 / 10",
+      "percentage": "70.0%",
+      "maxPoints": 10,
+      "awardedPoints": 7,
+      "candidateOutput": {
+        "title": "Critical Connections in a Network",
+        "difficulty": "Hard",
+        "crux": "Identify all bridge edges in an undirected connected graph whose removal disconnects the graph, using graph connectivity constraints.",
+        "edgeCases": [
+          "n=2, single edge [[0,1]] → answer [[0,1]] (only edge, removal disconnects)",
+          "n=4, triangle + leaf [[0,1],[1,2],[2,0],[1,3]] → answer [[1,3]] (leaf edge)",
+          "n=5, line graph 0-1-2-3-4 → all [[i,i+1]] are critical",
+          "Complete graph K_n (n>=3) → no critical connections",
+          "Parallel paths between two nodes → neither path edge is critical",
+          "Star graph center with many leaves → all leaf edges are critical",
+          "Constraints n up to 10^5, edges up to 10^5, adjacency list size must be O(N)",
+          "No repeated edges, no self-loops, graph is connected per statement"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "DFS Subtree Size Comparison",
+            "verdict": "WA",
+            "signal": "Return edges where child subtree size < n - subtree_size",
+            "reason": "Only works for trees; fails when back-edges create cycles hiding critical bridges"
+          },
+          {
+            "name": "Bridge Detection via Low/High Timestamps (Tarjan) without articulation handling",
+            "verdict": "WA",
+            "signal": "DFS with disc and low arrays, low[v] = min(disc[v], disc[u] for back-edge (u,v))",
+            "reason": "Standard Tarjan bridge finder is correct; this signal describes the right approach but the verdict indicates a mis-implementation variant that was submitted and failed"
+          },
+          {
+            "name": "BFS from Each Node to Find Critical Edges",
+            "verdict": "TLE",
+            "signal": "Run BFS from every node, mark each edge removed, check connectivity",
+            "reason": "O(N * (N + M)) time; N=10^5 causes TLE"
+          },
+          {
+            "name": "Find All Bridges Using SCC Decomposition",
+            "verdict": "WA",
+            "signal": "Compute SCCs, edges between different SCCs are bridges",
+            "reason": "Strongly connected components apply to directed graphs; undirected bridges ≠ SCC boundaries"
+          }
+        ],
+        "optimal": {
+          "name": "Tarjan's Bridge-Finding DFS (Articulation Point Variant)",
+          "keyIdea": "Run one DFS maintaining discovery time `disc` and low-link `low`; an edge (u,v) is a bridge iff `low[v] > disc[u]` after processing v's subtree, because no back-edge reaches u or earlier.",
+          "time": "O(N + M)",
+          "space": "O(N + M)",
+          "topics": [
+            "graph",
+            "depth-first-search",
+            "union-find"
+          ],
+          "invariants": [
+            "`disc[u]` assigned when node u first visited, strictly increasing",
+            "`low[u]` = min(disc[u], disc[parent], low[children], disc[back-neighbors])",
+            "Bridge condition: after DFS(v) from u, if low[v] > disc[u] then (u,v) is critical",
+            "Graph is connected so single DFS root covers all nodes"
+          ],
+          "pitfalls": [
+            "Forgetting to skip the direct parent edge, causing false bridge on tree edges",
+            "Using `low[v] >= disc[u]` instead of `>` for articulation vs bridge confusion",
+            "Not resetting `disc`/`low` for disconnected components if graph were not guaranteed connected",
+            "Integer overflow unlikely with N=10^5 but use 32-bit int safely within limits"
+          ],
+          "recognizeBy": [
+            "disc and low arrays initialized to -1",
+            "for neighbor v of u: if v == parent continue else if disc[v] == -1 { dfs(v); low[u] = min(low[u], low[v]); if low[v] > disc[u] add bridge } else { low[u] = min(low[u], disc[v]) }"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Bridge Detection Using Edge Removal + Connectivity Check (Brute Force)",
+            "keyIdea": "For each edge, temporarily remove it and run BFS/DFS to test if graph stays connected; if not, it is a bridge.",
+            "time": "O(M * (N + M))",
+            "space": "O(N + M)",
+            "topics": [
+              "graph",
+              "breadth-first-search"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "O(M * (N + M)) = up to 10^10 ops for max constraints, far exceeds time limit",
+            "recognizeBy": [
+              "edges loop iterating over all connections",
+              "temporary removal and BFS connectivity test per edge"
+            ]
+          },
+          {
+            "name": "Bridge Detection Using Low/High with Stack (Iterative DFS)",
+            "keyIdea": "Simulate Tarjan's recursive DFS iteratively using an explicit stack to avoid stack overflow on deep graphs.",
+            "time": "O(N + M)",
+            "space": "O(N + M)",
+            "topics": [
+              "graph",
+              "stack",
+              "depth-first-search"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Same asymptotic as recursive Tarjan but higher constant factor; used only when recursion depth limits are a concern",
+            "recognizeBy": [
+              "explicit stack frames storing (node, parent, edge_index)",
+              "manual simulation of post-order low-link updates"
+            ]
+          },
+          {
+            "name": "Bridge Detection Using BFS/DFS from Arbitrary Node + Degree Analysis (Incorrect Heuristic)",
+            "keyIdea": "Find edges where removing them increases the number of connected components by running BFS from node 0 and checking if all nodes remain reachable.",
+            "time": "O(M * (N + M))",
+            "space": "O(N + M)",
+            "topics": [
+              "graph",
+              "breadth-first-search"
+            ],
+            "verdict": "WA",
+            "whyNotOptimal": "Only checks connectivity from one start node; a bridge may not disconnect node 0 from others but still disconnect some pair of nodes",
+            "recognizeBy": [
+              "single BFS from node 0 per edge removal",
+              "visited count == n check"
+            ]
+          },
+          {
+            "name": "Bridge Detection Using Maximum Spanning Tree Edges",
+            "keyIdea": "Compute any MST; edges not in MST are non-critical, edges in MST are critical if they are the only connection between components.",
+            "time": "O(M log M)",
+            "space": "O(N + M)",
+            "topics": [
+              "graph",
+              "sorting",
+              "minimum-spanning-tree"
+            ],
+            "verdict": "WA",
+            "whyNotOptimal": "MST minimizes total weight, not bridge identification; a graph can have MST edges that are not bridges and non-MST edges that are bridges",
+            "recognizeBy": [
+              "Kruskal or Prim algorithm body",
+              "edge inclusion flag based on weight"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Identify all bridge edges in an undirected connected graph whose removal disconnects the graph",
+            "reason": "The crux correctly identifies the fundamental task as finding bridges (critical connections) whose removal disconnects the undirected graph."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=5, line graph 0-1-2-3-4 → all [[i,i+1]] are critical",
+            "reason": "The edge cases include a tree/line graph where every edge is critical, a triangle+leaf (cycle with bridge), complete graph (no bridges), star graph (all leaf edges critical), and parallel paths — covering all required boundary scenarios."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Run BFS from every node, mark each edge removed, check connectivity... O(N * (N + M)) time; N=10^5 causes TLE",
+            "reason": "The wrong approaches section explicitly lists a brute-force edge-removal + BFS/DFS approach with O(E*(V+E)) complexity and correctly verdicts it as TLE for the given constraints."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "an edge (u,v) is a bridge iff `low[v] > disc[u]` after processing v's subtree",
+            "reason": "The optimal section correctly describes Tarjan's bridge-finding DFS with disc/low arrays, the bridge condition low[v] > disc[u], and O(V+E) time/space, matching the required mechanics."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "Forgetting to skip the direct parent edge, causing false bridge on tree edges",
+            "reason": "The pitfalls list explicitly includes skipping the direct parent edge to avoid false cycles, which is the classic subtle implementation trap for this problem."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 0,
+            "reason": "The alternates list contains only brute-force (TLE), iterative DFS (same algorithm), an incorrect BFS heuristic (WA), and MST-based approach (WA). None represents a genuinely distinct valid/near-optimal alternative such as 2-edge-connected component decomposition or Hopcroft-Tarjan variants required by the rubric."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON with all required keys (crux, edgeCases, wrongApproaches, optimal, alternates) and no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 0,
+            "reason": "The optimal section lists 'union-find' in its topics array, but union-find is not the algorithm for Tarjan's bridge finding (DFS-based). This mislabels the algorithmic paradigm; however, the time/space complexities O(N+M) are correctly stated. The error in topic classification indicates asymptotic understanding is correct but topic tagging is wrong, which falls under GR_4. GR_2 focuses on Big-O notation correctness, which is satisfied."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are concise (1-2 sentences), use compact notation (->, disc/low), and avoid wordy prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 0,
+            "reason": "The optimal section includes 'union-find' in its topics array, which is not a standard LeetCode slug for this problem's solution (the correct slugs are 'graph', 'depth-first-search', 'bridges' or similar). 'union-find' is a distinct DSU topic not applicable to Tarjan's algorithm, making this an invalid topic slug for the described optimal approach."
+          }
+        ],
+        "total": 7
+      }
+    },
+    {
+      "questionId": "329",
+      "questionFrontendId": "329",
+      "title": "Longest Increasing Path in a Matrix",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 421,
+      "judgeLatencyMs": 323,
+      "score": "9 / 10",
+      "percentage": "90.0%",
+      "maxPoints": 10,
+      "awardedPoints": 9,
+      "candidateOutput": {
+        "title": "Longest Increasing Path in a Matrix",
+        "difficulty": "Hard",
+        "crux": "Find the maximum length of a strictly increasing sequence traversable via 4-directional moves on an m×n grid.",
+        "edgeCases": [
+          "1x1 matrix → return 1, single cell base case",
+          "strictly decreasing matrix → answer = 1, no valid moves",
+          "all equal values → answer = 1, no strictly increasing moves possible",
+          "single row or column → reduces to 1D path finding",
+          "large plateaus of same value → DFS must skip non-increasing neighbors",
+          "values at 2^31-1 max: int safe for memo dp, no overflow in additions"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Naive DFS without memoization",
+            "verdict": "TLE",
+            "signal": "dfs(i,j) without visited/cache",
+            "reason": "Exponential re-exploration of identical subproblems; path explores all 4^L routes, N=200 grid causes repeated full traversals from same cell"
+          },
+          {
+            "name": "BFS from every cell level-by-level",
+            "verdict": "TLE",
+            "signal": "queue per cell, expand frontier k times",
+            "reason": "Each BFS is O(N) and there are N cells; total O(N^2) with queue overhead, infeasible for 200x200 = 40K cells"
+          },
+          {
+            "name": "Topological sort on grid edges",
+            "verdict": "WA",
+            "signal": "Kahn's algorithm with indegree counts",
+            "reason": "Longest path in DAG requires DP relaxation, not just indegree peeling; indegree approach cannot track path length accumulation correctly"
+          },
+          {
+            "name": "Sort cells ascending, DP update from smaller",
+            "verdict": "WA",
+            "signal": "Process cells by value, dp[nx][ny] = max(dp[nx][ny], dp[i][j]+1)",
+            "reason": "Updates flow backwards: smaller→larger direction, but we need larger→smaller to accumulate path length; order of relaxation causes missing dependencies"
+          }
+        ],
+        "optimal": {
+          "name": "DFS + Memoization (DP on DAG)",
+          "keyIdea": "From each cell, recursively explore 4 neighbors with strictly greater values; cache the longest path starting at each cell in a dp[m][n] table; use visited marker to prevent recursion cycle on plateaus.",
+          "time": "O(m * n)",
+          "space": "O(m * n)",
+          "topics": [
+            "depth-first-search",
+            "dynamic-programming",
+            "graph"
+          ],
+          "invariants": [
+            "memo[i][j] stores longest increasing path starting from cell (i,j)",
+            "only transition to neighbor (nx,ny) if matrix[nx][ny] > matrix[i][j]",
+            "dp values are computed bottom-up via recursion post-order",
+            "no cycles because values strictly increase along path"
+          ],
+          "pitfalls": [
+            "missing base case: cell with no greater neighbors returns 1",
+            "integer overflow if adding path lengths beyond int range (mitigated by constraints)",
+            "not marking current cell temporarily to avoid re-entering same path in cycle-prone graph",
+            "forgetting to check boundary bounds before neighbor access"
+          ],
+          "recognizeBy": [
+            "if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue",
+            "if (matrix[nx][ny] <= matrix[i][j]) continue",
+            "if (dp[nx][ny] != 0) return dp[nx][ny]",
+            "dp[i][j] = 1 + max(dfs(nx, ny))"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Topological Sort + DP (Kahn's Algorithm)",
+            "keyIdea": "Reverse the direction: process cells in descending value order; for each cell, update its smaller neighbors' dp values; in-degree counts how many larger neighbors exist; when indegree hits 0, node is processed.",
+            "time": "O(m * n log(m * n))",
+            "space": "O(m * n)",
+            "topics": [
+              "topological-sort",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N log N) from sorting vs O(N) DFS memo; constant factors from priority queue",
+            "recognizeBy": [
+              "sort cells by value descending",
+              "indegree array counting larger neighbors",
+              "queue of zero-indegree nodes"
+            ]
+          },
+          {
+            "name": "BFS with Longest Distance in DAG",
+            "keyIdea": "Topologically sort by value, then BFS/DFS relaxes edge to larger neighbors, dp[neighbor] = max(dp[neighbor], dp[curr]+1).",
+            "time": "O(m * n log(m * n))",
+            "space": "O(m * n)",
+            "topics": [
+              "breadth-first-search",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Sorting overhead; BFS queue operations add constant factor over simple recursion",
+            "recognizeBy": [
+              "queue initialization with all cells",
+              "relaxation: if matrix[nx][ny] > matrix[i][j] dp[nx][ny] = max(dp[nx][ny], dp[i][j]+1)"
+            ]
+          },
+          {
+            "name": "Binary Lifting on Grid DAG",
+            "keyIdea": "Precompute 2^k-th ancestor and path length for each cell; allows O(log N) path queries after O(N log N) build.",
+            "time": "O(m * n log(m * n))",
+            "space": "O(m * n log(m * n))",
+            "topics": [
+              "binary-lifting",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Excessive memory O(N log N) for problem with N≤40K; overkill when simple DFS memo is O(N)",
+            "recognizeBy": [
+              "up[k][i][j] = up[k-1][ up[k-1][i][j] ]",
+              "len[k][i][j] = len[k-1][i][j] + len[k-1][ up[k-1][i][j] ]"
+            ]
+          },
+          {
+            "name": "Iterative DP with explicit stack",
+            "keyIdea": "Simulate recursion using manual stack to avoid recursion depth limits on large grids; push cells, process when all neighbors resolved.",
+            "time": "O(m * n)",
+            "space": "O(m * n) for dp + O(m * n) for stack",
+            "topics": [
+              "stack",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Manual stack adds code complexity and constant factor; recursion with memo is simpler and equally efficient",
+            "recognizeBy": [
+              "stack<pair<int,int>> st; st.push({i,j})",
+              "while (!st.empty()) { cur = st.top(); ... }"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Find the maximum length of a strictly increasing sequence traversable via 4-directional moves on an m×n grid.",
+            "reason": "Crux accurately captures the core problem: longest strictly increasing path via 4-directional moves on a grid."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "1x1 matrix → return 1, single cell base case; strictly decreasing matrix → answer = 1, no valid moves; all equal values → answer = 1, no strictly increasing moves possible",
+            "reason": "Edge cases explicitly covers 1x1 matrix, all equal values, and strictly decreasing matrix as required by rubric."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Naive DFS without memoization; verdict: TLE; reason: Exponential re-exploration of identical subproblems; path explores all 4^L routes, N=200 grid causes repeated full traversals from same cell",
+            "reason": "Identifies unmemoized DFS/naive backtracking as wrong approach with correct TLE verdict and exponential mechanism."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "DFS + Memoization (DP on DAG); time: O(m * n); space: O(m * n); invariants: memo[i][j] stores longest increasing path starting from cell (i,j); only transition to neighbor (nx,ny) if matrix[nx][ny] > matrix[i][j]; dp values are computed bottom-up via recursion post-order; no cycles because values strictly increase along path",
+            "reason": "Optimal section correctly identifies memoized DFS (DP on DAG) with O(m*n) time/space and provides four operational invariants."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 0,
+            "evidence": "Inspected 'optimal.pitfalls' field",
+            "reason": "Pitfalls lists 'not marking current cell temporarily to avoid re-entering same path in cycle-prone graph' which contradicts the rubric's required pitfall: unnecessary visited array/cycle detection is not needed because strictly increasing condition guarantees acyclicity. Candidate flags missing cycle detection as a pitfall, but the actual pitfall is adding unnecessary cycle detection."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Topological Sort + DP (Kahn's Algorithm); keyIdea: Reverse the direction: process cells in descending value order; for each cell, update its smaller neighbors' dp values; in-degree counts how many larger neighbors exist; when indegree hits 0, node is processed.",
+            "reason": "Provides a distinct alternate approach (Topological Sort/Kahn's) that peels indegree-0 cells layer by layer, satisfying the rubric requirement."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching required schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Optimal time O(m*n) and space O(m*n) use correct asymptotic notation with problem variables; alternates also use valid notation (O(m*n log(m*n)), etc.)."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are concise (1-2 sentences), using compact symbols and arrows; no bloated prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topics arrays contain standard LeetCode slugs: 'depth-first-search', 'dynamic-programming', 'graph', 'topological-sort', 'breadth-first-search', 'binary-lifting', 'stack'."
+          }
+        ],
+        "total": 9
+      }
+    },
+    {
+      "questionId": "1008",
+      "questionFrontendId": "968",
+      "title": "Binary Tree Cameras",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 312,
+      "judgeLatencyMs": 539,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "Binary Tree Cameras",
+        "difficulty": "Hard",
+        "crux": "Place minimum cameras on tree nodes so that every node is monitored (covers itself, parent, and immediate children).",
+        "edgeCases": [
+          "n=1 → 1 camera needed on the single root",
+          "n=2 → 1 camera on parent covers both",
+          "degenerate tree: single left/right chain → ceil(n/3) pattern",
+          "perfectly balanced full tree → cameras at every third level",
+          "star topology: root with many children → 1 camera at root suffices",
+          "alternating depth: deep left spine with single right child → strategic placement required",
+          "null child references → handle leaf/missing node state logic"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Greedy DFS from Root",
+            "verdict": "WA",
+            "signal": "post-order traversal placing camera at root if child uncovered",
+            "reason": "Root has no parent; placing camera at root may miss covering nodes above it in unbounded trees, or fail to propagate coverage status upward correctly, leading to suboptimal or incorrect counts."
+          },
+          {
+            "name": "BFS Level-by-Level Placement",
+            "verdict": "WA",
+            "signal": "queue-based level order, place camera at first uncovered node",
+            "reason": "BFS does not respect tree ancestry; a camera placed at a deeper level may not optimally cover its ancestors, and level-order decisions are irreversible, causing over-counting or missed coverage."
+          },
+          {
+            "name": "DP with Only Two States (Covered/Uncovered)",
+            "verdict": "WA",
+            "signal": "return pair {covered, hasCamera} per node",
+            "reason": "Missing the 'monitored-from-parent' state causes incorrect decisions at leaves and root; a node might appear uncovered when it is actually covered by a camera in its child, or vice versa."
+          },
+          {
+            "name": "Brute Force All Subsets",
+            "verdict": "TLE",
+            "signal": "2^n subset enumeration over n nodes",
+            "reason": "n ≤ 1000 makes 2^n utterly infeasible; exponential time complexity exceeds limits by orders of magnitude."
+          }
+        ],
+        "optimal": {
+          "name": "Tree DP with Three States",
+          "keyIdea": "Post-order DFS returning three states per node: 0=uncovered, 1=has camera, 2=covered-by-child; parent uses children's states to decide placement minimizing camera count.",
+          "time": "O(N)",
+          "space": "O(H)",
+          "topics": [
+            "tree",
+            "dynamic-programming",
+            "depth-first-search"
+          ],
+          "invariants": [
+            "Leaf nodes default to state 0 (uncovered) forcing camera placement at their parent",
+            "If any child is state 0 (uncovered), current node MUST install camera (state 1)",
+            "If any child has camera (state 1), current node is covered (state 2) without new camera",
+            "After processing root, if root ends in state 0, one extra camera is needed at root"
+          ],
+          "pitfalls": [
+            "forgetting to add +1 camera if root returns uncovered state 0",
+            "mixing up state transitions: state 2 means covered by child, not by parent",
+            "not handling null children → null must return state 2 (covered) so it doesn't force unnecessary cameras",
+            "using BFS or pre-order instead of post-order DFS breaks the bottom-up state propagation"
+          ],
+          "recognizeBy": [
+            "post-order DFS (left, right, then node)",
+            "return tuple of three integers (uncovered, camera, covered)",
+            "condition: if left==0 || right==0 → place camera",
+            "final check: if root state == 0 → ans++"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Greedy from Leaves (Post-Order without Explicit DP States)",
+            "keyIdea": "Traverse post-order; if node or either child is uncovered, place camera at node and increment count.",
+            "time": "O(N)",
+            "space": "O(H)",
+            "topics": [
+              "tree",
+              "greedy"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Conceptually identical to the three-state DP; no asymptotic difference, but may be harder to prove formally without the state enumeration.",
+            "recognizeBy": [
+              "while (node) { if (!covered(node) || !covered(left) || !covered(right)) place camera }",
+              "increment count and mark node and neighbors covered"
+            ]
+          },
+          {
+            "name": "BFS + Greedy from Bottom (Level Order + Post-Order Logic)",
+            "keyIdea": "Perform topological sort (BFS to get levels), then process nodes from deepest level upward, placing camera whenever a node is not yet covered.",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "tree",
+              "breadth-first-search",
+              "greedy"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N) space for queue vs O(H) recursion stack; constant-factor overhead from level-order traversal vs recursive post-order.",
+            "recognizeBy": [
+              "queue-based level order",
+              "reverse level processing (deepest first)",
+              "boolean covered array updated for node + parent + children"
+            ]
+          },
+          {
+            "name": "DP with State Compression (Two States + Parent Flag)",
+            "keyIdea": "Return pair from DFS: {minCameras, hasCamera}. Parent decides based on whether it needs coverage from child.",
+            "time": "O(N)",
+            "space": "O(H)",
+            "topics": [
+              "tree",
+              "dynamic-programming"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Slightly more complex state logic than the three-state approach; easier to mis-handle the edge case where root needs an extra camera.",
+            "recognizeBy": [
+              "return pair<int,int> where first=minCams, second=hasCameraFlag",
+              "parent chooses min(left.minCams, right.minCams) if neither child has camera"
+            ]
+          },
+          {
+            "name": "Recursive DFS with Global Covered Set",
+            "keyIdea": "Use DFS to traverse; maintain a global boolean array/Set of covered nodes. After traversal, greedily place cameras at uncovered nodes from leaves upward.",
+            "time": "O(N)",
+            "space": "O(N)",
+            "topics": [
+              "tree",
+              "depth-first-search",
+              "hash-set"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(N) extra space for the covered set; two-pass nature (traverse + place) vs single-pass bottom-up DP. Hash-set operations add constant overhead.",
+            "recognizeBy": [
+              "Set< TreeNode > covered",
+              "dfs(node) { if (!covered[node]) ... }",
+              "final loop over nodes to place remaining cameras"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Place minimum cameras on tree nodes so that every node is monitored (covers itself, parent, and immediate children).",
+            "reason": "Crux accurately captures the fundamental algorithmic task: minimum camera placement for full tree monitoring."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=1 → 1 camera needed on the single root, n=2 → 1 camera on parent covers both, degenerate tree: single left/right chain → ceil(n/3) pattern",
+            "reason": "Edge cases explicitly include single node, two-node tree, and linear chain with concrete boundary values."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Greedy DFS from Root ... verdict: WA ... BFS Level-by-Level Placement ... verdict: WA ... DP with Only Two States (Covered/Uncovered) ... verdict: WA ... Brute Force All Subsets ... verdict: TLE",
+            "reason": "Multiple realistic failing approaches cited with correct verdicts (WA/TLE) and clear failure mechanisms."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Post-order DFS returning three states per node: 0=uncovered, 1=has camera, 2=covered-by-child; parent uses children's states to decide placement minimizing camera count. ... time: O(N), space: O(H) ... invariants: Leaf nodes default to state 0 (uncovered) forcing camera placement at their parent, If any child is state 0 (uncovered), current node MUST install camera (state 1), If any child has camera (state 1), current node is covered (state 2) without new camera, After processing root, if root ends in state 0, one extra camera is needed at root",
+            "reason": "Optimal mechanics correctly identify post-order bottom-up greedy DFS with 3 states, O(N) time, O(H) space, and list four necessary operational invariants."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "forgetting to add +1 camera if root returns uncovered state 0, mixing up state transitions: state 2 means covered by child, not by parent, not handling null children → null must return state 2 (covered) so it doesn't force unnecessary cameras, using BFS or pre-order instead of post-order DFS breaks the bottom-up state propagation",
+            "reason": "Pitfalls explicitly include forgetting to check if root remains in state 0 requiring +1 camera, plus other subtle traps."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "DP with State Compression (Two States + Parent Flag) ... keyIdea: Return pair from DFS: {minCameras, hasCamera}. Parent decides based on whether it needs coverage from child. ... verdict: Accepted",
+            "reason": "Alternates include a genuinely distinct valid approach (two-state DP with parent flag) that is not a minor syntax tweak of the optimal three-state method."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching all required schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Optimal and alternate complexities use valid asymptotic notation with problem variable names (O(N), O(H), O(N) space for BFS variant) consistent with constraints."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are tight (1-2 sentences), using compact symbols (arrows ->) where appropriate; no bloated prose or implementation code."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs (tree, dynamic-programming, depth-first-search, greedy, breadth-first-search, hash-set) are standard LeetCode slugs."
+          }
+        ],
+        "total": 10
+      }
+    },
+    {
+      "questionId": "297",
+      "questionFrontendId": "297",
+      "title": "Serialize and Deserialize Binary Tree",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 292,
+      "judgeLatencyMs": 429,
+      "score": "9 / 10",
+      "percentage": "90.0%",
+      "maxPoints": 10,
+      "awardedPoints": 9,
+      "candidateOutput": {
+        "title": "Serialize and Deserialize Binary Tree",
+        "difficulty": "Hard",
+        "crux": "Encode a binary tree of N nodes into a compact string that can be reversed losslessly, handling null structure and value constraints.",
+        "edgeCases": [
+          "n=0 empty tree → serialize to sentinel like 'N' or '[]', deserialize return null",
+          "n=1 single node → serialize its value, deserialize creates leaf with no children",
+          "node.val=-1000 and val=1000: full range of 3-digit ints with sign, no delimiter collision if separator chosen carefully",
+          "completely skewed left or right tree → string length O(N), recursion depth O(N) risk stack overflow",
+          "duplicate node values throughout tree → serialization must encode structure, not just values, to allow unique deserialization",
+          "trailing nulls in level-order array: ensure deserializer stops or skips correctly without creating extra leaf nodes"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Pre-order String with Unspecified Null Marker",
+            "verdict": "WA",
+            "signal": "preorder traversal concatenating node.val as strings",
+            "reason": "Missing explicit null markers causes ambiguity when a missing child is indistinguishable from a leaf value that happens to match the serialization format"
+          },
+          {
+            "name": "Level-Order BFS String Without Trimming",
+            "verdict": "WA",
+            "signal": "queue-based level-order producing '1,2,3,null,null,4,5'",
+            "reason": "Trailing nulls may be dropped or incorrectly re-added during deserialization, shifting the tree structure"
+          },
+          {
+            "name": "In-order Traversal Serialization",
+            "verdict": "WA",
+            "signal": "inorder left-root-right string concat",
+            "reason": "In-order alone cannot reconstruct shape or root; multiple trees share same in-order sequence"
+          },
+          {
+            "name": "Adjacency List Format",
+            "verdict": "MLE",
+            "signal": "map from node id to [left,right] pairs",
+            "reason": "Storing explicit edges for 10^4 nodes exceeds typical string output limits and adds overhead per node"
+          }
+        ],
+        "optimal": {
+          "name": "Pre-order DFS with Explicit Null Marker and Comma Separator",
+          "keyIdea": "Serialize via pre-order DFS appending node.val or a sentinel (e.g. '#') for null, join with commas; deserialize by splitting and recursive reconstruction consuming tokens in the same order.",
+          "time": "O(N)",
+          "space": "O(N) for recursion stack + output string",
+          "topics": [
+            "tree",
+            "depth-first-search",
+            "string"
+          ],
+          "invariants": [
+            "Every null child is explicitly written as the sentinel '#'",
+            "Sentinel is a single character that does not collide with integer values in [-1000,1000]",
+            "Deserializer reads tokens left-to-right and reconstructs left subtree before right subtree",
+            "Base case: when token is sentinel, return null and advance pointer"
+          ],
+          "pitfalls": [
+            "Integer overflow if val stored as string without bounds check (val in [-1000,1000] is safe)",
+            "Missing sentinel for leaves causes underflow/parsing errors during deserialization",
+            "Recursive deserializer stack depth equals tree height; skewed tree of 10^4 nodes may RE if recursion limit hit",
+            "Comma separator omitted → multi-digit values merge (e.g. '12' + '3' = '123')"
+          ],
+          "recognizeBy": [
+            "preorder traversal order (root, left, right)",
+            "sentinel token '#' for null children",
+            "comma ',' as delimiter between values",
+            "index/pointer variable advanced after each token read in deserialize"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Level-Order BFS with Explicit Null Markers",
+            "keyIdea": "Serialize by enqueuing nodes level by level, writing each node's val or '#' for null; deserialize by popping from queue and assigning left/right children from the token stream.",
+            "time": "O(N)",
+            "space": "O(N) for queue and output string",
+            "topics": [
+              "tree",
+              "breadth-first-search",
+              "string"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Typically produces longer strings than pre-order for skewed trees; queue overhead in deserialize",
+            "recognizeBy": [
+              "tokens indexed sequentially from a split array",
+              "while queue not empty: pop, read val, assign left/right",
+              "'#' used for null child markers"
+            ]
+          },
+          {
+            "name": "Compact Base-64 Encoded Bitset",
+            "keyIdea": "Serialize structure into a bit-array where 1 = present node, 0 = null; values stored separately; pack bits into base-64 string for space efficiency.",
+            "time": "O(N) to serialize, O(N) to deserialize",
+            "space": "O(N) bits + output string",
+            "topics": [
+              "bit-manipulation",
+              "string"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "Higher constant factor; requires careful handling of value ordering and bit-boundary alignment during deserialization",
+            "recognizeBy": [
+              "bit-packing of structural flags",
+              "separate storage of node values order",
+              "base-64 or hex output encoding"
+            ]
+          },
+          {
+            "name": "Pre-order with Marker and No Delimiters (Compact)",
+            "keyIdea": "Serialize pre-order node values as raw characters; use '#' for null and rely on fixed-width or known value range to disambiguate (e.g., values guaranteed 3 digits with leading zeros).",
+            "time": "O(N)",
+            "space": "O(N) for string",
+            "topics": [
+              "string",
+              "math"
+            ],
+            "verdict": "WA if value range not constrained to fixed width",
+            "whyNotOptimal": "Fails on arbitrary ints in [-1000,1000] without delimiters or padding; '12#3' ambiguous vs '1#23'",
+            "recognizeBy": [
+              "no comma separators between tokens",
+              " '#' sentinel for null",
+              "depends on fixed-width integer formatting"
+            ]
+          },
+          {
+            "name": "XOR-linked List Style Serialization",
+            "keyIdea": "Encode tree as sequence of values with parent pointers XOR'd to reduce space, deserialize by walking and resolving XOR.",
+            "verdict": "RE",
+            "signal": "XOR of adjacent pointer indices",
+            "reason": "Complex pointer arithmetic error-prone; not compatible with standard binary tree deserialization expectations"
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Encode a binary tree of N nodes into a compact string that can be reversed losslessly, handling null structure and value constraints.",
+            "reason": "The crux accurately captures the core requirement: lossless encoding/decoding of both structure and values while handling nulls and value ranges."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=0 empty tree → serialize to sentinel like 'N' or '[]', deserialize return null; n=1 single node → serialize its value, deserialize creates leaf with no children; node.val=-1000 and val=1000: full range of 3-digit ints with sign, no delimiter collision if separator chosen carefully; duplicate node values throughout tree → serialization must encode structure, not just values, to allow unique deserialization",
+            "reason": "Edge cases explicitly cover empty tree, single node, negative values, and duplicate values as required."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 0,
+            "reason": "The listed wrong approaches do not include the required 'Inorder + Preorder traversal without null sentinels (fails on duplicate node values)'. Inspected 'wrongApproaches' array; the failure mechanism described does not match the rubric's required concept."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Serialize via pre-order DFS appending node.val or a sentinel (e.g. '#') for null, join with commas; deserialize by splitting and recursive reconstruction consuming tokens in the same order.; time: O(N); space: O(N) for recursion stack + output string; invariants: Every null child is explicitly written as the sentinel '#'; Sentinel is a single character that does not collide with integer values in [-1000,1000]; Deserializer reads tokens left-to-right and reconstructs left subtree before right subtree; Base case: when token is sentinel, return null and advance pointer",
+            "reason": "Optimal correctly identifies preorder DFS with null markers, O(N) time/space, and lists multiple operational invariants."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "Integer overflow if val stored as string without bounds check (val in [-1000,1000] is safe); Missing sentinel for leaves causes underflow/parsing errors during deserialization; Recursive deserializer stack depth equals tree height; skewed tree of 10^4 nodes may RE if recursion limit hit; Comma separator omitted → multi-digit values merge (e.g. '12' + '3' = '123')",
+            "reason": "Pitfalls address multi-digit/negative integer parsing issues, missing sentinel problems, and recursion depth limits."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Level-Order BFS with Explicit Null Markers; keyIdea: Serialize by enqueuing nodes level by level, writing each node's val or '#' for null; deserialize by popping from queue and assigning left/right children from the token stream.; time: O(N); space: O(N) for queue and output string; verdict: Accepted",
+            "reason": "Alternates includes a valid Level-order BFS approach with O(N) time/space, matching the required distinct alternative."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON with all required keys and no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Optimal and alternates use correct asymptotic notation O(N) with problem variable N."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are concise (1-2 sentences) and use compact notation like O(N), '#', '->' implicitly."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs ('tree', 'depth-first-search', 'string', 'breadth-first-search', 'bit-manipulation', 'math') are valid LeetCode slugs."
+          }
+        ],
+        "total": 9
+      }
+    },
+    {
+      "questionId": "794",
+      "questionFrontendId": "778",
+      "title": "Swim in Rising Water",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 386,
+      "judgeLatencyMs": 488,
+      "score": "10 / 10",
+      "percentage": "100.0%",
+      "maxPoints": 10,
+      "awardedPoints": 10,
+      "candidateOutput": {
+        "title": "Swim in Rising Water",
+        "difficulty": "Hard",
+        "crux": "Find earliest time t when a path of cells with elevation <= 4-directionally connects start (0,0) to target (n-1,n-1).",
+        "edgeCases": [
+          "n=1: answer=0 since start==target immediately reachable",
+          "strictly increasing heights along any path: answer equals max elevation on path",
+          "all elevations equal: answer equals that single elevation value",
+          "maximum elevation n^2-1 present early in grid forcing later detours",
+          "grid values are a permutation of 0..n^2-1"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Binary Search + DFS Connectivity",
+            "verdict": "TLE",
+            "signal": "for t in 0..n^2: visited DFS from (0,0)",
+            "reason": "O(n^4) checks each O(n^2) binary steps with O(n^2) DFS cost"
+          },
+          {
+            "name": "Priority Queue Dijkstra on Elevation Max",
+            "verdict": "WA (incorrect implementation)",
+            "signal": "PQ keyed by current cell elevation only",
+            "reason": "ignores historical max elevation along path, may submerge start too early"
+          },
+          {
+            "name": "Flood Fill per Time Step",
+            "verdict": "TLE",
+            "signal": "BFS queue reinitialized for every t from 0 to n^2",
+            "reason": "redundant re-exploration of same reachable component"
+          },
+          {
+            "name": "Sort Cells by Elevation, Two-Pointer",
+            "verdict": "WA",
+            "signal": "maintain sliding window of cells <= t, check connectivity",
+            "reason": "sliding window breaks 4-directional adjacency constraints when cells added out of order"
+          }
+        ],
+        "optimal": {
+          "name": "Min-Heap Dijkstra (Prim’s Algorithm)",
+          "keyIdea": "Treat grid as graph; min-heap stores (maxElevationSoFar, r, c). Pop smallest, expand 4-neighbors, push new max(maxSoFar, neighborElev). First time target popped guarantees minimum time.",
+          "time": "O(N^2 log N^2)",
+          "space": "O(N^2)",
+          "topics": [
+            "heap-priority-queue",
+            "graph",
+            "binary-search"
+          ],
+          "invariants": [
+            "heap always contains frontier cells with current path max-elevation as key",
+            "dist[r][c] tracks smallest known max-elevation to reach (r,c), skip stale pops",
+            "start dist = grid[0][0], target answer when target popped from heap"
+          ],
+          "pitfalls": [
+            "forgetting to initialize dist[0][0] = grid[0][0] causes wrong start cost",
+            "not skipping popped entries where dist < popped elevation causes infinite loop",
+            "using max-heap instead of min-heap inverts the optimization goal",
+            "target answer taken before heap pop → returns suboptimal larger value"
+          ],
+          "recognizeBy": [
+            "PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->a[0]-b[0]);",
+            "int cur = pq.poll(); int r = cur/ n, c = cur % n;",
+            "for (int d=0; d<4; d++) { int nr=r+dr[d], nc=c+dc[d]; }",
+            "if (nr>=0 && nr<n && nc>=0 && nc<n && grid[nr][nc] > cur) push(nr,nc, Math.max(cur, grid[nr][nc]))"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Binary Search + Union-Find (Dynamic Connectivity)",
+            "keyIdea": "Sort all cells by elevation, binary search answer t, union cells with elevation <= t, check if find(0) == find(n-1).",
+            "time": "O(N^2 log N^2)",
+            "space": "O(N^2)",
+            "topics": [
+              "union-find",
+              "binary-search",
+              "sorting"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "constant factors from sorting + DSU overhead exceed single-pass Dijkstra",
+            "recognizeBy": [
+              "cells sorted by elevation ascending",
+              "UnionFind uf = new UnionFind(n*n);",
+              "for each cell in sorted order: union with active neighbors",
+              "if uf.find(startIdx) == uf.find(targetIdx) return current elevation"
+            ]
+          },
+          {
+            "name": "Binary Search + BFS Connectivity",
+            "keyIdea": "Binary search time t, run BFS/DFS only on cells with elevation <= t, check path existence.",
+            "time": "O(N^2 log (maxElev))",
+            "space": "O(N^2)",
+            "topics": [
+              "binary-search",
+              "bfs",
+              "graph"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(log(maxElev)) BFS passes each O(N^2) worse than Dijkstra's single pass",
+            "recognizeBy": [
+              "boolean[][] vis = new boolean[n][n];",
+              "Queue<int[]> q = new LinkedList<>();",
+              "while (q.poll()) { int r=q.front()/n, c=q.front()%n; }"
+            ]
+          },
+          {
+            "name": "Brute Force Time Linear Search",
+            "keyIdea": "Iterate t from 0 to n^2-1, after each increment run BFS from start; stop when target reached.",
+            "time": "O(N^4)",
+            "space": "O(N^2)",
+            "topics": [
+              "bfs",
+              "simulation"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "quadratic t-loop times linear BFS gives quartic N^4, exceeds limit for n=50",
+            "recognizeBy": [
+              "for (int t=0; t<n*n; t++) {",
+              "  boolean[][] vis = new boolean[n][n];",
+              "  bfs(0,0, t, vis);",
+              "  if (vis[n-1][n-1]) return t;",
+              "}"
+            ]
+          },
+          {
+            "name": "Dynamic Programming on Elevation",
+            "keyIdea": "dp[r][c] = min time to reach (r,c); transition dp[nr][nc] = min(dp[nr][nc], max(dp[r][c], grid[nr][nc])).",
+            "time": "O(N^4)",
+            "space": "O(N^2)",
+            "topics": [
+              "dynamic-programming",
+              "graph"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "requires N^2 relaxations repeated until convergence, effectively Bellman-Ford on grid",
+            "recognizeBy": [
+              "int[][] dp = new int[n][n];",
+              "Arrays.fill(dp, Integer.MAX_VALUE);",
+              "dp[0][0] = grid[0][0];",
+              "for (int k=0; k<n*n; k++) for each cell relax neighbors"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Find earliest time t when a path of cells with elevation <= 4-directionally connects start (0,0) to target (n-1,n-1).",
+            "reason": "The crux correctly captures the fundamental task: the minimum time t such that a 4-directional path exists where every cell elevation <= t."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "n=1: answer=0 since start==target immediately reachable; strictly increasing heights along any path: answer equals max elevation on path; all elevations equal: answer equals that single elevation value",
+            "reason": "Edge cases explicitly cover n=1, strictly increasing elevations (bottleneck path), and uniform elevations; the candidate also notes the permutation property which implies start elevation can be higher than target."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Priority Queue Dijkstra on Elevation Max: verdict WA (incorrect implementation), signal PQ keyed by current cell elevation only, reason ignores historical max elevation along path, may submerge start too early",
+            "reason": "The candidate identifies a realistic wrong approach (PQ keyed by current cell elevation only) with correct WA verdict and explains the failure mechanism: it ignores the historical max elevation (bottleneck) along the path, which is exactly the unweighted BFS / sum mistake the rubric expects."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Min-Heap Dijkstra (Prim's Algorithm): heap always contains frontier cells with current path max-elevation as key; dist[r][c] tracks smallest known max-elevation to reach (r,c), skip stale pops; start dist = grid[0][0], target answer when target popped from heap",
+            "reason": "Optimal mechanics correctly describe Dijkstra with min-heap on bottleneck max-elevation, state two invariants (heap key = path max-elevation, dist array for pruning), and note the answer is when target is popped."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "forgetting to initialize dist[0][0] = grid[0][0] causes wrong start cost; not skipping popped entries where dist < popped elevation causes infinite loop; using max-heap instead of min-heap inverts the optimization goal",
+            "reason": "Pitfalls include the critical initialization of start cost as grid[0][0] (not 0), stale-entry skipping, and heap ordering — directly matching the rubric's required pitfall about accounting for start cell elevation."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 1,
+            "evidence": "Binary Search + Union-Find (Dynamic Connectivity): Sort all cells by elevation, binary search answer t, union cells with elevation <= t, check if find(0) == find(n-1).",
+            "reason": "The alternate presents Kruskal/Union-Find connecting cells by sorted elevation (no binary search needed in the description, but the core idea matches), which is a genuinely distinct valid approach."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "The output is valid JSON matching the schema keys with no markdown fences or conversational prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "All complexities use valid asymptotic notation with problem variable N (e.g., O(N^2 log N^2), O(N^4)) consistent with constraints n <= 50."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are tight, 1-2 sentences, using compact symbols (->, <=, etc.) and avoiding implementation code in the main text."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs are standard LeetCode tags: heap-priority-queue, graph, binary-search, union-find, sorting, bfs, dynamic-programming, simulation."
+          }
+        ],
+        "total": 10
+      }
+    },
+    {
+      "questionId": "4",
+      "questionFrontendId": "4",
+      "title": "Median of Two Sorted Arrays",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 306,
+      "judgeLatencyMs": 584,
+      "score": "9 / 10",
+      "percentage": "90.0%",
+      "maxPoints": 10,
+      "awardedPoints": 9,
+      "candidateOutput": {
+        "title": "Median of Two Sorted Arrays",
+        "difficulty": "Hard",
+        "crux": "Find the k-th smallest element in the union of two sorted arrays without merging them, using binary search on indices to achieve O(log(m+n)).",
+        "edgeCases": [
+          "m=0, n>0: median is standard median of nums2 alone",
+          "n=0, m>0: median is standard median of nums1 alone",
+          "both arrays non-empty with equal total length: median is average of two middle elements",
+          "total length odd: return middle element; even: average of two middle elements",
+          "all elements in one array smaller than the other: partition at boundary",
+          "duplicate values across arrays: binary search still valid, counts matter"
+        ],
+        "wrongApproaches": [
+          {
+            "name": "Merge and Sort",
+            "verdict": "TLE",
+            "signal": "nums1.concat(nums2).sort((a,b)=>a-b)",
+            "reason": "O((m+n) log(m+n)) violates the strict O(log(m+n)) requirement",
+            "whyNotOptimal": "Fails the logarithmic time complexity constraint"
+          },
+          {
+            "name": "Simple Binary Search on One Array",
+            "verdict": "WA",
+            "signal": "binarySearch(nums1, target)",
+            "reason": "Cannot discard elements from both arrays simultaneously without index mapping in the second array",
+            "whyNotOptimal": "Fails to find correct partition across both arrays"
+          },
+          {
+            "name": "Concatenation without Sort",
+            "verdict": "WA",
+            "signal": "nums1.concat(nums2)",
+            "reason": "Resulting array is not sorted, median calculation incorrect",
+            "whyNotOptimal": "Assumes input arrays can be blindly concatenated"
+          },
+          {
+            "name": "Linear Partition without Binary Search",
+            "verdict": "TLE",
+            "signal": "two-pointer merge scanning both arrays",
+            "reason": "O(m+n) time exceeds the required O(log(m+n))",
+            "whyNotOptimal": "Linear scan is too slow for the constraint limits"
+          }
+        ],
+        "optimal": {
+          "name": "Binary Search on Partition (QuickSelect style)",
+          "keyIdea": "Binary search the partition point on the smaller array; ensure left max <= right min across both arrays, then compute median from boundary values.",
+          "time": "O(log(min(m, n)))",
+          "space": "O(1)",
+          "topics": [
+            "binary-search",
+            "two-pointers",
+            "divide-and-conquer"
+          ],
+          "invariants": [
+            "partitionX + partitionY = (m + n + 1) / 2",
+            "leftX <= rightY and leftY <= rightX",
+            "binary search bounds: [0, m] on smaller array",
+            "handle edge partitions with -Infinity / +Infinity sentinels"
+          ],
+          "pitfalls": [
+            "integer overflow in partition index calculation (use left + (right - left) / 2)",
+            "off-by-one in the (m + n + 1) / 2 formula for odd/even total lengths",
+            "forgetting to swap arrays so binary search runs on the smaller one",
+            "miscomputing median when total length is even versus odd"
+          ],
+          "recognizeBy": [
+            "finding partitionX via binary search on smaller array",
+            "calculating partitionY = (m + n + 1) / 2 - partitionX",
+            "comparing nums1[partitionX-1] and nums2[partitionY-1] as left maxes",
+            "comparing nums1[partitionX] and nums2[partitionY] as right mins"
+          ]
+        },
+        "alternates": [
+          {
+            "name": "Linear Merge with Two Pointers",
+            "keyIdea": "Merge the two sorted arrays into a new array using two pointers until the median index is reached, then compute the median.",
+            "time": "O(m + n)",
+            "space": "O(m + n) or O(1) if output counted",
+            "topics": [
+              "two-pointers",
+              "array"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(m+n) time exceeds the required O(log(m+n))",
+            "recognizeBy": [
+              "while (i < m && j < n) compare nums1[i] and nums2[j]",
+              "advance pointer with smaller current element"
+            ]
+          },
+          {
+            "name": "Counting Sort based Merge",
+            "keyIdea": "Leverage the constraint range [-10^6, 10^6] to use a frequency array of size 2*10^6+1 to count all elements, then find the median by traversing the frequency array.",
+            "time": "O(m + n + K) where K = 2*10^6+1",
+            "space": "O(K)",
+            "topics": [
+              "array",
+              "counting-sort"
+            ],
+            "verdict": "Accepted",
+            "whyNotOptimal": "O(K) space and time is overkill given m+n <= 2000, violates logarithmic constraint",
+            "recognizeBy": [
+              "frequency array of fixed size 2000001",
+              "cumulative count traversal to find k-th element"
+            ]
+          },
+          {
+            "name": "Full Merge Sort",
+            "keyIdea": "Combine nums1 and nums2 using a standard merge sort merge step, then pick the middle element(s).",
+            "time": "O((m+n) log(m+n))",
+            "space": "O(m+n)",
+            "topics": [
+              "sorting",
+              "merge-sort"
+            ],
+            "verdict": "TLE",
+            "whyNotOptimal": "Log-linear time violates the O(log(m+n)) requirement",
+            "recognizeBy": [
+              "temporary array of size m+n",
+              "standard merge logic with indices"
+            ]
+          },
+          {
+            "name": "Randomized QuickSelect",
+            "keyIdea": "Randomly pick a pivot from the combined elements, partition both arrays around it, and recurse on the side containing the median.",
+            "time": "Expected O(m+n), worst O((m+n)^2)",
+            "space": "O(log(m+n)) recursion stack",
+            "topics": [
+              "randomized",
+              "quickselect"
+            ],
+            "verdict": "WA / TLE",
+            "whyNotOptimal": "Randomization does not guarantee the strict O(log(m+n)) bound; worst-case quadratic",
+            "recognizeBy": [
+              "random pivot selection",
+              "partitioning both arrays around pivot value"
+            ]
+          }
+        ]
+      },
+      "judgeEvaluation": {
+        "personal": [
+          {
+            "id": "PR_1",
+            "awarded": 1,
+            "evidence": "Find the k-th smallest element in the union of two sorted arrays without merging them, using binary search on indices to achieve O(log(m+n)).",
+            "reason": "Crux correctly identifies the core algorithmic task: finding median via k-th element / partition binary search with target logarithmic complexity."
+          },
+          {
+            "id": "PR_2",
+            "awarded": 1,
+            "evidence": "m=0, n>0: median is standard median of nums2 alone; n=0, m>0: median is standard median of nums1 alone; all elements in one array smaller than the other: partition at boundary",
+            "reason": "Edge cases explicitly cover one empty array (m=0 or n=0), non-overlapping ranges, and odd/even total length handling."
+          },
+          {
+            "id": "PR_3",
+            "awarded": 1,
+            "evidence": "Merge and Sort: verdict TLE; signal nums1.concat(nums2).sort((a,b)=>a-b); reason O((m+n) log(m+n)) violates the strict O(log(m+n)) requirement",
+            "reason": "Wrong approaches include merging (linear or log-linear) with correct TLE verdict and explicit violation of logarithmic constraint."
+          },
+          {
+            "id": "PR_4",
+            "awarded": 1,
+            "evidence": "Binary Search on Partition (QuickSelect style); keyIdea: Binary search the partition point on the smaller array; ensure left max <= right min across both arrays, then compute median from boundary values.; invariants: partitionX + partitionY = (m + n + 1) / 2, leftX <= rightY and leftY <= rightX, binary search bounds: [0, m] on smaller array, handle edge partitions with -Infinity / +Infinity sentinels",
+            "reason": "Optimal section identifies correct algorithm (binary search on smaller array partition) with multiple necessary invariants (partition sum, cross-array ordering, bounds, sentinels)."
+          },
+          {
+            "id": "PR_5",
+            "awarded": 1,
+            "evidence": "off-by-one in the (m + n + 1) / 2 formula for odd/even total lengths; forgetting to swap arrays so binary search runs on the smaller one; handle edge partitions with -Infinity / +Infinity sentinels",
+            "reason": "Pitfalls explicitly list sentinel handling for edge partitions (index 0 or length), odd/even formula off-by-one, and smaller-array swap requirement."
+          },
+          {
+            "id": "PR_6",
+            "awarded": 0,
+            "evidence": "Inspected alternates array: contains Linear Merge (O(m+n)), Counting Sort (O(m+n+K)), Full Merge Sort (O((m+n)log(m+n))), Randomized QuickSelect (expected O(m+n)). None match K-th element elimination via binary search O(log(m+n)).",
+            "reason": "No alternate approach describes the distinct K-th element elimination binary search (recursively discarding k/2 elements) which runs in O(log(m+n)) time. Provided alternates are either slower or incorrect."
+          }
+        ],
+        "general": [
+          {
+            "id": "GR_1",
+            "awarded": 1,
+            "reason": "Output is valid JSON matching required keys; no markdown or extra prose."
+          },
+          {
+            "id": "GR_2",
+            "awarded": 1,
+            "reason": "Optimal time O(log(min(m,n))) and space O(1) are correct; alternate complexities use valid asymptotic notation with problem variables."
+          },
+          {
+            "id": "GR_3",
+            "awarded": 1,
+            "reason": "Explanations are concise (1-2 sentences), using compact notation like arrows and symbols; no implementation code or bloat."
+          },
+          {
+            "id": "GR_4",
+            "awarded": 1,
+            "reason": "All topic slugs (binary-search, two-pointers, divide-and-conquer, array, counting-sort, sorting, merge-sort, randomized, quickselect) are standard LeetCode tags."
+          }
+        ],
+        "total": 9
+      }
+    },
+    {
+      "questionId": "10",
+      "questionFrontendId": "10",
+      "title": "Regular Expression Matching",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 94,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "23",
+      "questionFrontendId": "23",
+      "title": "Merge k Sorted Lists",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 2230,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "32",
+      "questionFrontendId": "32",
+      "title": "Longest Valid Parentheses",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 93,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "41",
+      "questionFrontendId": "41",
+      "title": "First Missing Positive",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 78,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "76",
+      "questionFrontendId": "76",
+      "title": "Minimum Window Substring",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 79,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "239",
+      "questionFrontendId": "239",
+      "title": "Sliding Window Maximum",
+      "difficulty": "Hard",
+      "candidateLatencyMs": 79,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "133",
+      "questionFrontendId": "133",
+      "title": "Clone Graph",
+      "difficulty": "Medium",
+      "candidateLatencyMs": 102,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "200",
+      "questionFrontendId": "200",
+      "title": "Number of Islands",
+      "difficulty": "Medium",
+      "candidateLatencyMs": 68,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "146",
+      "questionFrontendId": "146",
+      "title": "LRU Cache",
+      "difficulty": "Medium",
+      "candidateLatencyMs": 74,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "210",
+      "questionFrontendId": "210",
+      "title": "Course Schedule II",
+      "difficulty": "Medium",
+      "candidateLatencyMs": 67,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    },
+    {
+      "questionId": "560",
+      "questionFrontendId": "560",
+      "title": "Subarray Sum Equals K",
+      "difficulty": "Medium",
+      "candidateLatencyMs": 73,
+      "judgeLatencyMs": 0,
+      "score": "0 / 10",
+      "percentage": "0.0%",
+      "maxPoints": 10,
+      "awardedPoints": 0,
+      "candidateOutput": null,
+      "judgeEvaluation": null,
+      "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day\",\"code\":429,\"metadata\":{\"headers\":{\"X-RateLimit-Limit\":\"50\",\"X-RateLimit-Remaining\":\"0\",\"X-RateLimit-Reset\":\"1793836800000\"},\"limit_source\":\"openrouter_free_tier_daily\",\"remedy_hint\":\"Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.\",\"provider_name\":null}},\"user_id\":\"user_3LdyprahNnNCYmSKOg37QwjrDIZ\"}"
+    }
+  ]
+}

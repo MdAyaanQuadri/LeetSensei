@@ -6,11 +6,22 @@ export type LeetCodeTopicSlug = string;
 // ==========================================
 
 
+export interface EnrichedExampleItem {
+  exampleNumber: number;
+  input: string;
+  output: string;
+  explanation?: string;
+  imageDescription?: string;
+}
+
 export interface QuestionAnalysisInput {
+  questionId: string;
+  questionFrontendId: string;
   title: string;
+  titleSlug: string;
   difficulty: "Easy" | "Medium" | "Hard";
   body: string;
-  examples: ExampleItem[];
+  examples: EnrichedExampleItem[];
   constraints: string[];
   officialTopics?: string[];
 }
@@ -56,3 +67,64 @@ export interface QuestionAnalysisOutput {
   optimal: OptimalApproach;
   alternates: AlternateApproach[];
 }
+
+export interface QuestionRubricItem {
+  questionId: string;
+  questionFrontendId: string;
+  title: string;
+  difficulty: "Hard" | "Medium";
+  personalRubrics: {
+    id: string;
+    criterion: string;
+    maxPoints: number;
+  }[];
+}
+
+// ==========================================
+// 3. LLM-AS-A-JUDGE & EVALUATION REPORT TYPES
+// ==========================================
+
+export interface JudgeScoreItem {
+  id: string;
+  awarded: number;
+  evidence?: string | undefined;
+  reason: string;
+}
+
+export interface JudgeEvaluationOutput {
+  personal: JudgeScoreItem[];
+  general: JudgeScoreItem[];
+  total: number;
+}
+
+export interface UnifiedQuestionAnalysisTestCaseReport {
+  questionId: string;
+  questionFrontendId: string;
+  title: string;
+  difficulty: string;
+  candidateLatencyMs: number;
+  judgeLatencyMs: number;
+  score: string;
+  percentage: string;
+  maxPoints: number;
+  awardedPoints: number;
+  candidateOutput: QuestionAnalysisOutput | null;
+  judgeEvaluation: JudgeEvaluationOutput | null;
+  error?: string | undefined;
+}
+
+export interface QuestionAnalysisEvalReport {
+  model: string;
+  judgeModel: string;
+  executedAt: string;
+  metrics: {
+    totalScore: number;
+    maxScore: number;
+    percentage: string;
+    avgLatencyMs: number;
+    validJsonRate: string;
+    totalCases: number;
+  };
+  scorecard: UnifiedQuestionAnalysisTestCaseReport[];
+}
+
