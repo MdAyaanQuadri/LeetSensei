@@ -1,0 +1,15 @@
+EXTRACTION RULES:
+
+1. Data Structure Identification & Topology:
+   - Binary Trees: Identify root, left child, right child, and explicit null pointers.
+   - Graphs: List every node and all directed/weighted edges (u -> v with weight w). Note cycles or bidirectional links.
+   - Grids / Matrices: State dimensions (M x N) and list critical cell coordinates (r, c) with their contents.
+   - Elevation Maps / Coordinates: State bar sequence, boundary heights, and intersection points.
+
+2. Numerical Precision:
+   - Transcribe ALL integers, negative signs, decimal values, and node labels exactly as shown.
+   - Never approximate, round, or guess values.
+
+3. Visual Highlights & Features:
+   - Describe visual features that text alone cannot convey: shaded regions (e.g., blue water blocks), highlighted paths or arrows, node colors, or state transitions (Initial -> Final).
+   - If no special highlights or state changes exist, state "None".

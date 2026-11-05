@@ -270,6 +270,41 @@ export const retryAfterRateLimit = async (
     }
 }
 
+export const LEETCODE_QUESTION_DATA_QUERY = gql`
+    query questionData($titleSlug: String!) {
+        userStatus {
+            isPremium
+        }
+        question(titleSlug: $titleSlug) {
+            questionId
+            questionFrontendId
+            title
+            titleSlug
+            content
+            difficulty
+            isPaidOnly
+            topicTags {
+                name
+                slug
+            }
+        }
+    }
+`;
+
+export const fetchLeetCodeQuestionFromApi = async (titleSlug: string) => {
+    const url = 'https://leetcode.com/graphql/';
+    try {
+        const data = await request<any>(url, LEETCODE_QUESTION_DATA_QUERY, { titleSlug });
+        return data;
+    } catch (error: any) {
+        if (error.response?.status === 429) {
+            throw new RateLimitError("LeetCode rate limit hit", `question: ${titleSlug}`);
+        }
+        console.warn(`[LeetSensei] Failed to fetch question "${titleSlug}" from LeetCode API:`, error.message);
+        return null;
+    }
+};
+
 export const fetchQuestions = async (titleSlug: string) => {
     const data = await prisma.question.findUnique({
         where: {
@@ -301,8 +336,39 @@ export const createQuestions = async (questionSyncData: QuestionSyncData) => {
 return data;
 }
 
+export const ensureQuestionExists = async (titleSlug: string) => {
+    const existing = await fetchQuestions(titleSlug);
+    if (existing) return existing;
+
+    const lcData = await fetchLeetCodeQuestionFromApi(titleSlug);
+    const question = lcData?.question;
+    if (!question) return null;
+
+    const isQuestionPremium = question.isPaidOnly === true;
+    const isUserPremium = lcData?.userStatus?.isPremium === true;
+
+    // Premium logic parity with extension: skip if question is paid and user is not premium
+    if (isQuestionPremium && !isUserPremium) {
+        console.warn(`[LeetSensei] Skipping sync for premium question "${titleSlug}" (user not premium).`);
+        return null;
+    }
+
+    if (!question.content) {
+        return null;
+    }
+
+    return await createQuestions({ data: { question } });
+};
+
 export const createAndUpdateSubmissionHistory = async (submissionHistorydata: submissionHistoryItemData[], userId: string) => {
     for (const history of submissionHistorydata) {
+        // Ensure question exists in DB before inserting submission history to satisfy foreign key constraint
+        try {
+            await ensureQuestionExists(history.titleSlug);
+        } catch (e) {
+            console.warn(`[LeetSensei] Could not ensure question exists for slug "${history.titleSlug}":`, e);
+        }
+
         await prisma.submissionHistory.upsert({
             where: { submissionId: history.id },
             update: {

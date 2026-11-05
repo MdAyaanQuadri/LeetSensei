@@ -225,7 +225,7 @@ const handleRouteChange = async (currentUrl: string = window.location.href) => {
       if (loggedIn) {
         trackingTimer = setTimeout(() => {
           syncQuestion(slug);
-        }, 5000);
+        }, 2000);
       } else {
         // Event-driven: tell content.tsx to show sign-in prompt if unauthenticated
         let title = formatSlugTitle(slug);

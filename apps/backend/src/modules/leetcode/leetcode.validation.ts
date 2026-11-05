@@ -10,6 +10,9 @@ export const leetcodeUsernameInputSchema = z.object({
 
 export const questionSyncSchema = z.object({
     data: z.object({
+        userStatus: z.object({
+            isPremium: z.boolean().nullable().optional()
+        }).nullable().optional(),
         question: z.object({
             questionId: z.coerce.string(),
             questionFrontendId: z.coerce.string(),
@@ -17,6 +20,7 @@ export const questionSyncSchema = z.object({
             titleSlug: z.string(),
             content: z.string().nullable().optional(),
             difficulty: z.string(),
+            isPaidOnly: z.boolean().nullable().optional(),
             topicTags: z.array(
                 z.object({
                     name: z.string(),

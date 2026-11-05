@@ -1,0 +1,451 @@
+[
+  {
+    "id": 42,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Trapping Rain Water",
+      "exampleNumber": 1,
+      "input": "height = [0,1,0,2,1,0,1,3,2,1,2,1]",
+      "output": "6"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies that the figure contains 12 vertical bars.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Identifies the bar heights in exact left-to-right order: 0,1,0,2,1,0,1,3,2,1,2,1.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Correctly identifies the bars as black and the trapped rainwater as blue.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies the trapped water above indices 2,4,5,6,9 with respective depths 1,1,2,1,1 units.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the tallest bar at index 7 with height 3 and recognizes that no water is trapped above it.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 218,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "The Skyline Problem",
+      "exampleNumber": 1,
+      "input": "buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]",
+      "output": "[[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies that the left diagram (A) contains five colored rectangular buildings.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies the five building intervals and heights: [2,9,10], [3,7,15], [5,12,12], [15,20,10], [19,24,8].",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that the right diagram (B) represents the resulting skyline using a black stepped outline.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies the seven red keypoints in order: (2,10), (3,15), (7,12), (12,0), (15,10), (20,8), (24,0).",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Recognizes that the skyline drops to height 0 at x=12 before rising again at x=15.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 133,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Clone Graph",
+      "exampleNumber": 1,
+      "input": "adjList = [[2,4],[1,3],[2,4],[1,3]]",
+      "output": "[[2,4],[1,3],[2,4],[1,3]]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies four nodes labelled 1, 2, 3, and 4 in the original graph.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Identifies the original graph as a four-node cycle with connections 1-2, 2-3, 3-4, and 4-1.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes the blue graph as the cloned graph with four new nodes retaining the original labels and connections.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Distinguishes the cloned graph from the original graph by recognizing that the nodes are new objects rather than the same nodes.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Recognizes the crossed-out example as an incorrect attempt to return the original graph and the bottom example as an incorrect clone with changed node connections.",
+        "maxPoints": 2
+      }
+    ]
+  },
+  {
+    "id": 133,
+    "figureIndex": 2,
+    "problemContext": {
+      "questionName": "Clone Graph",
+      "exampleNumber": 2,
+      "input": "adjList = [[]]",
+      "output": "[[]]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies that the figure contains exactly one graph node.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies the node's label as 1.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that the node has no connecting edges or neighboring nodes.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Recognizes the graph as an isolated single-node graph rather than an empty graph.",
+        "maxPoints": 2
+      }
+    ]
+  },
+  {
+    "id": 685,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Redundant Connection II",
+      "exampleNumber": 1,
+      "input": "edges = [[1,2],[1,3],[2,3]]",
+      "output": "[2,3]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies exactly three nodes labelled 1, 2, and 3.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies all three directed edges: 1→2, 1→3, and 2→3.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that node 1 has two outgoing edges, one towards node 2 and another towards node 3.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies node 3 as having two incoming edges, originating from nodes 1 and 2.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the directed edge 2→3 as the redundant connection shown by the expected output.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 685,
+    "figureIndex": 2,
+    "problemContext": {
+      "questionName": "Redundant Connection II",
+      "exampleNumber": 2,
+      "input": "edges = [[1,2],[2,3],[3,4],[4,1],[1,5]]",
+      "output": "[4,1]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies exactly five nodes labelled 1, 2, 3, 4, and 5.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies the directed cycle 1→2→3→4→1.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Identifies the additional directed edge 1→5 extending from node 1.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Recognizes that node 5 is a terminal node with no outgoing edges.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the directed edge 4→1 as the redundant connection corresponding to the expected output.",
+        "maxPoints": 2
+      }
+    ]
+  },
+  {
+    "id": 124,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Binary Tree Maximum Path Sum",
+      "exampleNumber": 1,
+      "input": "root = [1,2,3]",
+      "output": "6"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies node 1 as the root of the binary tree.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies node 2 as the left child and node 3 as the right child of node 1.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that the tree contains exactly three nodes and has no additional descendants.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies the path 2→1→3 as the path connecting both leaf nodes through the root.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Correctly associates the values 2, 1, and 3 with the displayed path sum of 6.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 124,
+    "figureIndex": 2,
+    "problemContext": {
+      "questionName": "Binary Tree Maximum Path Sum",
+      "exampleNumber": 2,
+      "input": "root = [-10,9,20,null,null,15,7]",
+      "output": "42"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies -10 as the root node of the tree.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies 9 as the left child and 20 as the right child of the root.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Identifies 15 and 7 as the left and right children of node 20, respectively.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Recognizes that node 9 is a leaf and that node 20 has two children.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the path 15→20→7 and correctly associates its sum with the displayed output of 42.",
+        "maxPoints": 2
+      }
+    ]
+  },
+  {
+    "id": 332,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Reconstruct Itinerary",
+      "exampleNumber": 1,
+      "input": "tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]",
+      "output": "[\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies all five airport nodes: JFK, MUC, LHR, SFO, and SJC.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies the directed connections JFK→MUC, MUC→LHR, LHR→SFO, and SFO→SJC.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes JFK as the starting airport and SJC as the final airport in the displayed route.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies the continuous route JFK→MUC→LHR→SFO→SJC without reversing any directed connection.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Recognizes that the diagram represents a single connected itinerary using all four displayed flight connections.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 332,
+    "figureIndex": 2,
+    "problemContext": {
+      "questionName": "Reconstruct Itinerary",
+      "exampleNumber": 2,
+      "input": "tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]",
+      "output": "[\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies the three airport nodes JFK, ATL, and SFO.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Correctly identifies the directed connections JFK→ATL, JFK→SFO, ATL→JFK, ATL→SFO, and SFO→ATL.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that multiple directed connections exist between the airport nodes and that the diagram is not a simple linear route.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies JFK as the starting airport in the reconstructed itinerary.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the displayed itinerary as JFK→ATL→JFK→SFO→ATL→SFO.",
+        "maxPoints": 2
+      }
+    ]
+  },
+  {
+    "id": 130,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Surrounded Regions",
+      "exampleNumber": 1,
+      "input": "board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+      "output": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies both diagrams as 4×4 grids containing X and O cells.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Identifies the three connected O cells in the upper-middle region of the original grid.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Recognizes that the O at the bottom-left position is connected to the boundary and remains unchanged.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies that all three O cells in the surrounded central region are changed to X in the resulting grid.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Recognizes that exactly one O remains in the bottom-left cell of the resulting grid.",
+        "maxPoints": 1
+      }
+    ]
+  },
+  {
+    "id": 909,
+    "figureIndex": 1,
+    "problemContext": {
+      "questionName": "Snakes and Ladders",
+      "exampleNumber": 1,
+      "input": "board = [[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,35,-1,-1,13,-1],[-1,-1,-1,-1,-1,-1],[-1,15,-1,-1,-1,-1]]",
+      "output": "4"
+    },
+    "personalRubrics": [
+      {
+        "id": "PR_1",
+        "criterion": "Identifies the game board as a 6×6 grid containing numbered squares from 1 to 36.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_2",
+        "criterion": "Recognizes the alternating left-to-right and right-to-left numbering pattern across successive rows.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_3",
+        "criterion": "Identifies the ladder connecting square 2 to square 15.",
+        "maxPoints": 2
+      },
+      {
+        "id": "PR_4",
+        "criterion": "Identifies the snake connecting square 17 to square 13.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_5",
+        "criterion": "Identifies the ladder connecting square 14 to square 35.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_6",
+        "criterion": "Recognizes square 1 as the starting position and square 36 as the destination.",
+        "maxPoints": 1
+      },
+      {
+        "id": "PR_7",
+        "criterion": "Recognizes the dice illustration beside the board as the mechanism used to determine movement.",
+        "maxPoints": 1
+      }
+    ]
+  }
+]

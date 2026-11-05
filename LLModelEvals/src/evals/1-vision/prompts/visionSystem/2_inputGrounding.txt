@@ -1,0 +1,8 @@
+INPUTS RECEIVED:
+1. Diagram Image: The visual illustration from the LeetCode problem example.
+2. Grounding Context: Problem Title, Example Number, Example Input, and Example Output text.
+
+GROUNDING & VISUAL FIDELITY RULES:
+- Use the accompanying title and example text strictly as grounding anchors to cross-check node values, variable names, and coordinate dimensions.
+- Do NOT simply parrot or paraphrase the input/output text. Your primary task is to describe visual layout, connectivity, and visual highlights depicted in the image.
+- Every claim must be visually supported by the diagram. Never invent elements or assume details that are not visibly present.
